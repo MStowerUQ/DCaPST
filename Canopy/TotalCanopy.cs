@@ -17,9 +17,9 @@ namespace LayerCanopyPhotosynthesis.Canopy
         public PartialCanopy Sunlit { get; private set; }
         public PartialCanopy Shaded { get; private set; }
 
-        public PathwayParameters CPath;        
+        public PathwayParameters CPath { get; private set; }        
 
-        public Angle LeafAngle { get; set; } = new Angle(60, AngleType.Deg);
+        public Angle LeafAngle { get; set; } 
         public double LeafWidth { get; set; } = 0.1;
         public double LeafNTopCanopy { get; set; } = 137;
 
@@ -35,15 +35,39 @@ namespace LayerCanopyPhotosynthesis.Canopy
         public double AverageCanopyNitrogen => (LeafNTopCanopy - CPath.StructuralN) * Math.Exp(-0.5 * NAllocationCoeff) + CPath.StructuralN;        
 
         public int Layers { get; }
-        public TotalCanopy(CanopyType type, int layers)
+        public TotalCanopy(CanopyType type, PathwayParameters pathway, int layers)
         {
             Type = type;
+            CPath = pathway;
             Layers = layers;
 
             var layerLAI = LAI / layers;
-            Rad = new AbsorbedRadiation(layers, layerLAI);
-            PAR = new AbsorbedRadiation(layers, layerLAI);
-            NIR = new AbsorbedRadiation(layers, layerLAI);
+            
+            Rad = new AbsorbedRadiation(layers, layerLAI)
+            {
+                DiffuseExtCoeff = CPath.Canopy.DiffuseExtCoeff,
+                LeafScatteringCoeff = CPath.Canopy.LeafScatteringCoeff,
+                DiffuseReflectionCoeff = CPath.Canopy.DiffuseReflectionCoeff
+            };
+
+            PAR = new AbsorbedRadiation(layers, layerLAI)
+            {
+                DiffuseExtCoeff = CPath.Canopy.DiffuseExtCoeff,
+                LeafScatteringCoeff = CPath.Canopy.LeafScatteringCoeff,
+                DiffuseReflectionCoeff = CPath.Canopy.DiffuseReflectionCoeff
+            };
+
+            NIR = new AbsorbedRadiation(layers, layerLAI)
+            {
+                DiffuseExtCoeff = CPath.Canopy.DiffuseExtCoeffNIR,
+                LeafScatteringCoeff = CPath.Canopy.LeafScatteringCoeffNIR,
+                DiffuseReflectionCoeff = CPath.Canopy.DiffuseReflectionCoeffNIR
+            };
+
+            WindSpeed = CPath.Canopy.U0;
+            WindSpeedExtinction = CPath.Canopy.Ku;
+            LeafAngle = new Angle(CPath.Canopy.LeafAngle, AngleType.Deg);
+            LeafWidth = CPath.Canopy.LeafWidth;
         }
 
         public void Initialise()

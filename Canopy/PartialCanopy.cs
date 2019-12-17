@@ -13,7 +13,6 @@ namespace LayerCanopyPhotosynthesis.Canopy
         public CanopyType Type { get; set; }
 
         public PathwayParameters CPath;
-        public AssimilationParameters aparam;
 
         public double A { get; set; } = 0.0;
         public double WaterUse { get; set; } = 0.0;
@@ -63,9 +62,35 @@ namespace LayerCanopyPhotosynthesis.Canopy
             CPath = cPath;
             Type = type;
 
-            Rad = new AbsorbedRadiation(layers, layerLAI);
-            PAR = new AbsorbedRadiation(layers, layerLAI);
-            NIR = new AbsorbedRadiation(layers, layerLAI);
+            Rad = new AbsorbedRadiation(layers, layerLAI)
+            {
+                DiffuseExtCoeff = CPath.Canopy.DiffuseExtCoeff,
+                LeafScatteringCoeff = CPath.Canopy.LeafScatteringCoeff,
+                DiffuseReflectionCoeff = CPath.Canopy.DiffuseReflectionCoeff
+            };
+
+            PAR = new AbsorbedRadiation(layers, layerLAI)
+            {
+                DiffuseExtCoeff = CPath.Canopy.DiffuseExtCoeff,
+                LeafScatteringCoeff = CPath.Canopy.LeafScatteringCoeff,
+                DiffuseReflectionCoeff = CPath.Canopy.DiffuseReflectionCoeff
+            };
+
+            NIR = new AbsorbedRadiation(layers, layerLAI)
+            {
+                DiffuseExtCoeff = CPath.Canopy.DiffuseExtCoeffNIR,
+                LeafScatteringCoeff = CPath.Canopy.LeafScatteringCoeffNIR,
+                DiffuseReflectionCoeff = CPath.Canopy.DiffuseReflectionCoeffNIR
+            };
+
+            // TODO: These might all be constants that don't need to be imported
+            Ca = CPath.Canopy.Ca;
+            EmpiricalSpectralCorrectionFactor = CPath.Canopy.F;
+            Constant = CPath.Canopy.Constant;
+            Gbs_CO2 = CPath.Canopy.Gbs_CO2;
+            ConvexityFactor = CPath.Canopy.Theta;
+            Alpha = CPath.Canopy.Alpha;
+            Vpr = CPath.Canopy.Vpr_l;
 
             Cm = Ca * CPath.CiCaRatio;
             Cc = Cm + 20;
@@ -74,9 +99,9 @@ namespace LayerCanopyPhotosynthesis.Canopy
 
         public bool TryCalculatePhotosynthesis(TemperatureModel Temp, PhotosynthesisParams Params)
         {
-            var Water = new WaterInteractionModel(Temp, LeafTemperature, Params.Gbh);
+            var Water = new WaterInteractionModel(Temp, CPath, LeafTemperature, Params.Gbh);
 
-            aparam = CPath.GetAssimilationParams(this);
+            var aparam = CPath.GetAssimilationParams(this);
             
             double Rn = PAR.TotalIrradiance + NIR.TotalIrradiance;
             double rtw;
