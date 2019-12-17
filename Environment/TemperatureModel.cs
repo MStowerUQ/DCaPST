@@ -64,8 +64,8 @@ namespace LayerCanopyPhotosynthesis
                     double temperatureDifference = (MaxTemperature - MinTemperature) * Math.Sin(Math.PI * (Solar.DayLength - ZLag) / (Solar.DayLength + 2 * XLag));
                     temperature = MinTemperature + temperatureDifference * Math.Exp(-YLag * n / (24.0 - Solar.DayLength));
                 }
-                hours[time] = (time - 1);
-                temperatures[time] = temperature;
+                hours[time - 1] = (time - 1);
+                temperatures[time - 1] = temperature;
             }
             Temps = new TableFunction(hours, temperatures, false);
         }

@@ -11,31 +11,29 @@ namespace LayerCanopyPhotosynthesis
 {
     public class Photosynthesis
     {
-        public enum Pathway { C3, C4, CCM };
-
-        public SolarGeometryModel Solar;
-        public RadiationModel Radiation;
-        public TemperatureModel Temperature;
+        public SolarGeometryModel Solar { get; set; }
+        public RadiationModel Radiation { get; set; }
+        public TemperatureModel Temperature { get; set; }
 
         public List<TotalCanopy> Canopies = new List<TotalCanopy>();
 
-        public double B { get; set; }
+        public double B { get; set; } = 0.409;
 
         private readonly int start = 6;
         private readonly int end = 18;
         private int RunTime => 1 + end - start;
 
-        public Photosynthesis(Pathway pathway)
+        public Photosynthesis(PathwayParameters pathway)
         { 
             int layers = 1;
             if (layers <= 0) throw new Exception("There must be at least 1 layer");
 
-            Canopies.Add(new TotalCanopy(CanopyType.Ac1, layers));
+            Canopies.Add(new TotalCanopy(CanopyType.Ac1, pathway, layers));
             
-            if (pathway != Pathway.C3) 
-                Canopies.Add(new TotalCanopy(CanopyType.Ac2, layers));
+            if (!(pathway is PathwayParametersC3)) 
+                Canopies.Add(new TotalCanopy(CanopyType.Ac2, pathway, layers));
             
-            Canopies.Add(new TotalCanopy(CanopyType.Aj, layers));
+            Canopies.Add(new TotalCanopy(CanopyType.Aj, pathway, layers));
         }
 
         public double[] DailyRun(
@@ -52,17 +50,15 @@ namespace LayerCanopyPhotosynthesis
         {
             // INITIALISE VALUES
             Solar = new SolarGeometryModel(DOY, latitude);
-            Radiation = new RadiationModel(Solar, radn);
-            Temperature = new TemperatureModel(Solar, maxT, minT);
+            Radiation = new RadiationModel(Solar, radn) { RPAR = 0.5};
+            Temperature = new TemperatureModel(Solar, maxT, minT) { AtmosphericPressure = 1.01325 };
 
             Canopies.ForEach(c => { c.LAI = lai; c.CPath.SLNAv = SLN; });
-
-            var totalIntercepted = CalculateInterceptedRadiation();
 
             // POTENTIAL CALCULATIONS
             // TODO: Total canopy -> CanopySection ?
             // Note: In the potential case, we assume unlimited water and therefore supply = demand
-            CalculatePotential(out double[] assimilations, out double[] sunlitDemand, out double[] shadedDemand);
+            CalculatePotential(out double intercepted, out double[] assimilations, out double[] sunlitDemand, out double[] shadedDemand);
             var waterSupply = sunlitDemand.Zip(shadedDemand, (x, y) => x + y).ToArray();
             var potential = assimilations.Sum();
             var totalDemand = waterSupply.Sum();
@@ -80,7 +76,7 @@ namespace LayerCanopyPhotosynthesis
             results[0] = actual * 3600 / 1000000 * 44 * B * 100 / ((1 + RootShootRatio) * 100);
             results[1] = totalDemand;
             results[2] = (soilWater > totalDemand) ? limitedSupply.Sum() : waterSupply.Sum();
-            results[3] = totalIntercepted;
+            results[3] = intercepted;
             results[4] = potential * 3600 / 1000000 * 44 * B * 100 / ((1 + RootShootRatio) * 100);
 
             return results;
@@ -107,30 +103,15 @@ namespace LayerCanopyPhotosynthesis
             bool invalidRadn = Radiation.Ios.Value(time) <= double.Epsilon;
 
             if (invalidTemp || invalidRadn)
-            {
-                Canopies.ForEach(c => { c.Sunlit.ZeroVariables(); c.Shaded.ZeroVariables(); });
                 return false;
-            }
-            return true;
-        }
+            else
+                return true;
+        }        
 
-        public double CalculateInterceptedRadiation()
-        {
-            var canopy = Canopies.First();
-
-            double result = 0.0;
-            for (int time = start; time <= end; time++)
-            {                
-                double rads = Radiation.Ios.Value(time);
-                if (double.IsNaN(rads) || rads <= 0)
-                    result += Radiation.TotalIncidentRadiation * canopy.PropnInterceptedRadns * 3600;
-            }
-            return result;
-        }
-
-        public void CalculatePotential(out double[] assimilations, out double[] sunlitDemand, out double[] shadedDemand)
+        public void CalculatePotential(out double intercepted, out double[] assimilations, out double[] sunlitDemand, out double[] shadedDemand)
         {
             // Water demands
+            intercepted = 0.0;
             sunlitDemand = new double[RunTime];
             shadedDemand = new double[RunTime];
             assimilations = new double[RunTime];
@@ -141,6 +122,9 @@ namespace LayerCanopyPhotosynthesis
 
                 // Note: double array values default to 0.0, which is the intended case if initialisation fails
                 if (!TryInitiliase(time)) continue;
+
+                intercepted += Radiation.Ios.Value(time) * Canopies.First().PropnInterceptedRadns * 3600;
+
                 DoHourlyCalculation();
 
                 var sunlits = Canopies.Select(c => c.Sunlit);
@@ -180,7 +164,7 @@ namespace LayerCanopyPhotosynthesis
                 maxHourlyT = maxHourlyT,
                 limited = false
             };
-            if (maxHourlyT == -1) Params.limited = true;
+            if (maxHourlyT != -1) Params.limited = true;
 
             Canopies.ForEach(c => 
             {
@@ -204,20 +188,24 @@ namespace LayerCanopyPhotosynthesis
             partials.ForEach(p => p.LeafTemperature = Temperature.AirTemperature);
 
             // Determine initial results
-            var test = partials.Select(s => s.TryCalculatePhotosynthesis(Temperature, Params));
+            var test = partials.Select(s => s.TryCalculatePhotosynthesis(Temperature, Params)).ToList();
 
             var initialA = partials.Select(s => s.A).ToArray();
             var initialWater = partials.Select(s => s.WaterUse).ToArray();
 
             // If any calculation fails, all results are zeroed
-            if (test.Any(b => b == false)) partials.ForEach(s => s.ZeroVariables());
+            if (test.Any(b => b == false))
+            {
+                partials.ForEach(s => s.ZeroVariables());
+                return;
+            }
 
             // Do not proceed if there is any insufficient assimilation
             if (!partials.Any(s => s.A < 0.5))
             {
                 for (int n = 0; n < 3; n++)
                 {                    
-                    test = partials.Select(s => s.TryCalculatePhotosynthesis(Temperature, Params));
+                    test = partials.Select(s => s.TryCalculatePhotosynthesis(Temperature, Params)).ToList();
 
                     // If any calculation fails, all results are set to the value calculated initially
                     if (test.Any(b => b == false))

@@ -20,7 +20,12 @@ namespace LayerCanopyPhotosynthesis.Environment
 
         private double Gbh;
 
-        public WaterInteractionModel(TemperatureModel Temp, double leafTemp, double gbh)
+        private double Rcp = 1200;
+        private double PsychrometricConstant = 0.066;
+        private double Sigma = 5.67E-08;
+        private double Lambda = 2447000;
+
+        public WaterInteractionModel(TemperatureModel Temp, PathwayParameters CPath, double leafTemp, double gbh)
         {
             AirTemp = Temp.AirTemperature;            
             AbsTemp = Temp.AbsoluteTemperature;
@@ -28,15 +33,15 @@ namespace LayerCanopyPhotosynthesis.Environment
             Atm = Temp.AtmosphericPressure;
             Rair = Temp.Rair;
 
+            Sigma = CPath.Canopy.Sigma;
+            Rcp = CPath.Canopy.Rcp;
+            PsychrometricConstant = CPath.Canopy.G;
+            Lambda = CPath.Canopy.Lambda;
+
             LeafTemp = leafTemp;
 
             Gbh = gbh;
-        }
-
-        private double Rcp = 1200;
-        private double PsychrometricConstant = 0.066;
-        private double Sigma = 5.67E-08;
-        private double Lambda = 2447000;
+        }        
 
         public double Gbw => Gbh / 0.92;
         public double Rbh => 1 / Gbh;

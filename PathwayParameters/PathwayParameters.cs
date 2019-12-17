@@ -4,6 +4,8 @@ namespace LayerCanopyPhotosynthesis
 {
     public abstract class PathwayParameters
     {
+        public CanopyParameters Canopy { get; set; } 
+
         public double StructuralN { get; set; } = 25;
         public double SLNRatioTop { get; set; } = 1.32;
         public double SLNAv { get; set; } = 1.45;
