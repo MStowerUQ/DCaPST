@@ -1,15 +1,15 @@
-﻿
+﻿using LayerCanopyPhotosynthesis.Canopy;
 namespace LayerCanopyPhotosynthesis
 {
     public class PathwayParametersC3 : PathwayParameters
     {
-        public PathwayParametersC3() : base()
+        public PathwayParametersC3()
         {
             StructuralN = 25;
             SLNRatioTop = 1.32;
             SLNAv = 1.45;
 
-            //Parmas based on C3
+            //Params based on C3
             CiCaRatio = 0.7;
             CiCaRatioIntercept = 0.70;
             CiCaRatioSlope = 0;
@@ -27,8 +27,6 @@ namespace LayerCanopyPhotosynthesis
             
             F2 = 0.75;
             F1 = 0.95;
-
-            #region Curvilinear Temperature Model
 
             // Kc µbar	Curvilinear Temperature Model 
             KcP25 = 273.422964228666;
@@ -59,13 +57,81 @@ namespace LayerCanopyPhotosynthesis
             GmTMin = 0.0;
             GmTOpt = 29.2338417788683;
             GmBeta = 1;
+        }
 
-            CGm = 0;
+        protected override AssimilationParameters GetAc1Params(PartialCanopy s)
+        {
+            var param = new AssimilationParameters()
+            {
+                x_1 = s.VcMaxT,
+                x_2 = s.Kc / s.Ko,
+                x_3 = s.Kc,
+                x_4 = 0.0,
+                x_5 = 0.0,
+                x_6 = 0.0,
+                x_7 = 0.0,
+                x_8 = 0.0,
+                x_9 = 0.0,
 
+                m = s.Rm,
+                t = s.G_,
+                b = 0.0,
+                j = 1.0,
+                e = s.OxygenPartialPressure,
+                R = s.RdT
+            };
 
-            #endregion
+            return param;
+        }
 
+        protected override AssimilationParameters GetAc2Params(PartialCanopy s)
+        {
+            var param = new AssimilationParameters()
+            {
+                x_1 = 0.0,
+                x_2 = 0.0,
+                x_3 = 0.0,
+                x_4 = 0.0,
+                x_5 = 0.0,
+                x_6 = 0.0,
+                x_7 = 0.0,
+                x_8 = 0.0,
+                x_9 = 0.0,
 
+                m = 0.0,
+                t = 0.0,
+                b = 0.0,
+                j = 0.0,
+                e = 0.0,
+                R = 0.0
+            };
+
+            return param;
+        }
+
+        protected override AssimilationParameters GetAjParams(PartialCanopy s)
+        {
+            var param = new AssimilationParameters()
+            {
+                x_1 = s.J / 4,
+                x_2 = 2 * s.G_,
+                x_3 = 0.0,
+                x_4 = 0.0,
+                x_5 = 0.0,
+                x_6 = 0.0,
+                x_7 = 0.0,
+                x_8 = 0.0,
+                x_9 = 0.0,
+
+                m = s.Rm,
+                t = s.G_,
+                b = 0.0,
+                j = 1.0,
+                e = s.OxygenPartialPressure,
+                R = s.RdT
+            };
+
+            return param;
         }
     }
 }
