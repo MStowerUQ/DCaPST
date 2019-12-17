@@ -2,19 +2,8 @@ using System;
 
 namespace LayerCanopyPhotosynthesis
 {
-    public class TempFunctionExp
+    public static class TemperatureFunction
     {
-        public TempFunctionExp() { }
-
-        //public static double Val(double temp, double P25, double c, double b)
-        //{
-        //    return P25 * Math.Exp(c - b / (temp + 273));
-        //}
-    }
-
-    public class TemperatureFunction
-    {
-        public TemperatureFunction() { }
         public static double Val(double temp, double P25, double c, double tMax, double tMin, double tOpt, double beta)
         {
             double alpha = Math.Log(2) / (Math.Log((tMax - tMin) / (tOpt - tMin)));
@@ -25,7 +14,7 @@ namespace LayerCanopyPhotosynthesis
             return funcT;
         }
 
-        public static double Val2(double temp, double P25/*, double c, double tMax*/, double tMin/*, double tOpt, double beta*/)
+        public static double Val2(double temp, double P25, double tMin)
         {
             return P25 * Math.Exp(tMin * (temp + 273 - 298.15) / (298.15 * 8.314 * (temp + 273)));
         }
