@@ -83,8 +83,11 @@ namespace LayerCanopyPhotosynthesis.Canopy
             CalcAbsorbedRadiations(radiation);
 
             // CalcLeafNitrogenDistribution
-            CPath.SLNAv = AverageCanopyNitrogen / 1000 * 14;
-            CPath.SLNRatioTop = SLNTop / CPath.SLNAv;
+            var SLNTop = CPath.SLNAv * CPath.SLNRatioTop;
+            LeafNTopCanopy = SLNTop * 1000 / 14;
+            
+            var NcAv = CPath.SLNAv * 1000 / 14;
+            NAllocationCoeff = -1 * Math.Log((NcAv - CPath.StructuralN) / (LeafNTopCanopy - CPath.StructuralN)) * 2;
 
             // CalcMaxRates
             CalcMaximumRates();
