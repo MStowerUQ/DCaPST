@@ -62,13 +62,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Environment\Angle.cs" />
-    <Compile Include="Environment\EnvironmentModel.cs" />
     <Compile Include="Layer\LayerModel.cs" />
     <Compile Include="Canopy\LeafCanopy.cs" />
     <Compile Include="MethodExtensions\CCMMethodExtensions.cs" />
     <Compile Include="Output\LightVar.cs" />
     <Compile Include="PathwayParameters\PathwayParametersC3.cs" />
     <Compile Include="PathwayParameters\PathwayParametersC4.cs" />
+    <Compile Include="Environment\TemperatureModel.cs" />
+    <Compile Include="Environment\RadiationModel.cs" />
+    <Compile Include="Environment\SolarGeometryModel.cs" />
     <Compile Include="PathwayParameters\PathwayParametersCCM.cs" />
     <Compile Include="PhotosynthesisModel\PhotosynthesisModelCCM.cs" />
     <Compile Include="Tools\Lookup\LookupTable.cs" />
