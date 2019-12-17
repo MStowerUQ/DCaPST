@@ -39,25 +39,31 @@ namespace LayerCanopyPhotosynthesis.Canopy
         {
             Type = type;
             CPath = pathway;
-            Layers = layers;
+            Layers = layers;            
+        }
 
-            var layerLAI = LAI / layers;
-            
-            Rad = new AbsorbedRadiation(layers, layerLAI)
+        public void Initialise(double lai, double sln)
+        {
+            LAI = lai;
+            CPath.SLNAv = sln;
+
+            var layerLAI = LAI / Layers;
+
+            Rad = new AbsorbedRadiation(Layers, layerLAI)
             {
                 DiffuseExtCoeff = CPath.Canopy.DiffuseExtCoeff,
                 LeafScatteringCoeff = CPath.Canopy.LeafScatteringCoeff,
                 DiffuseReflectionCoeff = CPath.Canopy.DiffuseReflectionCoeff
             };
 
-            PAR = new AbsorbedRadiation(layers, layerLAI)
+            PAR = new AbsorbedRadiation(Layers, layerLAI)
             {
                 DiffuseExtCoeff = CPath.Canopy.DiffuseExtCoeff,
                 LeafScatteringCoeff = CPath.Canopy.LeafScatteringCoeff,
                 DiffuseReflectionCoeff = CPath.Canopy.DiffuseReflectionCoeff
             };
 
-            NIR = new AbsorbedRadiation(layers, layerLAI)
+            NIR = new AbsorbedRadiation(Layers, layerLAI)
             {
                 DiffuseExtCoeff = CPath.Canopy.DiffuseExtCoeffNIR,
                 LeafScatteringCoeff = CPath.Canopy.LeafScatteringCoeffNIR,
@@ -70,7 +76,7 @@ namespace LayerCanopyPhotosynthesis.Canopy
             LeafWidth = CPath.Canopy.LeafWidth;
         }
 
-        public void Initialise()
+        public void ResetPartials()
         {
             // Reset the partial canopies
             Sunlit = new PartialCanopy(CPath, Type, Layers, LAI / Layers);

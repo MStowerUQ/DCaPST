@@ -53,7 +53,7 @@ namespace LayerCanopyPhotosynthesis
             Radiation = new RadiationModel(Solar, radn) { RPAR = 0.5};
             Temperature = new TemperatureModel(Solar, maxT, minT) { AtmosphericPressure = 1.01325 };
 
-            Canopies.ForEach(c => { c.LAI = lai; c.CPath.SLNAv = SLN; });
+            Canopies.ForEach(c => c.Initialise(lai, SLN));
 
             // POTENTIAL CALCULATIONS
             // TODO: Total canopy -> CanopySection ?
@@ -168,7 +168,7 @@ namespace LayerCanopyPhotosynthesis
 
             Canopies.ForEach(c => 
             {
-                c.Initialise();
+                c.ResetPartials();
                 c.CalcLAI();
                 c.Run(Radiation);
             });
