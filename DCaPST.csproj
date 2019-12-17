@@ -74,6 +74,7 @@
     <Compile Include="Environment\TemperatureModel.cs" />
     <Compile Include="Environment\RadiationModel.cs" />
     <Compile Include="Environment\SolarGeometryModel.cs" />
+    <Compile Include="Environment\WaterInteractionModel.cs" />
     <Compile Include="PathwayParameters\PathwayParametersCCM.cs" />
     <Compile Include="PhotosynthesisModel\PhotosynthesisModelCCM.cs" />
     <Compile Include="Tools\Lookup\LookupTable.cs" />
