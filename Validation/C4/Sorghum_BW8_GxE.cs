@@ -48,7 +48,7 @@ namespace Validation.C4
         {
             var PM = Initialise.NewC4();
 
-            var dcaps = PM.RunApsim(DOY, latitude, maxT, minT, radn, lai, SLN, SWAvailable, RootShootRatio);
+            var dcaps = PM.DailyRun(DOY, latitude, maxT, minT, radn, lai, SLN, SWAvailable, RootShootRatio);
 
             double BIOshootDAY = dcaps[0];            
             double EcanDemand = dcaps[1];

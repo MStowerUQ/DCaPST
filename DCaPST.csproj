@@ -22,7 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RegisterForComInterop>false</RegisterForComInterop>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="Canopy\AbsorbedRadiation.cs" />
     <Compile Include="Canopy\BaseCanopy.cs" />
+    <Compile Include="Canopy\CanopyParameters.cs" />
     <Compile Include="Canopy\PartialCanopy.cs" />
     <Compile Include="Canopy\TotalCanopy.cs" />
     <Compile Include="Environment\Angle.cs" />
