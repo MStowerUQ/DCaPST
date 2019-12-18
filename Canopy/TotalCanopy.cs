@@ -138,7 +138,9 @@ namespace LayerCanopyPhotosynthesis.Canopy
             NIR.BeamExtinctionCoeff = PAR.BeamExtinctionCoeff = Rad.BeamExtinctionCoeff;
 
             // Intercepted radiation
-            PropnInterceptedRadns = Rad.CalculateAccumInterceptedRadn() - PropnInterceptedRadns;
+            PropnInterceptedRadns = Rad.CalculateAccumInterceptedRadn();
+            // TODO: Make this work with multiple layers
+            //PropnInterceptedRadns = Rad.CalculateAccumInterceptedRadn() - PropnInterceptedRadns;
         }
 
         private double CalcShadowProjection(double sunAngleRadians)

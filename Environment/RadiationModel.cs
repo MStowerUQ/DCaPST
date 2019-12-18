@@ -13,10 +13,11 @@ namespace LayerCanopyPhotosynthesis.Environment
         public double ExtraTerrestrialRadiation { get; set; }
         public double FracDiffuseATM { get; set; } = 0.1725;
         public double RPAR { get; set; } = 0.5;
-        public double DirectRadiation { get; set; }
-        public double DiffuseRadiation { get; set; }
-        public double DirectRadiationPAR { get; set; }
-        public double DiffuseRadiationPAR { get; set; }
+        public double TotalIncidentRadiation { get; private set; }
+        public double DirectRadiation { get; private set; }
+        public double DiffuseRadiation { get; private set; }
+        public double DirectRadiationPAR { get; private set; }
+        public double DiffuseRadiationPAR { get; private set; }
 
         public TableFunction Ios { get; set; }
         public TableFunction Idirs { get; set; }
@@ -54,6 +55,8 @@ namespace LayerCanopyPhotosynthesis.Environment
 
         public void UpdateIncidentRadiation(double hour)
         {
+            TotalIncidentRadiation = Ios.Value(hour);
+
             DirectRadiation = Idirs.Value(hour);
             DiffuseRadiation = Idiffs.Value(hour);
 

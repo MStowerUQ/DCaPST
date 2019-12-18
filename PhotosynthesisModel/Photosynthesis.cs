@@ -100,7 +100,7 @@ namespace LayerCanopyPhotosynthesis
         {
             var CPath = Canopies.First().CPath;
             bool invalidTemp = temp > CPath.JTMax || temp < CPath.JTMin || temp > CPath.GmTMax || temp < CPath.GmTMin;
-            bool invalidRadn = Radiation.Ios.Value(time) <= double.Epsilon;
+            bool invalidRadn = Radiation.TotalIncidentRadiation <= double.Epsilon;
 
             if (invalidTemp || invalidRadn)
                 return false;
@@ -123,7 +123,7 @@ namespace LayerCanopyPhotosynthesis
                 // Note: double array values default to 0.0, which is the intended case if initialisation fails
                 if (!TryInitiliase(time)) continue;
 
-                intercepted += Radiation.Ios.Value(time) * Canopies.First().PropnInterceptedRadns * 3600;
+                intercepted += Radiation.TotalIncidentRadiation * Canopies.First().PropnInterceptedRadns * 3600;
 
                 DoHourlyCalculation();
 
