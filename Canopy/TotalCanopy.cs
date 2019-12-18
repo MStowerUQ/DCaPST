@@ -81,6 +81,10 @@ namespace LayerCanopyPhotosynthesis.Canopy
             // Reset the partial canopies
             Sunlit = new PartialCanopy(CPath, Type, Layers, LAI / Layers);
             Shaded = new PartialCanopy(CPath, Type, Layers, LAI / Layers);
+
+            // TODO: This mess can be cleaned up with better structure, just getting it working
+            Sunlit.NIR.BeamExtinctionCoeff = Sunlit.PAR.BeamExtinctionCoeff = Sunlit.Rad.BeamExtinctionCoeff = Rad.BeamExtinctionCoeff;
+            Shaded.NIR.BeamExtinctionCoeff = Shaded.PAR.BeamExtinctionCoeff = Shaded.Rad.BeamExtinctionCoeff = Rad.BeamExtinctionCoeff;
         }
 
         public void Run(RadiationModel radiation)
