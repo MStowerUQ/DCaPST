@@ -26,8 +26,7 @@ namespace LayerCanopyPhotosynthesis.Canopy
         // CONSTANTS
         public double Ca { get; set; } = 380;
         public double Constant { get; set; } = 0.047;
-        public double Alpha { get; set; } = 0.1;
-        public double Vpr { get; set; } = 80;
+        public double Alpha { get; set; } = 0.1;       
         public double ConvexityFactor { get; set; } = 0.7;
         public double OxygenPartialPressure { get; set; } = 210000;
         public double Gbs_CO2 { get; set; } = 0.003;
@@ -56,6 +55,7 @@ namespace LayerCanopyPhotosynthesis.Canopy
         public double K_ => Kc * (1 + OxygenPartialPressure / Ko);       
         public double Rm => RdT * 0.5;
         public double Gbs => Gbs_CO2 * LAI;
+        public double Vpr => CPath.Canopy.Vpr_l * LAI;
 
         public PartialCanopy(PathwayParameters cPath, CanopyType type, int layers, double layerLAI)
         {
@@ -90,7 +90,6 @@ namespace LayerCanopyPhotosynthesis.Canopy
             Gbs_CO2 = CPath.Canopy.Gbs_CO2;
             ConvexityFactor = CPath.Canopy.Theta;
             Alpha = CPath.Canopy.Alpha;
-            Vpr = CPath.Canopy.Vpr_l;
 
             Cm = Ca * CPath.CiCaRatio;
             Cc = Cm + 20;
