@@ -75,7 +75,7 @@ namespace LayerCanopyPhotosynthesis
             double[] results = new double[5];
             results[0] = actual * 3600 / 1000000 * 44 * B * 100 / ((1 + RootShootRatio) * 100);
             results[1] = totalDemand;
-            results[2] = (soilWater > totalDemand) ? limitedSupply.Sum() : waterSupply.Sum();
+            results[2] = (soilWater < totalDemand) ? limitedSupply.Sum() : waterSupply.Sum();
             results[3] = intercepted;
             results[4] = potential * 3600 / 1000000 * 44 * B * 100 / ((1 + RootShootRatio) * 100);
 
