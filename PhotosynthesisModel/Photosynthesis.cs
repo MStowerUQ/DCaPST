@@ -173,11 +173,14 @@ namespace LayerCanopyPhotosynthesis
                 c.Run(Radiation);
             });
 
-            Params.Gbh = Canopies.First().CalcSunlitGbh();
+            var gbh = Canopies.First().CalcGbh();
+            var sunlitGbh = Canopies.First().CalcSunlitGbh();
 
+            Params.Gbh = sunlitGbh;
             Params.fraction = sunFraction;
             CalcPartialPhotosynthesis(Canopies.Select(c => c.Sunlit).ToList(), Params);
 
+            Params.Gbh = gbh - sunlitGbh;
             Params.fraction = shadeFraction;
             CalcPartialPhotosynthesis(Canopies.Select(c => c.Shaded).ToList(), Params);
         }

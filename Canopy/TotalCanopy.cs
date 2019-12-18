@@ -99,13 +99,22 @@ namespace LayerCanopyPhotosynthesis.Canopy
             CalcMaximumRates();
         }
 
+        public double CalcGbh()
+        {
+            var a = 0.5 * WindSpeedExtinction;
+            var b = 0.01 * Math.Pow(WindSpeed / LeafWidth, 0.5);
+            var c = 1 - Math.Exp(-a * LAI);
+
+            return b * c / a;
+        }
+
         public double CalcSunlitGbh()
         {
-            var a = 0.01 * Math.Pow(WindSpeed / LeafWidth, 0.5);
-            var b = 1 - Math.Exp(-0.5 * (WindSpeedExtinction + Rad.BeamExtinctionCoeff) * LAI);
-            var c = 0.5 * (WindSpeedExtinction + Rad.BeamExtinctionCoeff);
+            var a = 0.5 * WindSpeedExtinction + Rad.BeamExtinctionCoeff;
+            var b = 0.01 * Math.Pow(WindSpeed / LeafWidth, 0.5);
+            var c = 1 - Math.Exp(-a * LAI);            
 
-            return a * b / c;
+            return b * c / a;
         }
 
         public void CalcLAI()
