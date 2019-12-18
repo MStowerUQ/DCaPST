@@ -117,15 +117,15 @@ namespace LayerCanopyPhotosynthesis
         {
             var param = new AssimilationParameters()
             {
-                x_1 = s.J / 4,
-                x_2 = 2 * s.G_,
+                x_1 = (1.0 - s.CPath.X) * s.J / 3.0,
+                x_2 = 7.0 / 3.0 * s.G_,
                 x_3 = 0.0,
                 x_4 = 0.0,
-                x_5 = 0.0,
-                x_6 = 0.0,
+                x_5 = s.CPath.X * s.J / s.CPath.Phi,
+                x_6 = 1.0,
                 x_7 = 0.0,
-                x_8 = 0.0,
-                x_9 = 0.0,
+                x_8 = 1.0,
+                x_9 = 1.0,
 
                 m = s.Rm,
                 t = s.G_,
