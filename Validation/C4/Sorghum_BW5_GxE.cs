@@ -6,7 +6,7 @@ namespace Validation.C4
     [TestFixture]
     public class Sorghum_BW5_GxE
     {
-        private double epsilon = 0.000000001;
+        private double epsilon = 0.0000000000001;
 
         // T1_short
         [TestCase(308, 18.6299991607666, 30, 12.5, 21.1000003814697, 1, 1.23923454979607, 5.18116129578529, 0.517031252935243, 1.95925826882313, 0.890692249779071, 0.890692249779071, 7.23789499947097, 1.95925826882313)]
