@@ -214,7 +214,7 @@ namespace LayerCanopyPhotosynthesis.Canopy
             var factor = LAI * (LeafNTopCanopy - CPath.StructuralN) * psi;
             var exp = Rad.CalcExp(nTerm / LAI);
 
-            return factor * exp;
+            return factor * exp / nTerm;
         }
         
     }
