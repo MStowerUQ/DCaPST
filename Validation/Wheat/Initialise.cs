@@ -57,7 +57,7 @@ namespace Validation.Wheat
                 PsiGm = 0.00412 * PsiFactor,
 
                 Phi = 0.75,
-                X = 0.75 / 3.75,
+                X = 0.75 / 3.75,                 
                 CiCaRatio = 0.7,
 
                 KcP25 = 273.422964228666,
@@ -87,6 +87,8 @@ namespace Validation.Wheat
                 GmC = 0.875790608584141,
                 GmBeta = 1.0,
             };
+            CPath.Fcyc = 0.25 * CPath.Phi;
+            CPath.z = (3.0 - CPath.Fcyc) / (4.0 * (1.0 - CPath.Fcyc));
 
             var Model = new Photosynthesis(CPath);
             
