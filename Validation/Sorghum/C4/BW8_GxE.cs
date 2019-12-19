@@ -1,10 +1,10 @@
 ﻿using System;
 using NUnit.Framework;
 
-namespace Validation.C4
+namespace Validation.Sorghum
 {
     [TestFixture]
-    public class Sorghum_BW8_GxE
+    public class BW8_GxE
     {
         private double epsilon = 0.0000000000001;
 

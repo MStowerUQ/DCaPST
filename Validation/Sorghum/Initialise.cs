@@ -5,7 +5,7 @@ using System.Text;
 using LayerCanopyPhotosynthesis.Canopy;
 using LayerCanopyPhotosynthesis;
 
-namespace Validation.C4
+namespace Validation.Sorghum
 {
     public static class Initialise
     {

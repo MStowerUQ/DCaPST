@@ -13,8 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="C3\" />
-    <Folder Include="CCM\" />
+    <Folder Include="Maize\" />
+    <Folder Include="Models\Canopy\" />
+    <Folder Include="Models\Environment\" />
   </ItemGroup>
 
   <ItemGroup>
