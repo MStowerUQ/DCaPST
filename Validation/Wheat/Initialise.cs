@@ -43,7 +43,7 @@ namespace Validation.Wheat
                 Lambda = 2447000,
             };
 
-            var CPath = new PathwayParametersC4()
+            var CPath = new PathwayParametersCCM()
             {
                 Canopy = canopy,
 
