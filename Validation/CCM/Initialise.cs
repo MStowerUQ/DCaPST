@@ -5,11 +5,11 @@ using System.Text;
 using LayerCanopyPhotosynthesis.Canopy;
 using LayerCanopyPhotosynthesis;
 
-namespace Validation.Wheat
+namespace Validation.CCM
 {
     public static class Initialise
     {        
-        public static Photosynthesis NewCCM()
+        public static Photosynthesis NewWheat()
         {
             double PsiFactor = 1.0;
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 
-namespace Validation.Sorghum
+namespace Validation.C4
 {
     [TestFixture]
     public class BW8_GxE
@@ -46,7 +46,7 @@ namespace Validation.Sorghum
             double expectedBIOshootDAYPot
         )
         {
-            var PM = Initialise.NewC4();
+            var PM = Initialise.NewSorghum();
 
             var dcaps = PM.DailyRun(DOY, latitude, maxT, minT, radn, lai, SLN, SWAvailable, RootShootRatio);
 

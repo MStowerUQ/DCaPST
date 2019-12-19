@@ -1,7 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 
-namespace Validation.Wheat
+namespace Validation.CCM
 {
     [TestFixture]
     public class CunderdinDry
@@ -38,7 +38,7 @@ namespace Validation.Wheat
             double expectedBIOshootDAYPot
         )
         {
-            var PM = Initialise.NewCCM();
+            var PM = Initialise.NewWheat();
 
             var dcaps = PM.DailyRun(DOY, latitude, maxT, minT, radn, lai, SLN, SWAvailable, RootShootRatio);
 

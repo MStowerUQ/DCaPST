@@ -5,11 +5,11 @@ using System.Text;
 using LayerCanopyPhotosynthesis.Canopy;
 using LayerCanopyPhotosynthesis;
 
-namespace Validation.Sorghum
+namespace Validation.C4
 {
     public static class Initialise
     {
-        public static Photosynthesis NewC4()
+        public static Photosynthesis NewSorghum()
         {
             double PsiFactor = 0.4;
 
