@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace LayerCanopyPhotosynthesis
+namespace DCAPST
 {
     public enum AngleType { Deg, Rad };
     

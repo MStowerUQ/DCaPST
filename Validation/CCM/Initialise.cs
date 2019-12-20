@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
-using LayerCanopyPhotosynthesis.Canopy;
-using LayerCanopyPhotosynthesis;
+using DCAPST.Canopy;
+using DCAPST;
 
 namespace Validation.CCM
 {
@@ -51,13 +51,13 @@ namespace Validation.CCM
                 StructuralN = 14,
 
                 PsiVc = 1.1 * PsiFactor,
-                PsiJ = 1.85 * PsiFactor,
+                PsiJ = 1.9484 * PsiFactor,
                 PsiRd = 0.0 * PsiFactor,
-                PsiVp = 1.0 * PsiFactor,
+                PsiVp = 0.373684157583268 * PsiFactor,
                 PsiGm = 0.00412 * PsiFactor,
 
                 Phi = 0.75,
-                X = 0.75 / 3.75,                 
+                X = 0.75 / 3.75,
                 CiCaRatio = 0.7,
 
                 KcP25 = 273.422964228666,

@@ -1,6 +1,6 @@
 using System;
-using LayerCanopyPhotosynthesis.Canopy;
-namespace LayerCanopyPhotosynthesis
+using DCAPST.Canopy;
+namespace DCAPST
 {
     public abstract class PathwayParameters
     {

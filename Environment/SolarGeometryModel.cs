@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Utilities;
 
-namespace LayerCanopyPhotosynthesis.Environment
+namespace DCAPST.Environment
 {
     public class SolarGeometryModel
     {

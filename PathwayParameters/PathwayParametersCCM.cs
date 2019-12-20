@@ -1,5 +1,5 @@
-using LayerCanopyPhotosynthesis.Canopy;
-namespace LayerCanopyPhotosynthesis
+using DCAPST.Canopy;
+namespace DCAPST
 {
     public class PathwayParametersCCM : PathwayParameters
     {

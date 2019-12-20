@@ -1,6 +1,6 @@
 using System;
 
-namespace LayerCanopyPhotosynthesis
+namespace DCAPST
 {
     public static class TemperatureFunction
     {

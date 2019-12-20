@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using LayerCanopyPhotosynthesis.Environment;
+using DCAPST.Environment;
 
-namespace LayerCanopyPhotosynthesis.Canopy
+namespace DCAPST.Canopy
 {
     public class PartialCanopy : BaseCanopy
     {        

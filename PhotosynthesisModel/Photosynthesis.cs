@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using LayerCanopyPhotosynthesis.Canopy;
-using LayerCanopyPhotosynthesis.Environment;
+using DCAPST.Canopy;
+using DCAPST.Environment;
 
-namespace LayerCanopyPhotosynthesis
+namespace DCAPST
 {
     public class Photosynthesis
     {

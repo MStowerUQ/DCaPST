@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Utilities;
 
-using LayerCanopyPhotosynthesis.Environment;
+using DCAPST.Environment;
 
-namespace LayerCanopyPhotosynthesis
+namespace DCAPST
 {
     public class TemperatureModel
     {
