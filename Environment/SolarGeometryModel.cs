@@ -9,18 +9,21 @@ namespace DCAPST.Environment
 {
     public class SolarGeometryModel
     {
-        public Angle Latitude { get; set; }
-        public double DayOfYear { get; set; }
-        public Angle SolarDeclination { get; set; }
-        public double SolarConstant { get; set; } = 1360;   
-        public Angle SunsetAngle { get; set; }
-        public double RadiusVector { get; set; }
-        public double DayLength { get; set; }
-        public double Sunrise { get; set; }
-        public double Sunset { get; set; }        
+        public Angle Latitude { get; private set; }
+        public Angle SolarDeclination { get; private set; }
+        public Angle SunsetAngle { get; private set; }
+
+        public double SolarConstant { get; private set; } = 1360;
+        public double DayOfYear { get; private set; }        
+        public double DayLength { get; private set; }
+        public double Sunrise { get; private set; }
+        public double Sunset { get; private set; }        
 
         public SolarGeometryModel(double dayOfYear, double latitude)
         {
+            if (dayOfYear < 1 || 366 < dayOfYear) throw new Exception("Day of year must lie between 1 and 366");
+            if (latitude < -90.0 || 90.0 < latitude) throw new Exception("Latitude cannot exceed 90 degrees");
+
             DayOfYear = dayOfYear;
             Latitude = new Angle(latitude, AngleType.Deg);
 
@@ -36,7 +39,7 @@ namespace DCAPST.Environment
             * (SunsetAngle.Rad * Math.Sin(Latitude.Rad) * Math.Sin(SolarDeclination.Rad) + Math.Sin(SunsetAngle.Rad) * Math.Cos(Latitude.Rad) * Math.Cos(SolarDeclination.Rad))
             / 1000000.0;            
 
-        public Angle CalcSolarDeclination() => new Angle(23.45 * Math.Sin(2 * Math.PI * (284 + DayOfYear) / 365), AngleType.Deg);
+        private Angle CalcSolarDeclination() => new Angle(23.45 * Math.Sin(2 * Math.PI * (284 + DayOfYear) / 365), AngleType.Deg);
 
         private Angle CalcSunsetAngle() => new Angle(Math.Acos(-1 * Math.Tan(Latitude.Rad) * Math.Tan(SolarDeclination.Rad)), AngleType.Rad);
         
