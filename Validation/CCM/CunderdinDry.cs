@@ -6,7 +6,7 @@ namespace Validation.CCM
     [TestFixture]
     public class CunderdinDry
     {
-        private double epsilon = 0.0000000000001;
+        private double delta = 0.0000000000001;
 
         [TestCase(228, -31.3999996185303, 13, 2.90000009536743, 14.5, 0.561035096645355, 1.87829542160034, 0, 0.554309725761414, 0, 0.495386168595403, 0, 5.97844157619763, 2.76022202465798)]
         [TestCase(231, -31.3999996185303, 16.2999992370605, -1.10000002384186, 17.8999996185303, 0.525810301303864, 1.85285043716431, 0, 0.693877518177032, 0, 1.03433244206527, 0, 8.46848982578894, 3.73424338954495)]
@@ -48,11 +48,11 @@ namespace Validation.CCM
             double RadIntDcaps = dcaps[3];
             double BIOshootDAYPot = dcaps[4];
 
-            Assert.IsTrue(Math.Abs(expectedBIOshootDAY - BIOshootDAY) < epsilon);
-            Assert.IsTrue(Math.Abs(expectedEcanDemand - EcanDemand) < epsilon);
-            Assert.IsTrue(Math.Abs(expectedEcanSupply - EcanSupply) < epsilon);
-            Assert.IsTrue(Math.Abs(expectedRadIntDcaps - RadIntDcaps) < epsilon);
-            Assert.IsTrue(Math.Abs(expectedBIOshootDAYPot - BIOshootDAYPot) < epsilon);
+            Assert.AreEqual(expectedBIOshootDAY, BIOshootDAY, delta);
+            Assert.AreEqual(expectedEcanDemand, EcanDemand, delta);
+            Assert.AreEqual(expectedEcanSupply, EcanSupply, delta);
+            Assert.AreEqual(expectedRadIntDcaps, RadIntDcaps, delta);
+            Assert.AreEqual(expectedBIOshootDAYPot, BIOshootDAYPot, delta);
         }
     }
 }

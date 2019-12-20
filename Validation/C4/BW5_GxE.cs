@@ -6,7 +6,7 @@ namespace Validation.C4
     [TestFixture]
     public class BW5_GxE
     {
-        private double epsilon = 0.0000000000001;
+        private double delta = 0.0000000000001;
 
         // T1_short
         [TestCase(308, 18.6299991607666, 30, 12.5, 21.1000003814697, 1, 1.23923454979607, 5.18116129578529, 0.517031252935243, 1.95925826882313, 0.890692249779071, 0.890692249779071, 7.23789499947097, 1.95925826882313)]
@@ -56,11 +56,11 @@ namespace Validation.C4
             double RadIntDcaps = dcaps[3];
             double BIOshootDAYPot = dcaps[4];
 
-            Assert.IsTrue(Math.Abs(expectedBIOshootDAY - BIOshootDAY) < epsilon);
-            Assert.IsTrue(Math.Abs(expectedEcanDemand - EcanDemand) < epsilon);
-            Assert.IsTrue(Math.Abs(expectedEcanSupply - EcanSupply) < epsilon);
-            Assert.IsTrue(Math.Abs(expectedRadIntDcaps - RadIntDcaps) < epsilon);
-            Assert.IsTrue(Math.Abs(expectedBIOshootDAYPot - BIOshootDAYPot) < epsilon);
+            Assert.AreEqual(expectedBIOshootDAY, BIOshootDAY, delta);
+            Assert.AreEqual(expectedEcanDemand, EcanDemand, delta);
+            Assert.AreEqual(expectedEcanSupply, EcanSupply, delta);
+            Assert.AreEqual(expectedRadIntDcaps, RadIntDcaps, delta);
+            Assert.AreEqual(expectedBIOshootDAYPot, BIOshootDAYPot, delta);
         }
     }
 }
