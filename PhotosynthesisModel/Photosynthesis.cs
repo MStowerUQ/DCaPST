@@ -87,8 +87,7 @@ namespace DCAPST
         private bool TryInitiliase(int time)
         {
             Temperature.UpdateAirTemperature(time);
-
-            Radiation.UpdateIncidentRadiation(time);
+            Radiation.UpdateHourlyRadiation(time);
             var sunAngle = Solar.SunAngle(time).Rad;            
             Canopies.ForEach(c => { c.CalcCanopyStructure(sunAngle); });
 

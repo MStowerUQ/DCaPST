@@ -9,101 +9,63 @@ namespace DCAPST.Environment
 {
     public class RadiationModel
     {
-        public double SolarRadiation { get; set; }
-        public double ExtraTerrestrialRadiation { get; set; }
         public double FracDiffuseATM { get; set; } = 0.1725;
         public double RPAR { get; set; } = 0.5;
+
+        public double ExtraTerrestrialRadiation { get; set; }
         public double TotalIncidentRadiation { get; private set; }
         public double DirectRadiation { get; private set; }
         public double DiffuseRadiation { get; private set; }
         public double DirectRadiationPAR { get; private set; }
         public double DiffuseRadiationPAR { get; private set; }
 
-        public TableFunction Ios { get; set; }
-        public TableFunction Idirs { get; set; }
-        public TableFunction Idiffs { get; set; }
-        public TableFunction Ios_PAR { get; set; }
-        public TableFunction Idirs_PAR { get; set; }
-        public TableFunction Idiffs_PAR { get; set; }
-        public TableFunction Ratios { get; set; }
+        public double Ratio { get; set; }
 
         public SolarGeometryModel Solar;
-
-        private readonly double[] times = Enumerable.Range(0, 24).Select(i => (double)i).ToArray();
 
         public RadiationModel(SolarGeometryModel solar, double solarRadiation)
         {
             Solar = solar;
-
-            SolarRadiation = solarRadiation;
             ExtraTerrestrialRadiation = Solar.CalcExtraTerrestrialRadiation();
+            Ratio = solarRadiation / ExtraTerrestrialRadiation;
 
-            CalcRatios();
-            CalcIncidentRadns();
-            CalcDiffuseRadns();
-            CalcDirectRadns();
-            ConvertRadiationsToPAR();
+            // Initialise radiation at 6 AM
+            UpdateHourlyRadiation(6.0);
         }
 
-        public void CalcRatios()
+        public void UpdateHourlyRadiation(double time)
         {
-            double ratio = SolarRadiation / ExtraTerrestrialRadiation;
-
-            var ratios = times.Select(t => ratio).ToArray();
-            Ratios = new TableFunction(times, ratios);
+            TotalIncidentRadiation = CalcTotalIncidentRadiation(time);
+            DiffuseRadiation = CalcDiffuseRadiation(time);
+            DirectRadiation = TotalIncidentRadiation - DiffuseRadiation;
+            DiffuseRadiationPAR = DiffuseRadiation * RPAR * 4.25 * 1E6;
+            DirectRadiationPAR = DirectRadiation * RPAR * 4.56 * 1E6;
         }
 
-        public void UpdateIncidentRadiation(double hour)
+        private double CalcTotalIncidentRadiation(double time)
         {
-            TotalIncidentRadiation = Ios.Value(hour);
+            double dawn = Math.Floor(Solar.Sunrise);
+            double dusk = Math.Ceiling(Solar.Sunset);
 
-            DirectRadiation = Idirs.Value(hour);
-            DiffuseRadiation = Idiffs.Value(hour);
+            if (time < dawn || dusk < time) return 0;
 
-            DiffuseRadiationPAR = Idiffs_PAR.Value(hour);
-            DirectRadiationPAR = Idirs_PAR.Value(hour);
+            var x = Math.PI * (time - Solar.Sunrise) / Solar.DayLength;
+            var y = Math.PI * Math.Sin(x) / (2 * Solar.DayLength * 3600);
+            var radiation = ExtraTerrestrialRadiation * Ratio * y;
+
+            if (radiation < 0) return 0;
+
+            return radiation;
         }
 
-        public double CalcInstantaneousIncidentRadiation(double hour) =>
-            ExtraTerrestrialRadiation * Ratios.Value(hour) * Math.PI * Math.Sin(Math.PI * (hour - Solar.Sunrise) / Solar.DayLength) / (2 * Solar.DayLength * 3600);
-
-        void CalcIncidentRadns()
+        private double CalcDiffuseRadiation(double time)
         {
-            double dawn = Math.Floor(12 - Solar.DayLength / 2.0);
-            double dusk = Math.Ceiling(12 + Solar.DayLength / 2.0);
+            var diffuse = Math.Max(FracDiffuseATM * Solar.SolarConstant * Math.Sin(Solar.SunAngle(time).Rad) / 1000000, 0);
 
-            var ios = times.Select(t => (t < dawn || dusk < t) ? 0 : Math.Max(CalcInstantaneousIncidentRadiation(t), 0)).ToArray();
-            
-            Ios = new TableFunction(times, ios, false);
-        }
-
-        void CalcDiffuseRadns()
-        {
-            var diffs = times.Select(t =>
-            {
-                var diff = Math.Max(FracDiffuseATM * Solar.SolarConstant * Math.Sin(Solar.SunAngle(t).Rad) / 1000000, 0);
-                var value = Ios.Value(t);
-                return diff > value ? value : diff;
-            }).ToArray();
-
-            Idiffs = new TableFunction(times, diffs, false);
-        }
-
-        void CalcDirectRadns()
-        {
-            var dirs = times.Select(t => Ios.Value(t) - Idiffs.Value(t)).ToArray();
-            Idirs = new TableFunction(times, dirs, false);
-        }
-
-        private void ConvertRadiationsToPAR()
-        {            
-            var idiff_par = times.Select(t => Idiffs.Value(t) * RPAR * 4.25 * 1E6).ToArray();
-            var idir_par = times.Select(t => Idirs.Value(t) * RPAR * 4.56 * 1E6).ToArray();
-            var io_par = times.Select(t => idiff_par[(int)t] + idir_par[(int)t]).ToArray();
-
-            Ios_PAR = new TableFunction(times, io_par, false);
-            Idiffs_PAR = new TableFunction(times, idiff_par, false);
-            Idirs_PAR = new TableFunction(times, idir_par, false);
+            if (diffuse > TotalIncidentRadiation)
+                return TotalIncidentRadiation;
+            else
+                return diffuse;
         }
 
     }
