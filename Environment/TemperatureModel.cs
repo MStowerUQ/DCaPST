@@ -1,25 +1,17 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Utilities;
-
 using DCAPST.Environment;
 
 namespace DCAPST
 {
     public class TemperatureModel
     {
-        public TableFunction Temps { get; set; }
-
         public SolarGeometryModel Solar;
         public RadiationModel Radiation;
 
-        public double AbsoluteTemperature = 273;
+        public double AbsoluteTemperature { get; } = 273;
         public double AtmosphericPressure { get; set; } = 1.01325;
         public double MaxTemperature { get; set; }
         public double MinTemperature { get; set; }
-        public double MinRelativeHumidity { get; set; }
-        public double MaxRelativeHumidity { get; set; } = -1;
 
         public double XLag { get; set; } = 1.8;
         public double YLag { get; set; } = 2.2;
@@ -34,40 +26,27 @@ namespace DCAPST
             MaxTemperature = maxTemperature;
             MinTemperature = minTemperature;
 
-            CalcTemps();            
+            // Initialise the air temperature at 6 AM
+            UpdateAirTemperature(6.0);
         }
 
-        public double GetTemp(double time) => Temps.Value(time - 1);       
-
-        public void CalcTemps()
+        public void UpdateAirTemperature(double time)
         {
-            var hours = new double[24];
-            var temperatures = new double[24];
-            
-            double timeOfMinT = 12.0 - Solar.DayLength / 2.0 + ZLag;              
-            
-            for (int time = 1; time <= 24; time++)
-            {                
-                double temperature;
+            double timeOfMinT = 12.0 - Solar.DayLength / 2.0 + ZLag;
 
-                if /*DAY*/ (time >= timeOfMinT && time < Solar.Sunset)
-                {
-                    double m = time - timeOfMinT;
-                    temperature = (MaxTemperature - MinTemperature) * Math.Sin((Math.PI * m) / (Solar.DayLength + 2 * XLag)) + MinTemperature;
-                }
-                else /*NIGHT*/
-                {
-                    double n = time - Solar.Sunset;
-                    if (n < 0)
-                        n += 24;
-
-                    double temperatureDifference = (MaxTemperature - MinTemperature) * Math.Sin(Math.PI * (Solar.DayLength - ZLag) / (Solar.DayLength + 2 * XLag));
-                    temperature = MinTemperature + temperatureDifference * Math.Exp(-YLag * n / (24.0 - Solar.DayLength));
-                }
-                hours[time - 1] = (time - 1);
-                temperatures[time - 1] = temperature;
+            if /*DAY*/ (timeOfMinT < time && time < Solar.Sunset)
+            {
+                double m = time - timeOfMinT;
+                AirTemperature = (MaxTemperature - MinTemperature) * Math.Sin((Math.PI * m) / (Solar.DayLength + 2 * XLag)) + MinTemperature;
             }
-            Temps = new TableFunction(hours, temperatures, false);
+            else /*NIGHT*/
+            {
+                double n = time - Solar.Sunset;
+                if (n < 0) n += 24;
+
+                double temperatureDifference = (MaxTemperature - MinTemperature) * Math.Sin(Math.PI * (Solar.DayLength - ZLag) / (Solar.DayLength + 2 * XLag));
+                AirTemperature = MinTemperature + temperatureDifference * Math.Exp(-YLag * n / (24.0 - Solar.DayLength));
+            }
         }
     }
 }

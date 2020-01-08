@@ -86,19 +86,20 @@ namespace DCAPST
         // can be made as a result of this
         private bool TryInitiliase(int time)
         {
-            double temp = Temperature.GetTemp(time);
-            Temperature.AirTemperature = temp;
+            Temperature.UpdateAirTemperature(time);
 
             Radiation.UpdateIncidentRadiation(time);
             var sunAngle = Solar.SunAngle(time).Rad;            
             Canopies.ForEach(c => { c.CalcCanopyStructure(sunAngle); });
 
-            return IsSensible(time, temp);
+            return IsSensible();
         }
 
-        private bool IsSensible(int time, double temp)
+        private bool IsSensible()
         {
             var CPath = Canopies.First().CPath;
+            var temp = Temperature.AirTemperature;
+
             bool invalidTemp = temp > CPath.JTMax || temp < CPath.JTMin || temp > CPath.GmTMax || temp < CPath.GmTMin;
             bool invalidRadn = Radiation.TotalIncidentRadiation <= double.Epsilon;
 
