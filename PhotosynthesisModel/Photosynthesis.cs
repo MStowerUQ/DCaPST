@@ -19,9 +19,10 @@ namespace DCAPST
 
         public double B { get; set; } = 0.409;
 
-        private readonly int start = 6;
-        private readonly int end = 18;
-        private int RunTime => 1 + end - start;
+        private readonly double start = 6.0;
+        private readonly double end = 18.0;
+        private readonly double timestep = 1.0;
+        private int iterations;
 
         public Photosynthesis(PathwayParameters pathway)
         { 
@@ -34,6 +35,8 @@ namespace DCAPST
                 Canopies.Add(new TotalCanopy(CanopyType.Ac2, pathway, layers));
             
             Canopies.Add(new TotalCanopy(CanopyType.Aj, pathway, layers));
+
+            iterations = (int)Math.Floor(1.0 + ((end - start) / timestep));
         }
 
         public double[] DailyRun(
@@ -84,7 +87,7 @@ namespace DCAPST
 
         // TODO: temp has more or less been moved into Temperature.AirTemperature, there should be simplifications that can
         // can be made as a result of this
-        private bool TryInitiliase(int time)
+        private bool TryInitiliase(double time)
         {
             Temperature.UpdateAirTemperature(time);
             Radiation.UpdateHourlyRadiation(time);
@@ -112,13 +115,13 @@ namespace DCAPST
         {
             // Water demands
             intercepted = 0.0;
-            sunlitDemand = new double[RunTime];
-            shadedDemand = new double[RunTime];
-            assimilations = new double[RunTime];
+            sunlitDemand = new double[iterations];
+            shadedDemand = new double[iterations];
+            assimilations = new double[iterations];
 
-            for (int i = 0; i < RunTime; i++)
+            for (int i = 0; i < iterations; i++)
             {
-                int time = start + i;
+                double time = start + i * timestep;
 
                 // Note: double array values default to 0.0, which is the intended case if initialisation fails
                 if (!TryInitiliase(time)) continue;
@@ -139,9 +142,9 @@ namespace DCAPST
         public double CalculateActual(double[] waterSupply, double[] sunlitDemand, double[] shadedDemand)
         {
             double assimilation = 0.0;
-            for (int i = 0; i < RunTime; i++)
+            for (int i = 0; i < iterations; i++)
             {
-                int time = start + i;
+                double time = start + i * timestep;
 
                 // Note: double array values default to 0.0, which is the intended case if initialisation fails
                 if (!TryInitiliase(time)) continue;
