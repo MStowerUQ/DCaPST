@@ -4,25 +4,23 @@ namespace DCAPST.Environment
 {
     public class RadiationModel
     {
+        public SolarGeometryModel Solar;
+
         public double FracDiffuseATM { get; set; } = 0.1725;
         public double RPAR { get; set; } = 0.5;
 
-        public double ExtraTerrestrialRadiation { get; set; }
         public double TotalIncidentRadiation { get; private set; }
         public double DirectRadiation { get; private set; }
         public double DiffuseRadiation { get; private set; }
         public double DirectRadiationPAR { get; private set; }
         public double DiffuseRadiationPAR { get; private set; }
 
-        public double Ratio { get; set; }
+        public double DailyRadiation { get; private set; }
 
-        public SolarGeometryModel Solar;
-
-        public RadiationModel(SolarGeometryModel solar, double solarRadiation)
+        public RadiationModel(SolarGeometryModel solar, double dailyRadiation)
         {
-            Solar = solar;
-            ExtraTerrestrialRadiation = Solar.CalcExtraTerrestrialRadiation();
-            Ratio = solarRadiation / ExtraTerrestrialRadiation;
+            Solar = solar ?? throw new Exception();
+            DailyRadiation = (dailyRadiation >= 0) ? dailyRadiation : throw new Exception();
 
             // Initialise radiation at 6 AM
             UpdateHourlyRadiation(6.0);
@@ -30,6 +28,8 @@ namespace DCAPST.Environment
 
         public void UpdateHourlyRadiation(double time)
         {
+            if (time < 0 || 24 < time) throw new Exception("Time must be between 0 and 24");
+
             TotalIncidentRadiation = CalcTotalIncidentRadiation(time);
             DiffuseRadiation = CalcDiffuseRadiation(time);
             DirectRadiation = TotalIncidentRadiation - DiffuseRadiation;
@@ -44,13 +44,14 @@ namespace DCAPST.Environment
 
             if (time < dawn || dusk < time) return 0;
 
-            var x = Math.PI * (time - Solar.Sunrise) / Solar.DayLength;
-            var y = Math.PI * Math.Sin(x) / (2 * Solar.DayLength * 3600);
-            var radiation = ExtraTerrestrialRadiation * Ratio * y;
+            var theta = Math.PI * (time - Solar.Sunrise) / Solar.DayLength;
+            var factor = Math.Sin(theta) * Math.PI / 2;
+            var radiation = DailyRadiation / (Solar.DayLength * 3600);
+            var incident = radiation * factor;
 
-            if (radiation < 0) return 0;
+            if (incident < 0) return 0;
 
-            return radiation;
+            return incident;
         }
 
         private double CalcDiffuseRadiation(double time)

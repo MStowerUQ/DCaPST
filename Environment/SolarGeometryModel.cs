@@ -27,12 +27,7 @@ namespace DCAPST.Environment
             DayLength = (SunsetAngle.Deg / 15) * 2;
             Sunrise = 12.0 - DayLength / 2.0;
             Sunset = 12.0 + DayLength / 2.0;
-        }
-
-        public double CalcExtraTerrestrialRadiation() => 24.0 / Math.PI
-            * (3600.0 * SolarConstant / Math.Pow(1.0 / Math.Sqrt(1 + (0.033 * Math.Cos(360.0 * DayOfYear / 365.0))), 2))
-            * (SunsetAngle.Rad * Math.Sin(Latitude.Rad) * Math.Sin(SolarDeclination.Rad) + Math.Sin(SunsetAngle.Rad) * Math.Cos(Latitude.Rad) * Math.Cos(SolarDeclination.Rad))
-            / 1000000.0;            
+        }     
 
         private Angle CalcSolarDeclination() => new Angle(23.45 * Math.Sin(2 * Math.PI * (284 + DayOfYear) / 365), AngleType.Deg);
 

@@ -4,6 +4,7 @@ using DCAPST.Environment;
 
 namespace ModelsTests.Environment.UnitTests
 {
+    [TestFixture]
     public class SolarGeometryTests
     {
         private SolarGeometryModel solar;
@@ -61,14 +62,6 @@ namespace ModelsTests.Environment.UnitTests
         {
             var expected = 18.47939124591235;
             var actual = solar.Sunset;
-            Assert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void ExtraterrestrialRadiationTest()
-        {           
-            var expected = 38.956206419557439;
-            var actual = solar.CalcExtraTerrestrialRadiation();
             Assert.AreEqual(expected, actual);
         }
 
