@@ -1,12 +1,11 @@
 using System;
-using DCAPST.Environment;
+using DCAPST.Interfaces;
 
-namespace DCAPST
+namespace DCAPST.Environment
 {
-    public class TemperatureModel
+    public class TemperatureModel : ITemperature
     {
-        public SolarGeometryModel Solar;
-        public RadiationModel Radiation;
+        public ISolarGeometry Solar;
 
         public double AbsoluteTemperature { get; } = 273;
         public double AtmosphericPressure { get; set; } = 1.01325;
@@ -20,7 +19,7 @@ namespace DCAPST
         public double AirTemperature { get; set; }
         public double Rair => AtmosphericPressure * 100000 / (287 * (AirTemperature + 273)) * 1000 / 28.966;
 
-        public TemperatureModel(SolarGeometryModel solar, double maxTemperature, double minTemperature)
+        public TemperatureModel(ISolarGeometry solar, double maxTemperature, double minTemperature)
         {
             Solar = solar;
             MaxTemperature = maxTemperature;

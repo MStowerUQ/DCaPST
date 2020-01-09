@@ -1,5 +1,6 @@
 ﻿using System;
 using DCAPST.Environment;
+using DCAPST.Interfaces;
 
 namespace DCAPST.Canopy
 {
@@ -8,11 +9,12 @@ namespace DCAPST.Canopy
     public class TotalCanopy : BaseCanopy
     {        
         public CanopyType Type { get; set; }
+        public IPathwayParameters CPath { get; private set; }
 
         public PartialCanopy Sunlit { get; private set; }
         public PartialCanopy Shaded { get; private set; }
 
-        public PathwayParameters CPath { get; private set; }        
+              
 
         public Angle LeafAngle { get; set; } 
         public double LeafWidth { get; set; } = 0.1;
@@ -30,10 +32,10 @@ namespace DCAPST.Canopy
         public double AverageCanopyNitrogen => (LeafNTopCanopy - CPath.StructuralN) * Math.Exp(-0.5 * NAllocationCoeff) + CPath.StructuralN;        
 
         public int Layers { get; }
-        public TotalCanopy(CanopyType type, PathwayParameters pathway, int layers)
+        public TotalCanopy(CanopyType type, IPathwayParameters path, int layers)
         {
             Type = type;
-            CPath = pathway;
+            CPath = path;
             Layers = layers;            
         }
 
@@ -82,7 +84,7 @@ namespace DCAPST.Canopy
             Shaded.NIR.BeamExtinctionCoeff = Shaded.PAR.BeamExtinctionCoeff = Shaded.Rad.BeamExtinctionCoeff = Rad.BeamExtinctionCoeff;
         }
 
-        public void Run(RadiationModel radiation)
+        public void Run(IRadiation radiation)
         {
             // CalcAbsorbedRadiation
             CalcAbsorbedRadiations(radiation);
@@ -160,7 +162,7 @@ namespace DCAPST.Canopy
             }
         }
 
-        public void CalcAbsorbedRadiations(RadiationModel radiation)
+        public void CalcAbsorbedRadiations(IRadiation radiation)
         {
             PAR.Direct = radiation.DirectRadiation * 0.5 * 1000000;
             PAR.Diffuse = radiation.DiffuseRadiation * 0.5 * 1000000;

@@ -1,10 +1,12 @@
 using System;
 using DCAPST.Canopy;
+using DCAPST.Interfaces;
+
 namespace DCAPST
 {
-    public abstract class PathwayParameters
+    public abstract class PathwayParameters : IPathwayParameters
     {
-        public CanopyParameters Canopy { get; set; } 
+        public ICanopyParameters Canopy { get; set; } 
 
         public double StructuralN { get; set; } = 25;
         public double SLNRatioTop { get; set; } = 1.32;
@@ -64,7 +66,7 @@ namespace DCAPST
         protected abstract AssimilationParameters GetAc2Params(PartialCanopy canopy);
         protected abstract AssimilationParameters GetAjParams(PartialCanopy canopy);
 
-        public static double CalculateAssimilation(AssimilationParameters s)
+        public double CalculateAssimilation(AssimilationParameters s)
         {
             double a, b, d;
 

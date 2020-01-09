@@ -1,6 +1,9 @@
 ﻿using System;
 using NUnit.Framework;
 
+using DCAPST;
+using DCAPST.Environment;
+using DCAPST.Interfaces;
 namespace Validation.CCM
 {
     [TestFixture]
@@ -38,10 +41,18 @@ namespace Validation.CCM
             double expectedBIOshootDAYPot
         )
         {
-            var PM = Initialise.NewWheat();
+            var CPath = Initialise.NewWheat() as IPathwayParameters;
 
-            var dcaps = PM.DailyRun(DOY, latitude, maxT, minT, radn, lai, SLN, SWAvailable, RootShootRatio);
+            ISolarGeometry Solar = new SolarGeometryModel(DOY, latitude);
+            IRadiation Radiation = new RadiationModel(Solar, radn) { RPAR = 0.5 };
+            ITemperature Temperature = new TemperatureModel(Solar, maxT, minT) { AtmosphericPressure = 1.01325 };
 
+            var PM = new PhotosynthesisModel(Solar, Radiation, Temperature, CPath);
+            //Model.B = 0.409;     //BiomassConversionCoefficient - CO2-to-biomass conversion efficiency
+            //Model.Radiation.RPAR = 0.5;     //RPAR - Fraction of PAR energy to that of the total solar
+            //Model.Temperature.AtmosphericPressure = 1.01325;   
+
+            var dcaps = PM.DailyRun(lai, SLN, SWAvailable, RootShootRatio);
             double BIOshootDAY = dcaps[0];            
             double EcanDemand = dcaps[1];
             double EcanSupply = dcaps[2];

@@ -4,14 +4,15 @@ using System.Linq;
 
 using DCAPST.Canopy;
 using DCAPST.Environment;
+using DCAPST.Interfaces;
 
 namespace DCAPST
 {
     public class PhotosynthesisModel
     {
-        public SolarGeometryModel Solar { get; set; }
-        public RadiationModel Radiation { get; set; }
-        public TemperatureModel Temperature { get; set; }
+        public ISolarGeometry Solar { get; set; }
+        public IRadiation Radiation { get; set; }
+        public ITemperature Temperature { get; set; }
 
         public List<TotalCanopy> Canopies = new List<TotalCanopy>();
 
@@ -22,8 +23,12 @@ namespace DCAPST
         private readonly double timestep = 1.0;
         private readonly int iterations;
 
-        public PhotosynthesisModel(PathwayParameters pathway)
-        { 
+        public PhotosynthesisModel(ISolarGeometry solar, IRadiation radiation, ITemperature temperature, IPathwayParameters pathway)
+        {
+            Solar = solar;
+            Radiation = radiation;
+            Temperature = temperature;
+
             int layers = 1;
             if (layers <= 0) throw new Exception("There must be at least 1 layer");
 
@@ -38,22 +43,12 @@ namespace DCAPST
         }
 
         public double[] DailyRun(
-            int DOY, 
-            double latitude, 
-            double maxT, 
-            double minT, 
-            double radn,
             double lai,
             double SLN, 
             double soilWater, 
             double RootShootRatio, 
             double MaxHourlyTRate = 100)
-        {
-            // INITIALISE VALUES
-            Solar = new SolarGeometryModel(DOY, latitude);
-            Radiation = new RadiationModel(Solar, radn) { RPAR = 0.5};
-            Temperature = new TemperatureModel(Solar, maxT, minT) { AtmosphericPressure = 1.01325 };
-
+        {            
             Canopies.ForEach(c => c.Initialise(lai, SLN));
 
             // POTENTIAL CALCULATIONS
@@ -191,8 +186,12 @@ namespace DCAPST
             // Initialise the leaf temperature as the air temperature
             partials.ForEach(p => p.LeafTemperature = Temperature.AirTemperature);
 
-            // Determine initial results
-            var test = partials.Select(s => s.TryCalculatePhotosynthesis(Temperature, Params)).ToList();
+            // Determine initial results            
+            var test = partials.Select(s =>
+            {
+                IWaterInteraction water = new WaterInteractionModel(Temperature, s.CPath.Canopy, s.LeafTemperature, Params.Gbh);
+                return s.TryCalculatePhotosynthesis(water, Params);
+            }).ToList();
 
             var initialA = partials.Select(s => s.A).ToArray();
             var initialWater = partials.Select(s => s.WaterUse).ToArray();
@@ -209,7 +208,11 @@ namespace DCAPST
             {
                 for (int n = 0; n < 3; n++)
                 {                    
-                    test = partials.Select(s => s.TryCalculatePhotosynthesis(Temperature, Params)).ToList();
+                    test = partials.Select(s =>
+                    {
+                        IWaterInteraction water = new WaterInteractionModel(Temperature, s.CPath.Canopy, s.LeafTemperature, Params.Gbh);
+                        return s.TryCalculatePhotosynthesis(water, Params);
+                    }).ToList();
 
                     // If any calculation fails, all results are set to the value calculated initially
                     if (test.Any(b => b == false))

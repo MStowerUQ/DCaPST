@@ -9,7 +9,7 @@ namespace Validation.CCM
 {
     public static class Initialise
     {        
-        public static PhotosynthesisModel NewWheat()
+        public static PathwayParameters NewWheat()
         {
             double PsiFactor = 1.0;
 
@@ -39,7 +39,7 @@ namespace Validation.CCM
                 Sigma = 0.0000000567,
                 Rcp = 1200,
 
-                G = 0.066,
+                PsychrometricConstant = 0.066,
                 Lambda = 2447000,
             };
 
@@ -88,15 +88,9 @@ namespace Validation.CCM
                 GmBeta = 1.0,
             };
             CPath.Fcyc = 0.25 * CPath.Phi;
-            CPath.z = (3.0 - CPath.Fcyc) / (4.0 * (1.0 - CPath.Fcyc));
+            CPath.z = (3.0 - CPath.Fcyc) / (4.0 * (1.0 - CPath.Fcyc));                      
 
-            var Model = new PhotosynthesisModel(CPath);
-            
-            //Model.B = 0.409;     //BiomassConversionCoefficient - CO2-to-biomass conversion efficiency
-            //Model.Radiation.RPAR = 0.5;     //RPAR - Fraction of PAR energy to that of the total solar
-            //Model.Temperature.AtmosphericPressure = 1.01325;            
-
-            return Model;
+            return CPath;
         }
     }
 }

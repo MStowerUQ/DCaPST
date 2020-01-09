@@ -1,6 +1,8 @@
-﻿namespace DCAPST.Canopy
+﻿using DCAPST.Interfaces;
+
+namespace DCAPST.Canopy
 {
-    public class CanopyParameters
+    public class CanopyParameters : ICanopyParameters
     {
         public double Ca { get; set; }
         public double U0 { get; set; }
@@ -21,7 +23,7 @@
         public double Gbs_CO2 { get; set; }
         public double Sigma { get; set; }
         public double Rcp { get; set; }
-        public double G { get; set; }
+        public double PsychrometricConstant { get; set; }
         public double Lambda { get; set; }
     }
 }

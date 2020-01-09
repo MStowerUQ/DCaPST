@@ -1,5 +1,6 @@
 ﻿using System;
 using DCAPST.Environment;
+using DCAPST.Interfaces;
 
 namespace DCAPST.Canopy
 {
@@ -7,7 +8,7 @@ namespace DCAPST.Canopy
     {        
         public CanopyType Type { get; set; }
 
-        public PathwayParameters CPath;
+        public IPathwayParameters CPath;
 
         public double A { get; set; } = 0.0;
         public double WaterUse { get; set; } = 0.0;
@@ -52,7 +53,7 @@ namespace DCAPST.Canopy
         public double Gbs => Gbs_CO2 * LAI;
         public double Vpr => CPath.Canopy.Vpr_l * LAI;
 
-        public PartialCanopy(PathwayParameters cPath, CanopyType type, int layers, double layerLAI)
+        public PartialCanopy(IPathwayParameters cPath, CanopyType type, int layers, double layerLAI)
         {
             CPath = cPath;
             Type = type;
@@ -91,9 +92,9 @@ namespace DCAPST.Canopy
             Oc = 210000;
         }
 
-        public bool TryCalculatePhotosynthesis(TemperatureModel Temp, PhotosynthesisParams Params)
+        public bool TryCalculatePhotosynthesis(IWaterInteraction Water, PhotosynthesisParams Params)
         {
-            var Water = new WaterInteractionModel(Temp, CPath, LeafTemperature, Params.Gbh);
+            //var Water = new WaterInteractionModel(Temp, CPath, LeafTemperature, Params.Gbh);
 
             var aparam = CPath.GetAssimilationParams(this);
             
@@ -107,7 +108,7 @@ namespace DCAPST.Canopy
                 aparam.p = Ci;
                 aparam.q = 1 / GmT;
 
-                A = PathwayParameters.CalculateAssimilation(aparam);
+                A = CPath.CalculateAssimilation(aparam);
                 rtw = Water.CalcUnlimitedRtw(A, Ca, Ci);
                 WaterUse = Water.HourlyWaterUse(rtw, Rn);
             }
@@ -122,7 +123,7 @@ namespace DCAPST.Canopy
                 aparam.p = Ca - WaterUseMolsSecond * Ca / (Gt + WaterUseMolsSecond / 2.0);
                 aparam.q = 1 / (Gt + WaterUseMolsSecond / 2) + 1.0 / GmT;
 
-                A = PathwayParameters.CalculateAssimilation(aparam);
+                A = CPath.CalculateAssimilation(aparam);
 
                 if (!(CPath is PathwayParametersC3)) 
                     Ci = ((Gt - WaterUseMolsSecond / 2.0) * Ca - A) / (Gt + WaterUseMolsSecond / 2.0);

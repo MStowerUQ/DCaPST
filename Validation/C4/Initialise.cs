@@ -9,7 +9,7 @@ namespace Validation.C4
 {
     public static class Initialise
     {
-        public static PhotosynthesisModel NewSorghum()
+        public static PathwayParametersC4 NewSorghumParameters()
         {
             double PsiFactor = 0.4;
 
@@ -35,7 +35,7 @@ namespace Validation.C4
                 Gbs_CO2 = 0.003,
                 Sigma = 0.0000000567,
                 Rcp = 1200,
-                G = 0.066,
+                PsychrometricConstant = 0.066,
                 Lambda = 2447000,
             };
 
@@ -83,14 +83,10 @@ namespace Validation.C4
                 GmC = 0.462820450976839,
                 GmBeta = 1,
             };
+                        
+                     
 
-            var Model = new PhotosynthesisModel(CPath);
-            
-            //Model.B = 0.409;     //BiomassConversionCoefficient - CO2-to-biomass conversion efficiency
-            //Model.Radiation.RPAR = 0.5;     //RPAR - Fraction of PAR energy to that of the total solar
-            //Model.Temperature.AtmosphericPressure = 1.01325;            
-
-            return Model;
+            return CPath;
         }
     }
 }

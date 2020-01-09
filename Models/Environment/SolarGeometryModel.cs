@@ -1,8 +1,9 @@
 ﻿using System;
+using DCAPST.Interfaces;
 
 namespace DCAPST.Environment
 {
-    public class SolarGeometryModel
+    public class SolarGeometryModel : ISolarGeometry
     {
         public Angle Latitude { get; private set; }
         public Angle SolarDeclination { get; private set; }

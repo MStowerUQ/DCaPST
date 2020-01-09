@@ -7,7 +7,7 @@
     <ProjectGuid>{96037C21-E821-4CF8-98B5-C8BD2446F4E0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LayerCanopyPhotosynthesis</RootNamespace>
+    <RootNamespace>DCAPST</RootNamespace>
     <AssemblyName>DCaPST</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -61,6 +61,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\ICanopyParameters.cs" />
+    <Compile Include="Interfaces\IPathwayParameters.cs" />
+    <Compile Include="Interfaces\IWaterInteraction.cs" />
+    <Compile Include="Interfaces\ITemperature.cs" />
+    <Compile Include="Interfaces\ISolarGeometry.cs" />
+    <Compile Include="Interfaces\IRadiation.cs" />
     <Compile Include="Models\Canopy\AbsorbedRadiation.cs" />
     <Compile Include="Models\Canopy\BaseCanopy.cs" />
     <Compile Include="Parameters\CanopyParameters.cs" />
@@ -79,9 +85,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\TempFunctionExp.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Interfaces\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

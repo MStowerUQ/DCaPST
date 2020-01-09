@@ -1,10 +1,11 @@
 ﻿using System;
+using DCAPST.Interfaces;
 
 namespace DCAPST.Environment
 {
-    public class RadiationModel
+    public class RadiationModel : IRadiation
     {
-        public SolarGeometryModel Solar;
+        public ISolarGeometry Solar;
 
         public double FracDiffuseATM { get; set; } = 0.1725;
         public double RPAR { get; set; } = 0.5;
@@ -17,7 +18,7 @@ namespace DCAPST.Environment
 
         public double DailyRadiation { get; private set; }
 
-        public RadiationModel(SolarGeometryModel solar, double dailyRadiation)
+        public RadiationModel(ISolarGeometry solar, double dailyRadiation)
         {
             Solar = solar ?? throw new Exception();
             DailyRadiation = (dailyRadiation >= 0) ? dailyRadiation : throw new Exception();
