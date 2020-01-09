@@ -9,7 +9,7 @@ namespace Validation.CCM
 {
     public static class Initialise
     {        
-        public static Photosynthesis NewWheat()
+        public static PhotosynthesisModel NewWheat()
         {
             double PsiFactor = 1.0;
 
@@ -90,7 +90,7 @@ namespace Validation.CCM
             CPath.Fcyc = 0.25 * CPath.Phi;
             CPath.z = (3.0 - CPath.Fcyc) / (4.0 * (1.0 - CPath.Fcyc));
 
-            var Model = new Photosynthesis(CPath);
+            var Model = new PhotosynthesisModel(CPath);
             
             //Model.B = 0.409;     //BiomassConversionCoefficient - CO2-to-biomass conversion efficiency
             //Model.Radiation.RPAR = 0.5;     //RPAR - Fraction of PAR energy to that of the total solar

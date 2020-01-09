@@ -1,74 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DCAPST.Canopy
 {
     public class AbsorbedRadiation
     {
-        // [Description("")]
-        // [Units("")]
-        // [Symbol("")]
-        // [Subscript("")]
-
-        // [Description("Total absorbed radiation for the canopy")]
-        // [Units("μmol/m2/s")]
-        // [Symbol("I")]
-        // [Subscript("abs")]
         public double TotalIrradiance { get; set; }
 
-        // [Description("Direct-beam absorbed by leaves")]
-        // [Units("μmol/m2/s")]
         public double Direct { get; set; }
-
-        // [Description("Diffuse absorbed by leaves")]
-        // [Units("μmol/m2/s")]
         public double Diffuse { get; set; }
-
-        // [Description]
-        // [Units]
-        public double DiffuseExtCoeff { get; set; } = 0.78;
-
-        // [Description("Scattered-beam absorbed by leaves")]
-        // [Units("μmol/m2/s")]
         public double Scattered { get; set; }
 
-        // [Description("Radiation extinction coefficient of canopy")]
-        // [Units("")]
-        // [Symbol("kb")]
+        public double DiffuseExtCoeff { get; set; } = 0.78;
         public double BeamExtinctionCoeff { get; set; }
-
-        // [Description("Direct and scattered-direct PAR extinction co-efficient"")]
-        // [Symbol("kb")]
-        public double BeamScatteredBeam => 
-            BeamExtinctionCoeff * Math.Pow(1 - LeafScatteringCoeff, 0.5);
-
-        // [Description("Diffuse and scattered-diffuse PAR extinction coefficient")]
-        // [Symbol("kd")]
-        public double DiffuseScatteredDiffuse => 
-            DiffuseExtCoeff * Math.Pow(1 - LeafScatteringCoeff, 0.5);
-
-        // [Description("Reflection coefficient of a canopy with horizontal leaves")]
-        // [Symbol("ph")]
-        public double ReflectionCoefficientHorizontal => 
-            (1 - Math.Pow(1 - LeafScatteringCoeff, 0.5)) / (1 + Math.Pow(1 - LeafScatteringCoeff, 0.5));
-
-        // [Description("Canopy-level reflection coefficient for direct PAR")]        
-        // [Symbol("ρ")]
-        // [Subscript("cb")]
-        public double BeamReflectionCoeff =>
-            1 - Math.Exp(-2 * ReflectionCoefficientHorizontal * BeamExtinctionCoeff / (1 + BeamExtinctionCoeff));
-
-        // [Description("Canopy-level reflection coefficient for diffuse PAR")]
-        // [Symbol("ρ")]
-        // [Subscript("cd")]
+        public double BeamReflectionCoeff => 1 - Math.Exp(-2 * ReflectionCoefficientHorizontal * BeamExtinctionCoeff / (1 + BeamExtinctionCoeff));
         public double DiffuseReflectionCoeff { get; set; }
-
-        // [Description("Leaf scattering coefficient of PAR")]
-        // [Symbol("σ")]
         public double LeafScatteringCoeff { get; set; }
+
+        public double BeamScatteredBeam => BeamExtinctionCoeff * Math.Pow(1 - LeafScatteringCoeff, 0.5);
+        public double DiffuseScatteredDiffuse => DiffuseExtCoeff * Math.Pow(1 - LeafScatteringCoeff, 0.5);
+        public double ReflectionCoefficientHorizontal => (1 - Math.Pow(1 - LeafScatteringCoeff, 0.5)) / (1 + Math.Pow(1 - LeafScatteringCoeff, 0.5));
 
         // Note: In the case of n layers, the layerLAI is totalLAI / n. 
         // The LAIAccum of the nth layer is n * layerLAI

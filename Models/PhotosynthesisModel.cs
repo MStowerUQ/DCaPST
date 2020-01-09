@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using DCAPST.Canopy;
 using DCAPST.Environment;
 
 namespace DCAPST
 {
-    public class Photosynthesis
+    public class PhotosynthesisModel
     {
         public SolarGeometryModel Solar { get; set; }
         public RadiationModel Radiation { get; set; }
@@ -22,9 +20,9 @@ namespace DCAPST
         private readonly double start = 6.0;
         private readonly double end = 18.0;
         private readonly double timestep = 1.0;
-        private int iterations;
+        private readonly int iterations;
 
-        public Photosynthesis(PathwayParameters pathway)
+        public PhotosynthesisModel(PathwayParameters pathway)
         { 
             int layers = 1;
             if (layers <= 0) throw new Exception("There must be at least 1 layer");

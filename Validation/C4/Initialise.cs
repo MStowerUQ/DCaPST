@@ -9,7 +9,7 @@ namespace Validation.C4
 {
     public static class Initialise
     {
-        public static Photosynthesis NewSorghum()
+        public static PhotosynthesisModel NewSorghum()
         {
             double PsiFactor = 0.4;
 
@@ -84,7 +84,7 @@ namespace Validation.C4
                 GmBeta = 1,
             };
 
-            var Model = new Photosynthesis(CPath);
+            var Model = new PhotosynthesisModel(CPath);
             
             //Model.B = 0.409;     //BiomassConversionCoefficient - CO2-to-biomass conversion efficiency
             //Model.Radiation.RPAR = 0.5;     //RPAR - Fraction of PAR energy to that of the total solar
