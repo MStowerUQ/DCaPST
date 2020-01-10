@@ -1,98 +1,142 @@
 ﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using DCAPST.Environment;
+using DCAPST.Interfaces;
+using Moq;
+using DCAPST;
 
 namespace ModelsTests.Environment.UnitTests
 {
     [TestFixture]
     public class RadiationTests
-    {
-        private static RadiationModel Radiation;
-
+    {    
         [SetUp]
         public void SetUp()
         {
-            var solar = new SolarGeometryModel(144, 18.3);
-            Radiation = new RadiationModel(solar, 16.5);
+            //var solar = new SolarGeometryModel(144, 18.3);
+        }
+
+        public Mock<ISolarGeometry> SetupMockSolar(double time, double sunAngle)
+        {
+            Mock<ISolarGeometry> mock = new Mock<ISolarGeometry>(MockBehavior.Loose);
+            mock.Setup(s => s.Sunrise).Returns(5.5206087540876512);
+            mock.Setup(s => s.Sunset).Returns(18.47939124591235);
+            mock.Setup(s => s.DayLength).Returns(12.958782491824698);
+            mock.Setup(s => s.SolarConstant).Returns(1360);            
+            mock.Setup(s => s.SunAngle(6.0)).Returns(new Angle(0.111379441989282, AngleType.Rad));
+
+            Angle angle = new Angle(sunAngle, AngleType.Rad);
+            mock.Setup(s => s.SunAngle(time)).Returns(angle);
+
+            return mock;
         }
 
         [TestCase(null, 0)]
-        //[TestCase(new SolarGeometryModel(144, 18.3), -10)]
-        public void InvalidConstructorTests(SolarGeometryModel solar, double radiation)
+        //[TestCase(, -10)]
+        public void Constructor_IfInvalidArguments_ThrowsException(ISolarGeometry solar, double radiation)
         {
             Assert.Throws<Exception>(() => new RadiationModel(solar, radiation));
         }
 
-        [TestCase(-2.3)]
-        [TestCase(24.7)]
-        public void InvalidTimeTests(double time)
+        [TestCase(-2.3, -0.66955090392859185)]
+        [TestCase(24.7, -0.86629147258044892)]
+        public void HourlyRadiation_WhenTimeOutOfBounds_ThrowsException(double time, double sunAngle)
         {
-            Assert.Throws<Exception>(() => Radiation.UpdateHourlyRadiation(time));
+            // Arrange            
+            var mock = SetupMockSolar(time, sunAngle);
+            var radiation = new RadiationModel(mock.Object, 16.5);
+
+            // Act
+
+            // Assert
+            Assert.Throws<Exception>(() => radiation.UpdateHourlyRadiation(time));
+            mock.VerifyAll();            
         }
 
-        [TestCase(0.0, 0.0)]
-        [TestCase(6.0, 6.4422088216489629E-05)]
-        [TestCase(12.0, 0.00055556786827918008)]
-        [TestCase(18.0, 6.44220882164897E-05)]
-        [TestCase(24.0, 0.0)]
-        public void IncidentRadiationTest(double time, double expected)
+        [TestCaseSource(typeof(RadiationTestData), "IncidentRadiationTestData")]
+        //[TestCase(0.0, 0.0, -0.88957017994999932)]
+        //[TestCase(6, 6.4422088216489629E-05, 0.111379441989282)]
+        //[TestCase(12, 0.00055556786827918008, 1.5283606861799228)]
+        //[TestCase(18, 6.44220882164897E-05, 0.1113794419892816)]
+        //[TestCase(24, 0.0, -0.88957017994999932)]
+        public void IncidentRadiation_GivenValidInput_MatchesExpectedValue(double time, double expected, double sunAngle)
         {
-            Radiation.UpdateHourlyRadiation(time);
-            var actual = Radiation.TotalIncidentRadiation;
+            // Arrange
+            var mock = SetupMockSolar(time, sunAngle);
+            var radiation = new RadiationModel(mock.Object, 16.5);
 
+            // Act
+            radiation.UpdateHourlyRadiation(time);
+            var actual = radiation.TotalIncidentRadiation;
+
+            // Assert
             Assert.AreEqual(expected, actual);
+            mock.VerifyAll();
         }
 
-        [TestCase(0.0, 0.0)]
-        [TestCase(6.0, 2.60756259519616E-05)]
-        [TestCase(12.0, 0.00023438879978105451)]
-        [TestCase(18.0, 2.6075625951961505E-05)]
-        [TestCase(24.0, 0.0)]
-        public void DiffuseRadiationTest(double time, double expected)
+        [TestCaseSource(typeof(RadiationTestData), "DiffuseRadiationTestData")]
+        public void DiffuseRadiation_GivenValidInput_MatchesExpectedValue(double time, double expected, double sunAngle)
         {
-            Radiation.UpdateHourlyRadiation(time);
-            var actual = Radiation.DiffuseRadiation;
+            // Arrange
+            var mock = SetupMockSolar(time, sunAngle);
+            var radiation = new RadiationModel(mock.Object, 16.5);
 
+            // Act
+            radiation.UpdateHourlyRadiation(time);
+            var actual = radiation.DiffuseRadiation;
+
+            // Assert
             Assert.AreEqual(expected, actual);
+            mock.VerifyAll();
         }
 
-        [TestCase(0.0, 0.0)]
-        [TestCase(6.0, 3.8346462264528029E-05)]
-        [TestCase(12.0, 0.00032117906849812557)]
-        [TestCase(18.0, 3.8346462264528192E-05)]
-        [TestCase(24.0, 0.0)]
-        public void DirectRadiationTest(double time, double expected)
+        [TestCaseSource(typeof(RadiationTestData), "DirectRadiationTestData")]
+        public void DirectRadiation_GivenValidInput_MatchesExpectedValue(double time, double expected, double sunAngle)
         {
-            Radiation.UpdateHourlyRadiation(time);
-            var actual = Radiation.DirectRadiation;
+            // Arrange
+            var mock = SetupMockSolar(time, sunAngle);
+            var radiation = new RadiationModel(mock.Object, 16.5);
 
+            // Act
+            radiation.UpdateHourlyRadiation(time);
+            var actual = radiation.DirectRadiation;
+
+            // Assert
             Assert.AreEqual(expected, actual);
+            mock.VerifyAll();
         }
 
-        [TestCase(0.0, 0.0)]
-        [TestCase(6.0, 55.4107051479184)]
-        [TestCase(12.0, 498.07619953474079)]
-        [TestCase(18.0, 55.4107051479182)]
-        [TestCase(24.0, 0.0)]
-        public void DiffuseRadiationParTest(double time, double expected)
+        [TestCaseSource(typeof(RadiationTestData), "DiffuseRadiationParTestData")]
+        public void DiffuseRadiationPAR_GivenValidInput_MatchesExpectedValue(double time, double expected, double sunAngle)
         {
-            Radiation.UpdateHourlyRadiation(time);
-            var actual = Radiation.DiffuseRadiationPAR;
+            // Arrange
+            var mock = SetupMockSolar(time, sunAngle);
+            var radiation = new RadiationModel(mock.Object, 16.5);
 
+            // Act
+            radiation.UpdateHourlyRadiation(time);
+            var actual = radiation.DiffuseRadiationPAR;
+
+            // Assert
             Assert.AreEqual(expected, actual);
+            mock.VerifyAll();
         }
 
-        [TestCase(0.0, 0.0)]
-        [TestCase(6.0, 87.4299339631239)]
-        [TestCase(12.0, 732.28827617572631)]
-        [TestCase(18.0, 87.42993396312427)]
-        [TestCase(24.0, 0.0)]
-        public void DirectRadiationParTest(double time, double expected)
+        [TestCaseSource(typeof(RadiationTestData), "DirectRadiationParTestData")]
+        public void DirectRadiationPAR_GivenValidInput_MatchesExpectedValue(double time, double expected, double sunAngle)
         {
-            Radiation.UpdateHourlyRadiation(time);
-            var actual = Radiation.DirectRadiationPAR;
+            // Arrange
+            var mock = SetupMockSolar(time, sunAngle);
+            var radiation = new RadiationModel(mock.Object, 16.5);
 
+            // Act
+            radiation.UpdateHourlyRadiation(time);
+            var actual = radiation.DirectRadiationPAR;
+
+            // Assert
             Assert.AreEqual(expected, actual);
+            mock.VerifyAll();
         }
     }
 }
