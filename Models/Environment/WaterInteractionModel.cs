@@ -5,30 +5,17 @@ namespace DCAPST.Environment
 {
     public class WaterInteractionModel : IWaterInteraction
     {
-        // TODO: Handle these variables better, they're just being dumped in to get it working
         private ITemperature Temp;
-        private ICanopyParameters canopy;
+        private ICanopyParameters Canopy;
 
-        private double LeafTemp;       
-
+        private double LeafTemp;   
         private double Gbh;
 
-        //private double Rcp = 1200;
-        //private double PsychrometricConstant = 0.066;
-        //private double Sigma = 5.67E-08;
-        //private double Lambda = 2447000;
-
-        public WaterInteractionModel(ITemperature temperature, ICanopyParameters CPath, double leafTemp, double gbh)
+        public WaterInteractionModel(ITemperature temperature, ICanopyParameters canopy, double leafTemp, double gbh)
         {
             Temp = temperature;
-            canopy = CPath;
-            //Sigma = CPath.Canopy.Sigma;
-            //Rcp = CPath.Canopy.Rcp;
-            //PsychrometricConstant = CPath.Canopy.G;
-            //Lambda = CPath.Canopy.Lambda;
-
+            Canopy = canopy;
             LeafTemp = leafTemp;
-
             Gbh = gbh;
         }        
 
@@ -37,7 +24,7 @@ namespace DCAPST.Environment
         public double GbCO2 => Temp.AtmosphericPressure * Temp.Rair * Gbw / 1.37;        
 
         //This should be: HEnergyBalance - * (LeafTemp__[i]-PM.EnvModel.GetTemp(PM.Time));
-        private double BnUp => 8 * canopy.Sigma * Math.Pow(Temp.AirTemperature + Temp.AbsoluteTemperature, 3) * (LeafTemp - Temp.AirTemperature);
+        private double BnUp => 8 * Canopy.Sigma * Math.Pow(Temp.AirTemperature + Temp.AbsoluteTemperature, 3) * (LeafTemp - Temp.AirTemperature);
         private double VPTLeaf => 0.61365 * Math.Exp(17.502 * LeafTemp / (240.97 + LeafTemp));
         private double VPTAir => 0.61365 * Math.Exp(17.502 * Temp.AirTemperature / (240.97 + Temp.AirTemperature));
         private double VPTAir_1 => 0.61365 * Math.Exp(17.502 * (Temp.AirTemperature + 1) / (240.97 + (Temp.AirTemperature + 1)));
@@ -73,18 +60,18 @@ namespace DCAPST.Environment
 
         public double CalcLimitedRtw(double availableWater, double Rn)
         {
-            double ekg = canopy.Lambda * availableWater / 3600;
-            double rtw = (s * Rbh * (Rn - BnUp - ekg) + VPD_la * canopy.Rcp) / (ekg * canopy.PsychrometricConstant);
+            double ekg = Canopy.Lambda * availableWater / 3600;
+            double rtw = (s * Rbh * (Rn - BnUp - ekg) + VPD_la * Canopy.Rcp) / (ekg * Canopy.PsychrometricConstant);
             return rtw;
         }
 
         public double HourlyWaterUse(double rtw, double Rn)
         {
-            double a_lump = s * (Rn - BnUp) + VPD_la * canopy.Rcp / Rbh;
-            double b_lump = s + canopy.PsychrometricConstant * rtw / Rbh;
+            double a_lump = s * (Rn - BnUp) + VPD_la * Canopy.Rcp / Rbh;
+            double b_lump = s + Canopy.PsychrometricConstant * rtw / Rbh;
             double lambdaE = a_lump / b_lump;
 
-            return (lambdaE / canopy.Lambda) * 3600;
+            return (lambdaE / Canopy.Lambda) * 3600;
         }
 
         public double CalcGt(double rtw)
@@ -96,8 +83,8 @@ namespace DCAPST.Environment
 
         public double CalcTemperature(double rtw, double Rn)
         {
-            double a = canopy.PsychrometricConstant * (Rn - BnUp) * rtw / canopy.Rcp - VPD_la;
-            double d = s + canopy.PsychrometricConstant * rtw / Rbh;
+            double a = Canopy.PsychrometricConstant * (Rn - BnUp) * rtw / Canopy.Rcp - VPD_la;
+            double d = s + Canopy.PsychrometricConstant * rtw / Rbh;
 
             double tDelta = a / d;
 
