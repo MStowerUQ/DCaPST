@@ -17,7 +17,7 @@ namespace DCAPST.Environment
         public double ZLag { get; set; } = 1;
 
         public double AirTemperature { get; set; }
-        public double Rair => AtmosphericPressure * 100000 / (287 * (AirTemperature + 273)) * 1000 / 28.966;
+        public double Rair => ((AtmosphericPressure * 100000) / (287 * (AirTemperature + 273))) * (1000 / 28.966);
 
         public TemperatureModel(ISolarGeometry solar, double maxTemperature, double minTemperature)
         {

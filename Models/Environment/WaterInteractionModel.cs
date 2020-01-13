@@ -13,10 +13,10 @@ namespace DCAPST.Environment
 
         public WaterInteractionModel(ITemperature temperature, ICanopyParameters canopy, double leafTemp, double gbh)
         {
-            Temp = temperature;
-            Canopy = canopy;
+            Temp = temperature ?? throw new Exception("The temperature model cannot be null");
+            Canopy = canopy ?? throw new Exception("The canopy parameters cannot be null");
             LeafTemp = leafTemp;
-            Gbh = gbh;
+            Gbh = (gbh != 0) ? gbh : throw new Exception("Gbh cannot be 0");
         }        
 
         public double Gbw => Gbh / 0.92;
