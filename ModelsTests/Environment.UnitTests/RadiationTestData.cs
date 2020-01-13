@@ -15,11 +15,20 @@ namespace ModelsTests.Environment.UnitTests
             get
             {
                 yield return new TestCaseData(null, 0);
-                //yield return new TestCaseData(null, 0);
+                yield return new TestCaseData(new Mock<ISolarGeometry>().Object, -10);
             }
         }
 
-        public static IEnumerable<TestCaseData> IncidentRadiationTestData
+        public static IEnumerable<TestCaseData> HourlyRadiationTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(-2.3, -0.66955090392859185);
+                yield return new TestCaseData(24.7, -0.86629147258044892);
+            }
+        }
+
+        public static IEnumerable<TestCaseData> IncidentRadiationTestCases
         {
             get
             {
@@ -31,7 +40,7 @@ namespace ModelsTests.Environment.UnitTests
             }
         }
 
-        public static IEnumerable<TestCaseData> DiffuseRadiationTestData
+        public static IEnumerable<TestCaseData> DiffuseRadiationTestCases
         {
             get
             {
@@ -43,7 +52,7 @@ namespace ModelsTests.Environment.UnitTests
             }
         }
 
-        public static IEnumerable<TestCaseData> DirectRadiationTestData
+        public static IEnumerable<TestCaseData> DirectRadiationTestCases
         {
             get
             {
@@ -55,7 +64,7 @@ namespace ModelsTests.Environment.UnitTests
             }
         }
 
-        public static IEnumerable<TestCaseData> DiffuseRadiationParTestData
+        public static IEnumerable<TestCaseData> DiffuseRadiationParTestCases
         {
             get
             {
@@ -67,7 +76,7 @@ namespace ModelsTests.Environment.UnitTests
             }
         }
 
-        public static IEnumerable<TestCaseData> DirectRadiationParTestData
+        public static IEnumerable<TestCaseData> DirectRadiationParTestCases
         {
             get
             {
