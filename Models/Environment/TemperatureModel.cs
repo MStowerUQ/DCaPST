@@ -21,9 +21,12 @@ namespace DCAPST.Environment
 
         public TemperatureModel(ISolarGeometry solar, double maxTemperature, double minTemperature)
         {
-            Solar = solar;
+            Solar = solar ?? throw new Exception("The solar geometry model cannot be null");
+
+            if (maxTemperature < minTemperature) throw new Exception("The maximum cannot be less than the minimum");
+
             MaxTemperature = maxTemperature;
-            MinTemperature = minTemperature;
+            MinTemperature = minTemperature;            
 
             // Initialise the air temperature at 6 AM
             UpdateAirTemperature(6.0);
@@ -31,6 +34,8 @@ namespace DCAPST.Environment
 
         public void UpdateAirTemperature(double time)
         {
+            if (time < 0 || 24 < time) throw new Exception("The time must be between 0 and 24");
+
             double timeOfMinT = 12.0 - Solar.DayLength / 2.0 + ZLag;
 
             if /*DAY*/ (timeOfMinT < time && time < Solar.Sunset)
