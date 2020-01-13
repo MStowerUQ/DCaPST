@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
-using DCAPST.Environment;
 using DCAPST.Interfaces;
 using Moq;
-using DCAPST;
 
 namespace ModelsTests.Environment.UnitTests
 {
-    public class RadiationTestData
+    public static class RadiationTestData
     {
         public static IEnumerable<TestCaseData> ConstructorTestCases
         {
