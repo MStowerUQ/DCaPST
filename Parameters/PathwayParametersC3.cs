@@ -63,19 +63,19 @@ namespace DCAPST
         {
             var param = new AssimilationParameters()
             {
-                x_1 = s.VcMaxT,
-                x_2 = s.Kc / s.Ko,
-                x_3 = s.Kc,
-                x_4 = 0.0,
-                x_5 = 0.0,
-                x_6 = 0.0,
-                x_7 = 0.0,
-                x_8 = 0.0,
-                x_9 = 0.0,
+                x1 = s.VcMaxT,
+                x2 = s.Kc / s.Ko,
+                x3 = s.Kc,
+                x4 = 0.0,
+                x5 = 0.0,
+                x6 = 0.0,
+                x7 = 0.0,
+                x8 = 0.0,
+                x9 = 0.0,
 
                 m = s.Rm,
                 t = s.G_,
-                b = 0.0,
+                sb = 0.0,
                 j = 1.0,
                 e = s.OxygenPartialPressure,
                 R = s.RdT
@@ -88,19 +88,19 @@ namespace DCAPST
         {
             var param = new AssimilationParameters()
             {
-                x_1 = 0.0,
-                x_2 = 0.0,
-                x_3 = 0.0,
-                x_4 = 0.0,
-                x_5 = 0.0,
-                x_6 = 0.0,
-                x_7 = 0.0,
-                x_8 = 0.0,
-                x_9 = 0.0,
+                x1 = 0.0,
+                x2 = 0.0,
+                x3 = 0.0,
+                x4 = 0.0,
+                x5 = 0.0,
+                x6 = 0.0,
+                x7 = 0.0,
+                x8 = 0.0,
+                x9 = 0.0,
 
                 m = 0.0,
                 t = 0.0,
-                b = 0.0,
+                sb = 0.0,
                 j = 0.0,
                 e = 0.0,
                 R = 0.0
@@ -113,19 +113,19 @@ namespace DCAPST
         {
             var param = new AssimilationParameters()
             {
-                x_1 = s.J / 4,
-                x_2 = 2 * s.G_,
-                x_3 = 0.0,
-                x_4 = 0.0,
-                x_5 = 0.0,
-                x_6 = 0.0,
-                x_7 = 0.0,
-                x_8 = 0.0,
-                x_9 = 0.0,
+                x1 = s.J / 4,
+                x2 = 2 * s.G_,
+                x3 = 0.0,
+                x4 = 0.0,
+                x5 = 0.0,
+                x6 = 0.0,
+                x7 = 0.0,
+                x8 = 0.0,
+                x9 = 0.0,
 
                 m = s.Rm,
                 t = s.G_,
-                b = 0.0,
+                sb = 0.0,
                 j = 1.0,
                 e = s.OxygenPartialPressure,
                 R = s.RdT

@@ -65,76 +65,59 @@ namespace DCAPST
         protected abstract AssimilationParameters GetAc1Params(PartialCanopy canopy);
         protected abstract AssimilationParameters GetAc2Params(PartialCanopy canopy);
         protected abstract AssimilationParameters GetAjParams(PartialCanopy canopy);
-
-        public double CalculateAssimilation(AssimilationParameters s)
-        {
-            double a, b, d;
-
-            a = s.b * s.R * s.x_2 * s.x_9
-                - s.b * s.t * s.x_1 * s.x_9
-                - s.j * s.p
-                + s.j * s.q * s.R
-                - s.j * s.q * s.x_1
-                - s.j * s.e * s.x_2
-                - s.j * s.x_3 + s.m * s.x_8
-                - s.p * s.x_4 * s.x_8
-                + s.q * s.R * s.x_4 * s.x_8
-                - s.q * s.x_1 * s.x_4 * s.x_8
-                + s.R * s.x_6 * s.x_8
-                - s.x_1 * s.x_6 * s.x_8
-                - s.x_5 * s.x_8
-                + s.x_7 * s.x_8;
-
-            d = -s.b * s.x_2 * s.x_9
-                + s.j * s.q
-                + s.q * s.x_4 * s.x_8
-                + s.x_6 * s.x_8;
-
-            b = d *
-                (-s.j * s.p * s.R
-                + s.j * s.p * s.x_1
-                - s.j * s.e * s.R * s.x_2
-                - s.j * s.R * s.x_3
-                - s.j * s.e * s.t * s.x_1
-                + s.m * s.R * s.x_8
-                - s.m * s.x_1 * s.x_8
-                - s.p * s.R * s.x_4 * s.x_8
-                + s.p * s.x_1 * s.x_4 * s.x_8
-                - s.R * s.x_7 * s.x_8
-                + s.x_1 * s.x_5 * s.x_8
-                - s.x_1 * s.x_7 * s.x_8);
-
-            // TODO: Explain the concept of factoring common terms to the person who wrote this
-
-            return SolveQuadratic(a, b, d);
-        }
-
-        public static double SolveQuadratic(double a, double b, double d)
-        {
-            return (-1 * Math.Pow((Math.Pow(a, 2) - 4 * b), 0.5) - a) / (2 * d);
-        }
+        
     }
 
-    public struct AssimilationParameters
+    public class AssimilationParameters
     {
         public double p;
         public double q;
 
-        public double x_1;
-        public double x_2;
-        public double x_3;
-        public double x_4;
-        public double x_5;
-        public double x_6;
-        public double x_7;
-        public double x_8;
-        public double x_9;
+        public double x1;
+        public double x2;
+        public double x3;
+        public double x4;
+        public double x5;
+        public double x6;
+        public double x7;
+        public double x8;
+        public double x9;
 
         public double m;
         public double t;
-        public double b;
+        public double sb;
         public double j;
         public double e;
         public double R;
+
+        public double CalculateAssimilation()
+        {
+            var n1 = R - x1;
+            var n2 = m - p * x4;
+            var n3 = x5 - x7;
+
+            var a1 = j * q - sb * x2 * x9;
+            var a2 = (q * x4 + x6) * x8;            
+
+            var b0 = q * n1 - p;
+            var b1 = sb * x9 * (R * x2 - t * x1);
+            var b2 = j * (b0 - e * x2 - x3);
+            var b3 = n1 * a2 + (n2 - n3) * x8;            
+
+            var c1 = j * (-p * n1 - e * (t * x1 + x2 * R) - R * x3);
+            var c2 = x8 * (n1 * n2 + n3 * x1 - x7 * R);
+
+            var a = a1 + a2;
+            var b = b1 + b2 + b3;
+            var c = c1 + c2;
+
+            return SolveQuadratic(a, b, c);
+        }
+
+        public static double SolveQuadratic(double a, double b, double c)
+        {
+            var root = b * b - 4 * a * c;
+            return (-b - Math.Sqrt(root)) / (2 * a);
+        }
     }
 }

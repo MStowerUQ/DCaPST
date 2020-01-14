@@ -108,7 +108,7 @@ namespace DCAPST.Canopy
                 aparam.p = Ci;
                 aparam.q = 1 / GmT;
 
-                A = CPath.CalculateAssimilation(aparam);
+                A = aparam.CalculateAssimilation();
                 rtw = Water.CalcUnlimitedRtw(A, Ca, Ci);
                 WaterUse = Water.HourlyWaterUse(rtw, Rn);
             }
@@ -123,7 +123,7 @@ namespace DCAPST.Canopy
                 aparam.p = Ca - WaterUseMolsSecond * Ca / (Gt + WaterUseMolsSecond / 2.0);
                 aparam.q = 1 / (Gt + WaterUseMolsSecond / 2) + 1.0 / GmT;
 
-                A = CPath.CalculateAssimilation(aparam);
+                A = aparam.CalculateAssimilation();
 
                 if (!(CPath is PathwayParametersC3)) 
                     Ci = ((Gt - WaterUseMolsSecond / 2.0) * Ca - A) / (Gt + WaterUseMolsSecond / 2.0);
@@ -137,7 +137,7 @@ namespace DCAPST.Canopy
             if (CPath is PathwayParametersCCM)
             {
                 Oc = Alpha * A / (Constant * Gbs) + OxygenPartialPressure;
-                Cc = Cm + (Cm * aparam.x_4 + aparam.x_5 - aparam.x_6 * A - aparam.m - aparam.x_7) * aparam.x_8 / Gbs;
+                Cc = Cm + (Cm * aparam.x4 + aparam.x5 - aparam.x6 * A - aparam.m - aparam.x7) * aparam.x8 / Gbs;
             }
 
             // New leaf temperature

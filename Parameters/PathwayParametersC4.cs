@@ -67,19 +67,19 @@ namespace DCAPST
         {
             var param = new AssimilationParameters()
             {
-                x_1 = s.VcMaxT,
-                x_2 = s.Kc / s.Ko,
-                x_3 = s.Kc,
-                x_4 = s.VpMaxT / (s.Cm + s.Kp),
-                x_5 = 0.0,
-                x_6 = 1.0,
-                x_7 = 0.0,
-                x_8 = 1.0,
-                x_9 = 1.0,
+                x1 = s.VcMaxT,
+                x2 = s.Kc / s.Ko,
+                x3 = s.Kc,
+                x4 = s.VpMaxT / (s.Cm + s.Kp),
+                x5 = 0.0,
+                x6 = 1.0,
+                x7 = 0.0,
+                x8 = 1.0,
+                x9 = 1.0,
 
                 m = s.Rm,
                 t = s.G_,
-                b = 0.1 / s.Constant,
+                sb = 0.1 / s.Constant,
                 j = s.Gbs,
                 e = s.OxygenPartialPressure,
                 R = s.RdT
@@ -92,19 +92,19 @@ namespace DCAPST
         {
             var param = new AssimilationParameters()
             {
-                x_1 = s.VcMaxT,
-                x_2 = s.Kc / s.Ko,
-                x_3 = s.Kc,
-                x_4 = 0.0,
-                x_5 = s.Vpr,
-                x_6 = 1.0,
-                x_7 = 0.0,
-                x_8 = 1.0,
-                x_9 = 1.0,
+                x1 = s.VcMaxT,
+                x2 = s.Kc / s.Ko,
+                x3 = s.Kc,
+                x4 = 0.0,
+                x5 = s.Vpr,
+                x6 = 1.0,
+                x7 = 0.0,
+                x8 = 1.0,
+                x9 = 1.0,
 
                 m = s.Rm,
                 t = s.G_,
-                b = 0.1 / s.Constant,
+                sb = 0.1 / s.Constant,
                 j = s.Gbs,
                 e = s.OxygenPartialPressure,
                 R = s.RdT
@@ -117,19 +117,19 @@ namespace DCAPST
         {
             var param = new AssimilationParameters()
             {
-                x_1 = (1.0 - s.CPath.X) * s.J / 3.0,
-                x_2 = 7.0 / 3.0 * s.G_,
-                x_3 = 0.0,
-                x_4 = 0.0,
-                x_5 = s.CPath.X * s.J / s.CPath.Phi,
-                x_6 = 1.0,
-                x_7 = 0.0,
-                x_8 = 1.0,
-                x_9 = 1.0,
+                x1 = (1.0 - s.CPath.X) * s.J / 3.0,
+                x2 = 7.0 / 3.0 * s.G_,
+                x3 = 0.0,
+                x4 = 0.0,
+                x5 = s.CPath.X * s.J / s.CPath.Phi,
+                x6 = 1.0,
+                x7 = 0.0,
+                x8 = 1.0,
+                x9 = 1.0,
 
                 m = s.Rm,
                 t = s.G_,
-                b = 0.1 / s.Constant,
+                sb = 0.1 / s.Constant,
                 j = s.Gbs,
                 e = s.OxygenPartialPressure,
                 R = s.RdT
