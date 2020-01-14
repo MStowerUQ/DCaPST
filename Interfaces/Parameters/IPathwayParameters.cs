@@ -52,6 +52,6 @@ namespace DCAPST.Interfaces
 
         AssimilationParameters GetAssimilationParams(PartialCanopy canopy);
 
-        double CalculateAssimilation(AssimilationParameters s);
+        //double CalculateAssimilation(AssimilationParameters s);
     }
 }
