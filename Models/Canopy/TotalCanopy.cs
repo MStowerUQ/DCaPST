@@ -14,8 +14,6 @@ namespace DCAPST.Canopy
         public PartialCanopy Sunlit { get; private set; }
         public PartialCanopy Shaded { get; private set; }
 
-              
-
         public Angle LeafAngle { get; set; } 
         public double LeafWidth { get; set; } = 0.1;
         public double LeafNTopCanopy { get; set; } = 137;

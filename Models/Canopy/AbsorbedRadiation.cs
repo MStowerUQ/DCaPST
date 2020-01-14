@@ -32,17 +32,12 @@ namespace DCAPST.Canopy
             LAIAccum0 = (layers - 1) * layerLAI;
         }
 
-        public double CalculateLAI()
-        {
-            return CalcExp(BeamExtinctionCoeff) * 1 / BeamExtinctionCoeff;
-        }
-
         public double CalculateTotalRadiation(double direct, double diffuse)
         {
-            var prod1 = (1 - BeamReflectionCoeff) * direct * CalcExp(BeamScatteredBeam);
-            var prod2 = (1 - DiffuseReflectionCoeff) * diffuse * CalcExp(DiffuseScatteredDiffuse);
+            var a = (1 - BeamReflectionCoeff) * direct * CalcExp(BeamScatteredBeam);
+            var b = (1 - DiffuseReflectionCoeff) * diffuse * CalcExp(DiffuseScatteredDiffuse);
 
-            return prod1 + prod2;
+            return a + b;
         }
 
         public double CalculateDirectSunlit(double direct)
@@ -83,10 +78,10 @@ namespace DCAPST.Canopy
 
         public double CalcExp(double x)
         {
-            var exp1 = Math.Exp(-x * LAIAccum0);
-            var exp2 = Math.Exp(-x * LAIAccum);
+            var a = Math.Exp(-x * LAIAccum0);
+            var b = Math.Exp(-x * LAIAccum);
 
-            return exp1 - exp2;
+            return a - b;
         }
     }
 }

@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Canopy.UnitTests\" />
     <Folder Include="Photosynthesis.UnitTests\" />
   </ItemGroup>
 
