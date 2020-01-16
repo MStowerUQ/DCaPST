@@ -6,7 +6,7 @@ namespace DCAPST.Interfaces
     {
         ICanopyParameters Canopy { get; set; }
 
-        double F { get; set; }
+        double SpectralCorrectionFactor { get; set; }
         double Alpha { get; set; }
         double Vpr_l { get; set; }
         double Gbs_CO2 { get; set; }

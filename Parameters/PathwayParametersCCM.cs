@@ -19,7 +19,7 @@ namespace DCAPST
 
                 m = s.Rm,
                 t = s.G_,
-                sb = 0.1 / s.Constant,
+                sb = 0.1 / s.CPath.Canopy.DiffusivitySolubilityRatio,
                 j = s.Gbs,
                 e = s.OxygenPartialPressure,
                 R = s.RdT
@@ -44,7 +44,7 @@ namespace DCAPST
 
                 m = s.Rm,
                 t = s.G_,
-                sb = 0.1 / s.Constant,
+                sb = 0.1 / s.CPath.Canopy.DiffusivitySolubilityRatio,
                 j = s.Gbs,
                 e = s.OxygenPartialPressure,
                 R = s.RdT
@@ -69,7 +69,7 @@ namespace DCAPST
 
                 m = s.Rm,
                 t = s.G_,
-                sb = 0.1 / s.Constant,
+                sb = 0.1 / s.CPath.Canopy.DiffusivitySolubilityRatio,
                 j = s.Gbs,
                 e = s.OxygenPartialPressure,
                 R = s.RdT

@@ -17,7 +17,7 @@ namespace Validation.C4
             var canopy = new CanopyParameters()
             {
                 Ca = 363,
-                U0 = 1.5,
+                Windspeed = 1.5,
                 LeafAngle = 60,
                 DiffuseExtCoeff = 0.78,
                 DiffuseExtCoeffNIR = 0.8,
@@ -26,10 +26,10 @@ namespace Validation.C4
                 DiffuseReflectionCoeff = 0.036,
                 DiffuseReflectionCoeffNIR = 0.389,
                 LeafWidth = 0.15,
-                Ku = 1.5,
-                Theta = 0.7,
+                WindSpeedExtinction = 1.5,
+                ConvexityFactor = 0.7,
                 
-                Constant = 0.047,
+                DiffusivitySolubilityRatio = 0.047,
                 SLNRatioTop = 1.3,      // Ratio of the specific leaf nitrogen at the top of the canopy to that of the canopy average
                 StructuralN = 14,       // Specific leaf nitrogen below which Vcamx, Jmax and Vpmax are zero
 
@@ -42,7 +42,7 @@ namespace Validation.C4
 
 
                 Vpr_l = 120,
-                F = 0.15,
+                SpectralCorrectionFactor = 0.15,
                 Alpha = 0.1,
                 Gbs_CO2 = 0.003,
 

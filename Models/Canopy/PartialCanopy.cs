@@ -8,8 +8,6 @@ namespace DCAPST.Canopy
     {        
         public CanopyType Type { get; set; }
 
-        public IPathwayParameters CPath;
-
         public double A { get; set; } = 0.0;
         public double WaterUse { get; set; } = 0.0;
         public double LeafTemperature { get; set; }
@@ -19,14 +17,8 @@ namespace DCAPST.Canopy
         public double Cc { get; set; }
         public double Oc { get; set; }
 
-        // CONSTANTS
-        public double Ca { get; set; }
-        public double Constant { get; set; }
-        public double Alpha { get; set; }       
-        public double ConvexityFactor { get; set; }
+        // CONSTANTS   
         public double OxygenPartialPressure { get; set; } = 210000;
-        public double Gbs_CO2 { get; set; }
-        public double EmpiricalSpectralCorrectionFactor { get; set; }
 
         // CONSTANT FUNCTIONS
         public double VcMaxT => TemperatureFunction.Val2(LeafTemperature, VcMax25, CPath.VcTEa);
@@ -40,17 +32,17 @@ namespace DCAPST.Canopy
         public double VcVo => TemperatureFunction.Val2(LeafTemperature, CPath.VcMax_VoMaxP25, CPath.VcMax_VoMaxTEa);
         public double Kp => TemperatureFunction.Val2(LeafTemperature, CPath.KpP25, CPath.KpTEa);
 
-        public double Ja => (1.0 - EmpiricalSpectralCorrectionFactor) / 2.0;
+        public double Ja => (1.0 - CPath.SpectralCorrectionFactor) / 2.0;
         private double JaXRad => Ja * Rad.TotalIrradiance;
         public double J =>
-            (JaXRad + JMaxT - Math.Pow(Math.Pow(JaXRad + JMaxT, 2) - 4 * ConvexityFactor * JMaxT * JaXRad, 0.5))
-            / (2 * ConvexityFactor);        
+            (JaXRad + JMaxT - Math.Pow(Math.Pow(JaXRad + JMaxT, 2) - 4 * CPath.Canopy.ConvexityFactor * JMaxT * JaXRad, 0.5))
+            / (2 * CPath.Canopy.ConvexityFactor);        
 
         public double ScO => Ko / Kc * VcVo;
         public double G_ => 0.5 / ScO;       
         public double K_ => Kc * (1 + OxygenPartialPressure / Ko);       
         public double Rm => RdT * 0.5;
-        public double Gbs => Gbs_CO2 * LAI;
+        public double Gbs => CPath.Gbs_CO2 * LAI;
         public double Vpr => CPath.Vpr_l * LAI;
 
         public PartialCanopy(IPathwayParameters cPath, CanopyType type, int layers, double layerLAI)
@@ -79,15 +71,7 @@ namespace DCAPST.Canopy
                 DiffuseReflectionCoeff = CPath.Canopy.DiffuseReflectionCoeffNIR
             };
 
-            // TODO: These might all be constants that don't need to be imported
-            Ca = CPath.Canopy.Ca;
-            EmpiricalSpectralCorrectionFactor = CPath.F;
-            Constant = CPath.Canopy.Constant;
-            Gbs_CO2 = CPath.Gbs_CO2;
-            ConvexityFactor = CPath.Canopy.Theta;
-            Alpha = CPath.Alpha;
-
-            Cm = Ca * CPath.CiCaRatio;
+            Cm = CPath.Canopy.Ca * CPath.CiCaRatio;
             Cc = Cm + 20;
             Oc = 210000;
         }
@@ -103,13 +87,13 @@ namespace DCAPST.Canopy
 
             if (!Params.limited)
             {
-                Ci = CPath.CiCaRatio * Ca;                
+                Ci = CPath.CiCaRatio * CPath.Canopy.Ca;                
                 
                 aparam.p = Ci;
                 aparam.q = 1 / GmT;
 
                 A = aparam.CalculateAssimilation();
-                rtw = Water.CalcUnlimitedRtw(A, Ca, Ci);
+                rtw = Water.CalcUnlimitedRtw(A, CPath.Canopy.Ca, Ci);
                 WaterUse = Water.HourlyWaterUse(rtw, Rn);
             }
             else
@@ -120,13 +104,13 @@ namespace DCAPST.Canopy
                 rtw = Water.CalcLimitedRtw(WaterUse, Rn);
                 var Gt = Water.CalcGt(rtw);                
 
-                aparam.p = Ca - WaterUseMolsSecond * Ca / (Gt + WaterUseMolsSecond / 2.0);
+                aparam.p = CPath.Canopy.Ca - WaterUseMolsSecond * CPath.Canopy.Ca / (Gt + WaterUseMolsSecond / 2.0);
                 aparam.q = 1 / (Gt + WaterUseMolsSecond / 2) + 1.0 / GmT;
 
                 A = aparam.CalculateAssimilation();
 
                 if (!(CPath is PathwayParametersC3)) 
-                    Ci = ((Gt - WaterUseMolsSecond / 2.0) * Ca - A) / (Gt + WaterUseMolsSecond / 2.0);
+                    Ci = ((Gt - WaterUseMolsSecond / 2.0) * CPath.Canopy.Ca - A) / (Gt + WaterUseMolsSecond / 2.0);
             }
 
             // C4 & CCM
@@ -136,7 +120,7 @@ namespace DCAPST.Canopy
             // CCM ONLY
             if (CPath is PathwayParametersCCM)
             {
-                Oc = Alpha * A / (Constant * Gbs) + OxygenPartialPressure;
+                Oc = CPath.Alpha * A / (CPath.Canopy.DiffusivitySolubilityRatio * Gbs) + OxygenPartialPressure;
                 Cc = Cm + (Cm * aparam.x4 + aparam.x5 - aparam.x6 * A - aparam.m - aparam.x7) * aparam.x8 / Gbs;
             }
 

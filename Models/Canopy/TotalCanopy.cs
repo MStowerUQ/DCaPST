@@ -8,8 +8,7 @@ namespace DCAPST.Canopy
 
     public class TotalCanopy : BaseCanopy
     {        
-        public CanopyType Type { get; set; }
-        public IPathwayParameters CPath { get; private set; }
+        public CanopyType Type { get; set; }        
 
         public PartialCanopy Sunlit { get; private set; }
         public PartialCanopy Shaded { get; private set; }
@@ -61,8 +60,8 @@ namespace DCAPST.Canopy
                 DiffuseReflectionCoeff = CPath.Canopy.DiffuseReflectionCoeffNIR
             };
 
-            WindSpeed = CPath.Canopy.U0;
-            WindSpeedExtinction = CPath.Canopy.Ku;
+            WindSpeed = CPath.Canopy.Windspeed;
+            WindSpeedExtinction = CPath.Canopy.WindSpeedExtinction;
             LeafAngle = new Angle(CPath.Canopy.LeafAngle, AngleType.Deg);
             LeafWidth = CPath.Canopy.LeafWidth;
         }

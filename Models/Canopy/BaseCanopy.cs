@@ -1,7 +1,11 @@
-﻿namespace DCAPST.Canopy
+﻿using DCAPST.Interfaces;
+
+namespace DCAPST.Canopy
 {
     public abstract class BaseCanopy
     {
+        public IPathwayParameters CPath { get; set; }
+
         public AbsorbedRadiation Rad;
         public AbsorbedRadiation PAR;
         public AbsorbedRadiation NIR;

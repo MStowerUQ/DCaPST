@@ -17,7 +17,7 @@ namespace Validation.CCM
             var canopy = new CanopyParameters()
             {
                 Ca = 370,
-                U0 = 1.5,
+                Windspeed = 1.5,
                 LeafAngle = 60,
                 DiffuseExtCoeff = 0.78,
                 DiffuseExtCoeffNIR = 0.8,
@@ -26,11 +26,11 @@ namespace Validation.CCM
                 DiffuseReflectionCoeff = 0.036,
                 DiffuseReflectionCoeffNIR = 0.389,
                 LeafWidth = 0.05,
-                Ku = 1.5,                
+                WindSpeedExtinction = 1.5,                
                 
-                Theta = 0.7,
+                ConvexityFactor = 0.7,
                 
-                Constant = 0.047,
+                DiffusivitySolubilityRatio = 0.047,
 
                 SLNRatioTop = 1.3,
                 StructuralN = 14,
@@ -43,7 +43,7 @@ namespace Validation.CCM
                 
 
                 Vpr_l = 400,
-                F = 0.15,
+                SpectralCorrectionFactor = 0.15,
                 Alpha = 0.1,
                 Gbs_CO2 = 0.5,
 

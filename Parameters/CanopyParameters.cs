@@ -5,7 +5,7 @@ namespace DCAPST.Canopy
     public class CanopyParameters : ICanopyParameters
     {
         public double Ca { get; set; }
-        public double U0 { get; set; }
+        public double Windspeed { get; set; }
         public double LeafAngle { get; set; }
         public double DiffuseExtCoeff { get; set; }
         public double DiffuseExtCoeffNIR { get; set; }
@@ -14,9 +14,9 @@ namespace DCAPST.Canopy
         public double DiffuseReflectionCoeff { get; set; }
         public double DiffuseReflectionCoeffNIR { get; set; }
         public double LeafWidth { get; set; }
-        public double Ku { get; set; }        
-        public double Theta { get; set; }
-        public double Constant { get; set; }
+        public double WindSpeedExtinction { get; set; }        
+        public double ConvexityFactor { get; set; }
+        public double DiffusivitySolubilityRatio { get; set; }
        
         public double StructuralN { get; set; }
         public double SLNRatioTop { get; set; }

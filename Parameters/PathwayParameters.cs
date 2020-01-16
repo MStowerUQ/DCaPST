@@ -8,47 +8,41 @@ namespace DCAPST
     {
         public ICanopyParameters Canopy { get; set; } 
 
-        public double CiCaRatio { get; set; } = 0.7;
-        public double CiCaRatioIntercept { get; set; } = 0.90;
-        public double CiCaRatioSlope { get; set; } = -0.12;
-        public double Fcyc { get; set; } = 0;        
-        public double PsiRd { get; set; } = 0.0175;        
-        public double PsiVc { get; set; } = 1.75;        
-        public double PsiJ { get; set; } = 3.20;        
-        public double PsiVp { get; set; } = 3.39;
-        public double PsiGm { get; set; } = 0.005296;
-        public double X { get; set; } = 0.4;
-        public double z { get; set; } = 0.0;
+        public double CiCaRatio { get; set; }
+        public double Fcyc { get; set; }        
+        public double PsiRd { get; set; }        
+        public double PsiVc { get; set; }        
+        public double PsiJ { get; set; }        
+        public double PsiVp { get; set; }
+        public double PsiGm { get; set; }
+        public double X { get; set; }
+        public double z { get; set; }
+       
+        public double Phi { get; set; }
 
-        // KineticParams       
-        public double F2 { get; set; } = 0.75;
-        public double F1 { get; set; } = 0.95;
-        public double Phi { get; set; } = 2;
+        public double KcP25 { get; set; }
+        public double KcTEa { get; set; }
+        public double KoP25 { get; set; }        
+        public double KoTEa { get; set; }
+        public double VcTEa { get; set; }
+        public double JMaxC { get; set; }
+        public double JTMax { get; set; }
+        public double JTMin { get; set; }
+        public double JTOpt { get; set; }
+        public double JBeta { get; set; }
+        public double VcMax_VoMaxP25 { get; set; }
+        public double VcMax_VoMaxTEa { get; set; }
+        public double KpP25 { get; set; }
+        public double KpTEa { get; set; }
+        public double VpMaxTEa { get; set; }
+        public double RdTEa { get; set; }
+        public double GmC { get; set; }
+        public double GmTMax { get; set; }
+        public double GmTMin { get; set; }
+        public double GmTOpt { get; set; }
+        public double GmBeta { get; set; }
 
-        // Curvilinear Temperature Model
-        public double KcP25 { get; set; } = 267.9295;
-        public double KcTEa { get; set; } = 0.0;
-        public double KoP25 { get; set; } = 164991.8069;        
-        public double KoTEa { get; set; } = 0.0;
-        public double VcTEa { get; set; } = 0.0;
-        public double JMaxC { get; set; } = 0.7991;
-        public double JTMax { get; set; } = 42.9922;
-        public double JTMin { get; set; } = 0.0;
-        public double JTOpt { get; set; } = 31.2390;
-        public double JBeta { get; set; } = 1;
-        public double VcMax_VoMaxP25 { get; set; } = 4.1672;
-        public double VcMax_VoMaxTEa { get; set; } = 0.0;
-        public double KpP25 { get; set; } = 160.1404;
-        public double KpTEa { get; set; } = 0.0;
-        public double VpMaxTEa { get; set; } = 0.0;
-        public double RdTEa { get; set; } = 0.0;
-        public double GmC { get; set; } = 0.5626;
-        public double GmTMax { get; set; } = 42.7227;
-        public double GmTMin { get; set; } = 0.0;
-        public double GmTOpt { get; set; } = 33.2424;
-        public double GmBeta { get; set; } = 1;
-
-        public double F { get; set; }
+        public double SpectralCorrectionFactor { get; set; }
         public double Alpha { get; set; }
         public double Vpr_l { get; set; }
         public double Gbs_CO2 { get; set; }
