@@ -61,12 +61,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interfaces\Canopy\ICanopyParameters.cs" />
-    <Compile Include="Interfaces\Canopy\IPathwayParameters.cs" />
-    <Compile Include="Interfaces\Environment\IWaterInteraction.cs" />
-    <Compile Include="Interfaces\Environment\ITemperature.cs" />
-    <Compile Include="Interfaces\Environment\ISolarGeometry.cs" />
-    <Compile Include="Interfaces\Environment\IRadiation.cs" />
+    <Compile Include="Interfaces\Parameters\ICanopyParameters.cs" />
+    <Compile Include="Interfaces\Parameters\IPathwayParameters.cs" />
+    <Compile Include="Interfaces\Models\IWaterInteraction.cs" />
+    <Compile Include="Interfaces\Models\ITemperature.cs" />
+    <Compile Include="Interfaces\Models\ISolarGeometry.cs" />
+    <Compile Include="Interfaces\Models\IRadiation.cs" />
     <Compile Include="Models\Canopy\AbsorbedRadiation.cs" />
     <Compile Include="Models\Canopy\BaseCanopy.cs" />
     <Compile Include="Parameters\CanopyParameters.cs" />
