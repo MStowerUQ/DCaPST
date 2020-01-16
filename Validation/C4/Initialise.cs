@@ -27,25 +27,26 @@ namespace Validation.C4
                 DiffuseReflectionCoeffNIR = 0.389,
                 LeafWidth = 0.15,
                 Ku = 1.5,
-                Vpr_l = 120,
                 Theta = 0.7,
-                F = 0.15,
-                Alpha = 0.1,
+                
                 Constant = 0.047,
-                Gbs_CO2 = 0.003,
-                Sigma = 0.0000000567,
-                Rcp = 1200,
-                PsychrometricConstant = 0.066,
-                Lambda = 2447000,
+                SLNRatioTop = 1.3,      // Ratio of the specific leaf nitrogen at the top of the canopy to that of the canopy average
+                StructuralN = 14,       // Specific leaf nitrogen below which Vcamx, Jmax and Vpmax are zero
+
+
             };
 
             var CPath = new PathwayParametersC4()
             {
                 Canopy = canopy,
 
-                SLNRatioTop = 1.3,      // Ratio of the specific leaf nitrogen at the top of the canopy to that of the canopy average
-                StructuralN = 14,       // Specific leaf nitrogen below which Vcamx, Jmax and Vpmax are zero
 
+                Vpr_l = 120,
+                F = 0.15,
+                Alpha = 0.1,
+                Gbs_CO2 = 0.003,
+
+                
                 PsiVc = 0.465 * PsiFactor,      // Slope of linear relationship between Vcmax per leaf area at 25°C and specific leaf nitrogen
                 PsiJ = 2.7 * PsiFactor,         // Slope of linear relationship between Jmax per leaf area at 25°C and specific leaf nitrogen
                 PsiRd = 0.0 * PsiFactor,        // Slope of linear relationship between Rd per leaf area at 25°C and specific leaf nitrogen

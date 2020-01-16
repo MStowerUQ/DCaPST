@@ -8,10 +8,6 @@ namespace DCAPST
     {
         public ICanopyParameters Canopy { get; set; } 
 
-        public double StructuralN { get; set; } = 25;
-        public double SLNRatioTop { get; set; } = 1.32;
-        public double SLNAv { get; set; } = 1.45;
-
         public double CiCaRatio { get; set; } = 0.7;
         public double CiCaRatioIntercept { get; set; } = 0.90;
         public double CiCaRatioSlope { get; set; } = -0.12;
@@ -51,6 +47,11 @@ namespace DCAPST
         public double GmTMin { get; set; } = 0.0;
         public double GmTOpt { get; set; } = 33.2424;
         public double GmBeta { get; set; } = 1;
+
+        public double F { get; set; }
+        public double Alpha { get; set; }
+        public double Vpr_l { get; set; }
+        public double Gbs_CO2 { get; set; }
 
         public AssimilationParameters GetAssimilationParams(PartialCanopy canopy)
         {

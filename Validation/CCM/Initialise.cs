@@ -26,29 +26,26 @@ namespace Validation.CCM
                 DiffuseReflectionCoeff = 0.036,
                 DiffuseReflectionCoeffNIR = 0.389,
                 LeafWidth = 0.05,
-                Ku = 1.5,
+                Ku = 1.5,                
                 
-                Vpr_l = 400,
                 Theta = 0.7,
-                F = 0.15,
-                Alpha = 0.1,
-                Constant = 0.047,
                 
-                Gbs_CO2 = 0.5,
+                Constant = 0.047,
 
-                Sigma = 0.0000000567,
-                Rcp = 1200,
-
-                PsychrometricConstant = 0.066,
-                Lambda = 2447000,
+                SLNRatioTop = 1.3,
+                StructuralN = 14,
             };
 
             var CPath = new PathwayParametersCCM()
             {
                 Canopy = canopy,
 
-                SLNRatioTop = 1.3,
-                StructuralN = 14,
+                
+
+                Vpr_l = 400,
+                F = 0.15,
+                Alpha = 0.1,
+                Gbs_CO2 = 0.5,
 
                 PsiVc = 1.1 * PsiFactor,
                 PsiJ = 1.9484 * PsiFactor,

@@ -20,13 +20,13 @@ namespace DCAPST.Canopy
         public double Oc { get; set; }
 
         // CONSTANTS
-        public double Ca { get; set; } = 380;
-        public double Constant { get; set; } = 0.047;
-        public double Alpha { get; set; } = 0.1;       
-        public double ConvexityFactor { get; set; } = 0.7;
+        public double Ca { get; set; }
+        public double Constant { get; set; }
+        public double Alpha { get; set; }       
+        public double ConvexityFactor { get; set; }
         public double OxygenPartialPressure { get; set; } = 210000;
-        public double Gbs_CO2 { get; set; } = 0.003;
-        public double EmpiricalSpectralCorrectionFactor { get; set; } = 0.15;
+        public double Gbs_CO2 { get; set; }
+        public double EmpiricalSpectralCorrectionFactor { get; set; }
 
         // CONSTANT FUNCTIONS
         public double VcMaxT => TemperatureFunction.Val2(LeafTemperature, VcMax25, CPath.VcTEa);
@@ -51,7 +51,7 @@ namespace DCAPST.Canopy
         public double K_ => Kc * (1 + OxygenPartialPressure / Ko);       
         public double Rm => RdT * 0.5;
         public double Gbs => Gbs_CO2 * LAI;
-        public double Vpr => CPath.Canopy.Vpr_l * LAI;
+        public double Vpr => CPath.Vpr_l * LAI;
 
         public PartialCanopy(IPathwayParameters cPath, CanopyType type, int layers, double layerLAI)
         {
@@ -81,11 +81,11 @@ namespace DCAPST.Canopy
 
             // TODO: These might all be constants that don't need to be imported
             Ca = CPath.Canopy.Ca;
-            EmpiricalSpectralCorrectionFactor = CPath.Canopy.F;
+            EmpiricalSpectralCorrectionFactor = CPath.F;
             Constant = CPath.Canopy.Constant;
-            Gbs_CO2 = CPath.Canopy.Gbs_CO2;
+            Gbs_CO2 = CPath.Gbs_CO2;
             ConvexityFactor = CPath.Canopy.Theta;
-            Alpha = CPath.Canopy.Alpha;
+            Alpha = CPath.Alpha;
 
             Cm = Ca * CPath.CiCaRatio;
             Cc = Cm + 20;

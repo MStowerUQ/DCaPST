@@ -7,8 +7,8 @@ namespace DCAPST.Environment
     {
         public ISolarGeometry Solar;
 
-        public double FracDiffuseATM { get; set; } = 0.1725;
-        public double RPAR { get; set; } = 0.5;
+        public double FracDiffuseATM { get; } = 0.1725;
+        public double RPAR { get; set; }
 
         public double TotalIncidentRadiation { get; private set; }
         public double DirectRadiation { get; private set; }

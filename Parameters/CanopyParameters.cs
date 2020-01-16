@@ -14,16 +14,12 @@ namespace DCAPST.Canopy
         public double DiffuseReflectionCoeff { get; set; }
         public double DiffuseReflectionCoeffNIR { get; set; }
         public double LeafWidth { get; set; }
-        public double Ku { get; set; }
-        public double Vpr_l { get; set; }
+        public double Ku { get; set; }        
         public double Theta { get; set; }
-        public double F { get; set; }
-        public double Alpha { get; set; }
         public double Constant { get; set; }
-        public double Gbs_CO2 { get; set; }
-        public double Sigma { get; set; }
-        public double Rcp { get; set; }
-        public double PsychrometricConstant { get; set; }
-        public double Lambda { get; set; }
+       
+        public double StructuralN { get; set; }
+        public double SLNRatioTop { get; set; }
+        public double SLNAv { get; set; }
     }
 }

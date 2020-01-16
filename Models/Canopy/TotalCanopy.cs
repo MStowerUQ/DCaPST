@@ -15,19 +15,15 @@ namespace DCAPST.Canopy
         public PartialCanopy Shaded { get; private set; }
 
         public Angle LeafAngle { get; set; } 
-        public double LeafWidth { get; set; } = 0.1;
-        public double LeafNTopCanopy { get; set; } = 137;
+        public double LeafWidth { get; set; }
+        public double LeafNTopCanopy { get; set; }
 
-        public double WindSpeed { get; set; } = 2;
-        public double WindSpeedExtinction { get; set; } = 0.5;
+        public double WindSpeed { get; set; }
+        public double WindSpeedExtinction { get; set; }
 
-        public double NAllocationCoeff { get; set; } = 0.713;
+        public double NAllocationCoeff { get; set; }
 
-        public double PropnInterceptedRadns { get; set; } = 0.0;
-
-        public double SLNTop => LeafNTopCanopy / 1000 * 14;
-
-        public double AverageCanopyNitrogen => (LeafNTopCanopy - CPath.StructuralN) * Math.Exp(-0.5 * NAllocationCoeff) + CPath.StructuralN;        
+        public double PropnInterceptedRadns { get; set; }
 
         public int Layers { get; }
         public TotalCanopy(CanopyType type, IPathwayParameters path, int layers)
@@ -40,7 +36,7 @@ namespace DCAPST.Canopy
         public void Initialise(double lai, double sln)
         {
             LAI = lai;
-            CPath.SLNAv = sln;
+            CPath.Canopy.SLNAv = sln;
 
             var layerLAI = LAI / Layers;
 
@@ -88,11 +84,11 @@ namespace DCAPST.Canopy
             CalcAbsorbedRadiations(radiation);
 
             // CalcLeafNitrogenDistribution
-            var SLNTop = CPath.SLNAv * CPath.SLNRatioTop;
+            var SLNTop = CPath.Canopy.SLNAv * CPath.Canopy.SLNRatioTop;
             LeafNTopCanopy = SLNTop * 1000 / 14;
             
-            var NcAv = CPath.SLNAv * 1000 / 14;
-            NAllocationCoeff = -1 * Math.Log((NcAv - CPath.StructuralN) / (LeafNTopCanopy - CPath.StructuralN)) * 2;
+            var NcAv = CPath.Canopy.SLNAv * 1000 / 14;
+            NAllocationCoeff = -1 * Math.Log((NcAv - CPath.Canopy.StructuralN) / (LeafNTopCanopy - CPath.Canopy.StructuralN)) * 2;
 
             // CalcMaxRates
             CalcMaximumRates();
@@ -221,7 +217,7 @@ namespace DCAPST.Canopy
         // Sunlit: nTerm = NAllocationCoeff + (BeamExtCoeff * LAI)
         public double CalcMaximumRate(double psi, double nTerm)
         {
-            var factor = LAI * (LeafNTopCanopy - CPath.StructuralN) * psi;
+            var factor = LAI * (LeafNTopCanopy - CPath.Canopy.StructuralN) * psi;
             var exp = Rad.CalcExp(nTerm / LAI);
 
             return factor * exp / nTerm;

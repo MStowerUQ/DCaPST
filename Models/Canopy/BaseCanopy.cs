@@ -10,7 +10,7 @@
         // [Units("m2 / m2")]
         // [Symbol("L")]
         // [Subscript("c")]
-        public double LAI { get; set; } = 5;
+        public double LAI { get; set; }
 
         // [Description("Vcmax for the sunlit and shade leaf fractions  @ 25°")]
         // [Units("μmol/m2/s")]

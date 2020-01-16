@@ -10,7 +10,7 @@ namespace DCAPST.Canopy
         public double Diffuse { get; set; }
         public double Scattered { get; set; }
 
-        public double DiffuseExtCoeff { get; set; } = 0.78;
+        public double DiffuseExtCoeff { get; set; }
         public double BeamExtinctionCoeff { get; set; }
         public double BeamReflectionCoeff => 1 - Math.Exp(-2 * ReflectionCoefficientHorizontal * BeamExtinctionCoeff / (1 + BeamExtinctionCoeff));
         public double DiffuseReflectionCoeff { get; set; }

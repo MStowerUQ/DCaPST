@@ -6,13 +6,13 @@ namespace DCAPST.Interfaces
     {
         ICanopyParameters Canopy { get; set; }
 
-        double StructuralN { get; set; }
-        double SLNRatioTop { get; set; }
-        double SLNAv { get; set; }
+        double F { get; set; }
+        double Alpha { get; set; }
+        double Vpr_l { get; set; }
+        double Gbs_CO2 { get; set; }
 
         double CiCaRatio { get; set; }
-        double CiCaRatioIntercept { get; set; }
-        double CiCaRatioSlope { get; set; }
+
         double Fcyc { get; set; }
         double PsiRd { get; set; }
         double PsiVc { get; set; }
@@ -23,8 +23,6 @@ namespace DCAPST.Interfaces
         double z { get; set; }
 
         // KineticParams       
-        double F2 { get; set; }
-        double F1 { get; set; }
         double Phi { get; set; }
 
         // Curvilinear Temperature Model
@@ -51,7 +49,5 @@ namespace DCAPST.Interfaces
         double GmBeta { get; set; }
 
         AssimilationParameters GetAssimilationParams(PartialCanopy canopy);
-
-        //double CalculateAssimilation(AssimilationParameters s);
     }
 }
