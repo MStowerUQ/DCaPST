@@ -189,7 +189,7 @@ namespace DCAPST
             // Determine initial results            
             var test = partials.Select(s =>
             {
-                IWaterInteraction water = new WaterInteractionModel(Temperature, s.CPath.Canopy, s.LeafTemperature, Params.Gbh);
+                IWaterInteraction water = new WaterInteractionModel(Temperature, s.LeafTemperature, Params.Gbh);
                 return s.TryCalculatePhotosynthesis(water, Params);
             }).ToList();
 
@@ -210,7 +210,7 @@ namespace DCAPST
                 {                    
                     test = partials.Select(s =>
                     {
-                        IWaterInteraction water = new WaterInteractionModel(Temperature, s.CPath.Canopy, s.LeafTemperature, Params.Gbh);
+                        IWaterInteraction water = new WaterInteractionModel(Temperature, s.LeafTemperature, Params.Gbh);
                         return s.TryCalculatePhotosynthesis(water, Params);
                     }).ToList();
 
