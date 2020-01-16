@@ -14,8 +14,9 @@ namespace ModelsTests.Environment.UnitTests
         {
             get
             {
-                yield return new TestCaseData(null, 35, 1);
-                yield return new TestCaseData(new Mock<ITemperature>().Object, 35, 0);
+                yield return new TestCaseData(null, new Mock<ICanopyParameters>().Object, 35, 1);
+                yield return new TestCaseData(new Mock<ITemperature>().Object, null, 35, 1);
+                yield return new TestCaseData(new Mock<ITemperature>().Object, new Mock<ICanopyParameters>().Object, 35, 0);
             }
         }
     }

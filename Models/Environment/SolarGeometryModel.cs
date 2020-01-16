@@ -9,7 +9,7 @@ namespace DCAPST.Environment
         public Angle SolarDeclination { get; private set; }
         public Angle SunsetAngle { get; private set; }
 
-        public double SolarConstant { get; } = 1360;
+        public double SolarConstant { get; private set; } = 1360;
         public double DayOfYear { get; private set; }        
         public double DayLength { get; private set; }
         public double Sunrise { get; private set; }

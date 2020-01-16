@@ -1,6 +1,4 @@
-﻿using DCAPST.Interfaces;
-
-namespace DCAPST.Canopy
+﻿namespace DCAPST.Canopy
 {
     public abstract class BaseCanopy
     {
@@ -12,7 +10,7 @@ namespace DCAPST.Canopy
         // [Units("m2 / m2")]
         // [Symbol("L")]
         // [Subscript("c")]
-        public double LAI { get; set; }
+        public double LAI { get; set; } = 5;
 
         // [Description("Vcmax for the sunlit and shade leaf fractions  @ 25°")]
         // [Units("μmol/m2/s")]
