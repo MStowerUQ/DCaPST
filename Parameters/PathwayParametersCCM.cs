@@ -3,7 +3,7 @@ namespace DCAPST
 {
     public class PathwayParametersCCM : PathwayParameters
     {
-        protected override AssimilationParameters GetAc1Params(PartialCanopy s)
+        protected override AssimilationParameters GetAc1Params(PartialAssimilation s)
         {
             var param = new AssimilationParameters()
             {
@@ -28,7 +28,7 @@ namespace DCAPST
             return param;
         }
 
-        protected override AssimilationParameters GetAc2Params(PartialCanopy s)
+        protected override AssimilationParameters GetAc2Params(PartialAssimilation s)
         {
             var param = new AssimilationParameters()
             {
@@ -53,7 +53,7 @@ namespace DCAPST
             return param;
         }
 
-        protected override AssimilationParameters GetAjParams(PartialCanopy s)
+        protected override AssimilationParameters GetAjParams(PartialAssimilation s)
         {
             var param = new AssimilationParameters()
             {

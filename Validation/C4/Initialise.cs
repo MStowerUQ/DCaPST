@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using DCAPST.Canopy;
+using DCAPST.Interfaces;
 using DCAPST;
 
 namespace Validation.C4
@@ -16,6 +17,8 @@ namespace Validation.C4
             //Set the parameters
             var canopy = new CanopyParameters()
             {
+                Type = CanopyType.C4,
+
                 Ca = 363,
                 Windspeed = 1.5,
                 LeafAngle = 60,

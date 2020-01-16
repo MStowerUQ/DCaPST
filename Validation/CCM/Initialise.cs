@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using DCAPST.Canopy;
+using DCAPST.Interfaces;
 using DCAPST;
 
 namespace Validation.CCM
@@ -16,6 +17,8 @@ namespace Validation.CCM
             //Set the parameters
             var canopy = new CanopyParameters()
             {
+                Type = CanopyType.CCM,
+
                 Ca = 370,
                 Windspeed = 1.5,
                 LeafAngle = 60,

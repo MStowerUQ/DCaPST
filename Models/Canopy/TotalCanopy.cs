@@ -4,12 +4,8 @@ using DCAPST.Interfaces;
 
 namespace DCAPST.Canopy
 {
-    public enum CanopyType { Ac1, Ac2, Aj }
-
     public class TotalCanopy : BaseCanopy
     {        
-        public CanopyType Type { get; set; }        
-
         public PartialCanopy Sunlit { get; private set; }
         public PartialCanopy Shaded { get; private set; }
 
@@ -25,9 +21,8 @@ namespace DCAPST.Canopy
         public double PropnInterceptedRadns { get; set; }
 
         public int Layers { get; }
-        public TotalCanopy(CanopyType type, IPathwayParameters path, int layers)
+        public TotalCanopy(IPathwayParameters path, int layers)
         {
-            Type = type;
             CPath = path;
             Layers = layers;            
         }
@@ -69,8 +64,8 @@ namespace DCAPST.Canopy
         public void ResetPartials()
         {
             // Reset the partial canopies
-            Sunlit = new PartialCanopy(CPath, Type, Layers, LAI / Layers);
-            Shaded = new PartialCanopy(CPath, Type, Layers, LAI / Layers);
+            Sunlit = new PartialCanopy(CPath, Layers, LAI / Layers);
+            Shaded = new PartialCanopy(CPath, Layers, LAI / Layers);
 
             // TODO: This mess can be cleaned up with better structure, just getting it working
             Sunlit.NIR.BeamExtinctionCoeff = Sunlit.PAR.BeamExtinctionCoeff = Sunlit.Rad.BeamExtinctionCoeff = Rad.BeamExtinctionCoeff;

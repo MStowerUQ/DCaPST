@@ -48,6 +48,6 @@ namespace DCAPST.Interfaces
         double GmTOpt { get; set; }
         double GmBeta { get; set; }
 
-        AssimilationParameters GetAssimilationParams(PartialCanopy canopy);
+        AssimilationParameters GetAssimilationParams(PartialAssimilation canopy);
     }
 }

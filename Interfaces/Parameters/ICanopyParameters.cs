@@ -1,7 +1,11 @@
 ﻿namespace DCAPST.Interfaces
 {
+    public enum CanopyType { C3, C4, CCM }
+
     public interface ICanopyParameters
     {
+        CanopyType Type { get; set; }
+
         double Ca { get; set; }
         double Windspeed { get; set; }
         double LeafAngle { get; set; }

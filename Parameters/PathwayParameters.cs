@@ -47,19 +47,19 @@ namespace DCAPST
         public double Vpr_l { get; set; }
         public double Gbs_CO2 { get; set; }
 
-        public AssimilationParameters GetAssimilationParams(PartialCanopy canopy)
-        {
-            if (canopy.Type == CanopyType.Ac1) 
+        public AssimilationParameters GetAssimilationParams(PartialAssimilation canopy)
+        {            
+            if (canopy.Type == AssimilationType.Ac1) 
                 return GetAc1Params(canopy);
-            else if (canopy.Type == CanopyType.Ac2) 
+            else if (canopy.Type == AssimilationType.Ac2) 
                 return GetAc2Params(canopy);
             else 
                 return GetAjParams(canopy);
         }
 
-        protected abstract AssimilationParameters GetAc1Params(PartialCanopy canopy);
-        protected abstract AssimilationParameters GetAc2Params(PartialCanopy canopy);
-        protected abstract AssimilationParameters GetAjParams(PartialCanopy canopy);
+        protected abstract AssimilationParameters GetAc1Params(PartialAssimilation canopy);
+        protected abstract AssimilationParameters GetAc2Params(PartialAssimilation canopy);
+        protected abstract AssimilationParameters GetAjParams(PartialAssimilation canopy);
         
     }
 

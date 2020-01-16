@@ -67,6 +67,7 @@
     <Compile Include="Interfaces\Models\ITemperature.cs" />
     <Compile Include="Interfaces\Models\ISolarGeometry.cs" />
     <Compile Include="Interfaces\Models\IRadiation.cs" />
+    <Compile Include="Models\Assimilation\PartialAssimilation.cs" />
     <Compile Include="Models\Canopy\AbsorbedRadiation.cs" />
     <Compile Include="Models\Canopy\BaseCanopy.cs" />
     <Compile Include="Parameters\CanopyParameters.cs" />

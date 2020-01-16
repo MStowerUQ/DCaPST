@@ -4,6 +4,8 @@ namespace DCAPST.Canopy
 {
     public class CanopyParameters : ICanopyParameters
     {
+        public CanopyType Type { get; set; }
+
         public double Ca { get; set; }
         public double Windspeed { get; set; }
         public double LeafAngle { get; set; }

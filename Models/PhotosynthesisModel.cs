@@ -14,7 +14,7 @@ namespace DCAPST
         public IRadiation Radiation { get; set; }
         public ITemperature Temperature { get; set; }
 
-        public List<TotalCanopy> Canopies = new List<TotalCanopy>();
+        public TotalCanopy Canopy;
 
         public double B { get; set; } = 0.409;
 
@@ -32,12 +32,7 @@ namespace DCAPST
             int layers = 1;
             if (layers <= 0) throw new Exception("There must be at least 1 layer");
 
-            Canopies.Add(new TotalCanopy(CanopyType.Ac1, pathway, layers));
-            
-            if (!(pathway is PathwayParametersC3)) 
-                Canopies.Add(new TotalCanopy(CanopyType.Ac2, pathway, layers));
-            
-            Canopies.Add(new TotalCanopy(CanopyType.Aj, pathway, layers));
+            Canopy = new TotalCanopy(pathway, layers);
 
             iterations = (int)Math.Floor(1.0 + ((end - start) / timestep));
         }
@@ -49,7 +44,7 @@ namespace DCAPST
             double RootShootRatio, 
             double MaxHourlyTRate = 100)
         {            
-            Canopies.ForEach(c => c.Initialise(lai, SLN));
+            Canopy.Initialise(lai, SLN);
 
             // POTENTIAL CALCULATIONS
             // TODO: Total canopy -> CanopySection ?
@@ -85,14 +80,14 @@ namespace DCAPST
             Temperature.UpdateAirTemperature(time);
             Radiation.UpdateHourlyRadiation(time);
             var sunAngle = Solar.SunAngle(time).Rad;            
-            Canopies.ForEach(c => { c.CalcCanopyStructure(sunAngle); });
+            Canopy.CalcCanopyStructure(sunAngle);
 
             return IsSensible();
         }
 
         private bool IsSensible()
         {
-            var CPath = Canopies.First().CPath;
+            var CPath = Canopy.CPath;
             var temp = Temperature.AirTemperature;
 
             bool invalidTemp = temp > CPath.JTMax || temp < CPath.JTMin || temp > CPath.GmTMax || temp < CPath.GmTMin;
@@ -119,16 +114,13 @@ namespace DCAPST
                 // Note: double array values default to 0.0, which is the intended case if initialisation fails
                 if (!TryInitiliase(time)) continue;
 
-                intercepted += Radiation.TotalIncidentRadiation * Canopies.First().PropnInterceptedRadns * 3600;
+                intercepted += Radiation.TotalIncidentRadiation * Canopy.PropnInterceptedRadns * 3600;
 
                 DoHourlyCalculation();
 
-                var sunlits = Canopies.Select(c => c.Sunlit);
-                var shadeds = Canopies.Select(c => c.Shaded);
-
-                sunlitDemand[i] = sunlits.Select(s => s.WaterUse).Min();
-                shadedDemand[i] = shadeds.Select(s => s.WaterUse).Min();
-                assimilations[i] = sunlits.Select(s => s.A).Min() + shadeds.Select(s => s.A).Min();
+                sunlitDemand[i] = Canopy.Sunlit.WaterUse;
+                shadedDemand[i] = Canopy.Shaded.WaterUse;
+                assimilations[i] = Canopy.Sunlit.A + Canopy.Shaded.A;
             }
         }
 
@@ -145,10 +137,7 @@ namespace DCAPST
                 double total = sunlitDemand[i] + shadedDemand[i];
                 DoHourlyCalculation(waterSupply[i], sunlitDemand[i] / total, shadedDemand[i] / total);
 
-                var sunlits = Canopies.Select(c => c.Sunlit);
-                var shadeds = Canopies.Select(c => c.Shaded);
-
-                assimilation += sunlits.Select(s => s.A).Min() + shadeds.Select(s => s.A).Min();
+                assimilation += Canopy.Sunlit.A + Canopy.Shaded.A;
             }
             return assimilation;
         }
@@ -162,72 +151,24 @@ namespace DCAPST
             };
             if (maxHourlyT != -1) Params.limited = true;
 
-            Canopies.ForEach(c => 
-            {
-                c.ResetPartials();
-                c.CalcLAI();
-                c.Run(Radiation);
-            });
+            Canopy.ResetPartials();
+            Canopy.CalcLAI();
+            Canopy.Run(Radiation);
 
-            var gbh = Canopies.First().CalcGbh();
-            var sunlitGbh = Canopies.First().CalcSunlitGbh();
+
+            var gbh = Canopy.CalcGbh();
+            var sunlitGbh = Canopy.CalcSunlitGbh();
 
             Params.Gbh = sunlitGbh;
             Params.fraction = sunFraction;
-            CalcPartialPhotosynthesis(Canopies.Select(c => c.Sunlit).ToList(), Params);
+            Canopy.Sunlit.CalcPartialPhotosynthesis(Temperature, Params);
 
             Params.Gbh = gbh - sunlitGbh;
             Params.fraction = shadeFraction;
-            CalcPartialPhotosynthesis(Canopies.Select(c => c.Shaded).ToList(), Params);
+            Canopy.Shaded.CalcPartialPhotosynthesis(Temperature, Params);
         }
 
-        public void CalcPartialPhotosynthesis(List<PartialCanopy> partials, PhotosynthesisParams Params)
-        {
-            // Initialise the leaf temperature as the air temperature
-            partials.ForEach(p => p.LeafTemperature = Temperature.AirTemperature);
-
-            // Determine initial results            
-            var test = partials.Select(s =>
-            {
-                IWaterInteraction water = new WaterInteractionModel(Temperature, s.LeafTemperature, Params.Gbh);
-                return s.TryCalculatePhotosynthesis(water, Params);
-            }).ToList();
-
-            var initialA = partials.Select(s => s.A).ToArray();
-            var initialWater = partials.Select(s => s.WaterUse).ToArray();
-
-            // If any calculation fails, all results are zeroed
-            if (test.Any(b => b == false))
-            {
-                partials.ForEach(s => s.ZeroVariables());
-                return;
-            }
-
-            // Do not proceed if there is any insufficient assimilation
-            if (!partials.Any(s => s.A < 0.5))
-            {
-                for (int n = 0; n < 3; n++)
-                {                    
-                    test = partials.Select(s =>
-                    {
-                        IWaterInteraction water = new WaterInteractionModel(Temperature, s.LeafTemperature, Params.Gbh);
-                        return s.TryCalculatePhotosynthesis(water, Params);
-                    }).ToList();
-
-                    // If any calculation fails, all results are set to the value calculated initially
-                    if (test.Any(b => b == false))
-                    {
-                        partials.Select((s, index) =>
-                        {
-                            s.A = initialA[index];
-                            s.WaterUse = initialWater[index];
-                            return s;
-                        });
-                        break;
-                    }
-                }
-            }
-        }      
+             
 
         /// <summary>
         /// In the case where there is greater water demand than supply allows, the water supply limit for each hour
