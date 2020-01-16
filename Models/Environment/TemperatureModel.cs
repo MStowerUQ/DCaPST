@@ -8,13 +8,13 @@ namespace DCAPST.Environment
         public ISolarGeometry Solar;
 
         public double AbsoluteTemperature { get; } = 273;
-        public double AtmosphericPressure { get; set; } = 1.01325;
+        public double AtmosphericPressure { get; set; } = 1.01325; // TODO: Parameterise (I)
         public double MaxTemperature { get; set; }
         public double MinTemperature { get; set; }
 
-        public double XLag { get; set; } = 1.8;
-        public double YLag { get; set; } = 2.2;
-        public double ZLag { get; set; } = 1;
+        public double XLag { get; set; } = 1.8; // TODO: Parameterise (I)
+        public double YLag { get; set; } = 2.2; // TODO: Parameterise (I)
+        public double ZLag { get; set; } = 1; // TODO: Parameterise (I)
 
         public double AirTemperature { get; set; }
         public double Rair => ((AtmosphericPressure * 100000) / (287 * (AirTemperature + 273))) * (1000 / 28.966);

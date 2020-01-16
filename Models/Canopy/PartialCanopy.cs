@@ -20,13 +20,13 @@ namespace DCAPST.Canopy
         public double Oc { get; set; }
 
         // CONSTANTS
-        public double Ca { get; set; } = 380;
-        public double Constant { get; set; } = 0.047;
-        public double Alpha { get; set; } = 0.1;       
-        public double ConvexityFactor { get; set; } = 0.7;
-        public double OxygenPartialPressure { get; set; } = 210000;
-        public double Gbs_CO2 { get; set; } = 0.003;
-        public double EmpiricalSpectralCorrectionFactor { get; set; } = 0.15;
+        public double Ca { get; set; }
+        public double DiffusivitySolubilityRatio { get; set; }
+        public double Alpha { get; set; }      
+        public double ConvexityFactor { get; set; }
+        public double OxygenPartialPressure { get; set; } = 210000; // TODO: Parameterise (I)
+        public double Gbs_CO2 { get; set; }
+        public double EmpiricalSpectralCorrectionFactor { get; set; }
 
         // CONSTANT FUNCTIONS
         public double VcMaxT => TemperatureFunction.Val2(LeafTemperature, VcMax25, CPath.VcTEa);
@@ -136,7 +136,7 @@ namespace DCAPST.Canopy
             // CCM ONLY
             if (CPath is PathwayParametersCCM)
             {
-                Oc = Alpha * A / (Constant * Gbs) + OxygenPartialPressure;
+                Oc = Alpha * A / (DiffusivitySolubilityRatio * Gbs) + OxygenPartialPressure;
                 Cc = Cm + (Cm * aparam.x4 + aparam.x5 - aparam.x6 * A - aparam.m - aparam.x7) * aparam.x8 / Gbs;
             }
 

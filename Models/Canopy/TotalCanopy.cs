@@ -15,19 +15,15 @@ namespace DCAPST.Canopy
         public PartialCanopy Shaded { get; private set; }
 
         public Angle LeafAngle { get; set; } 
-        public double LeafWidth { get; set; } = 0.1;
-        public double LeafNTopCanopy { get; set; } = 137;
+        public double LeafWidth { get; set; }
+        public double LeafNTopCanopy { get; set; }
 
-        public double WindSpeed { get; set; } = 2;
-        public double WindSpeedExtinction { get; set; } = 0.5;
+        public double WindSpeed { get; set; }
+        public double WindSpeedExtinction { get; set; }
 
-        public double NAllocationCoeff { get; set; } = 0.713;
+        public double NAllocationCoeff { get; set; }
 
-        public double PropnInterceptedRadns { get; set; } = 0.0;
-
-        public double SLNTop => LeafNTopCanopy / 1000 * 14;
-
-        public double AverageCanopyNitrogen => (LeafNTopCanopy - CPath.StructuralN) * Math.Exp(-0.5 * NAllocationCoeff) + CPath.StructuralN;        
+        public double PropnInterceptedRadns { get; set; }
 
         public int Layers { get; }
         public TotalCanopy(CanopyType type, IPathwayParameters path, int layers)

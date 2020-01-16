@@ -16,7 +16,7 @@ namespace DCAPST
 
         public List<TotalCanopy> Canopies = new List<TotalCanopy>();
 
-        public double B { get; set; } = 0.409;
+        public double B { get; set; } = 0.409; // TODO: Parameterise (I)
 
         private readonly double start = 6.0;
         private readonly double end = 18.0;
@@ -55,23 +55,23 @@ namespace DCAPST
             // TODO: Total canopy -> CanopySection ?
             // Note: In the potential case, we assume unlimited water and therefore supply = demand
             CalculatePotential(out double intercepted, out double[] assimilations, out double[] sunlitDemand, out double[] shadedDemand);
-            var waterSupply = sunlitDemand.Zip(shadedDemand, (x, y) => x + y).ToArray();
+            var waterDemand = sunlitDemand.Zip(shadedDemand, (x, y) => x + y).ToArray();
             var potential = assimilations.Sum();
-            var totalDemand = waterSupply.Sum();
+            var totalDemand = waterDemand.Sum();
 
             // ACTUAL CALCULATIONS
             // Limit water to supply available from Apsim
-            double maxHourlyT = Math.Min(waterSupply.Max(), MaxHourlyTRate);
-            waterSupply = waterSupply.Select(w => w > maxHourlyT ? maxHourlyT : w).ToArray();
+            double maxHourlyT = Math.Min(waterDemand.Max(), MaxHourlyTRate);
+            waterDemand = waterDemand.Select(w => w > maxHourlyT ? maxHourlyT : w).ToArray();
 
-            var limitedSupply = CalculateWaterSupplyLimits(soilWater, maxHourlyT, totalDemand, waterSupply);
+            var limitedSupply = CalculateWaterSupplyLimits(soilWater, maxHourlyT, totalDemand, waterDemand);
 
             var actual = (soilWater > totalDemand) ? potential : CalculateActual(limitedSupply, sunlitDemand, shadedDemand);
 
             double[] results = new double[5];
             results[0] = actual * 3600 / 1000000 * 44 * B * 100 / ((1 + RootShootRatio) * 100);
             results[1] = totalDemand;
-            results[2] = (soilWater < totalDemand) ? limitedSupply.Sum() : waterSupply.Sum();
+            results[2] = (soilWater < totalDemand) ? limitedSupply.Sum() : waterDemand.Sum();
             results[3] = intercepted;
             results[4] = potential * 3600 / 1000000 * 44 * B * 100 / ((1 + RootShootRatio) * 100);
 
@@ -237,46 +237,40 @@ namespace DCAPST
         /// If this brings the water demand too far below the supply, it is adjusted upwards again, by a smaller margin.
         /// This process is repeated until the difference between the demand and supply is within some minor tolerance.
         /// </summary>
-        private double[] CalculateWaterSupplyLimits(double soilWaterAvail, double maxHourlyT, double totalDemand, double[] supply)
+        private double[] CalculateWaterSupplyLimits(double soilWaterAvail, double maxHourlyT, double totalDemand, double[] demand)
         {
-            if (soilWaterAvail > 0.0001)
+            if (soilWaterAvail < 0.0001) return demand.Select(d => 0.0).ToArray();
+            
+            if (totalDemand < soilWaterAvail) return demand;
+            
+            double tolerance = 0.000001;
+
+            double max = maxHourlyT;
+            double min = 0;
+            double average = 0;
+
+            double averageSum = demand.Sum();
+            double maxSum = 0;
+
+            // While averageTotal is outside some tolerance of the soilwater
+            while ((soilWaterAvail + tolerance) < averageSum || averageSum < (soilWaterAvail - tolerance))
             {
-                if (totalDemand > soilWaterAvail)
-                {
-                    double tolerance = 0.000001;
+                average = (max + min) / 2;
 
-                    double max = maxHourlyT;
-                    double min = 0;
-                    double average = 0;
+                // Select the sum of the supplied water, trimming any values greater than the average
+                averageSum = demand.Select(d => d > average ? average : d).Sum();
 
-                    double averageSum = supply.Sum();
-                    double maxSum = 0;
+                // Select the sum of the supplied water, trimming values greater than the max value
+                maxSum = demand.Select(d => d > max ? max : d).Sum();
 
-                    // While averageTotal is outside some tolerance of the soilwater
-                    while ((soilWaterAvail + tolerance) < averageSum || averageSum < (soilWaterAvail - tolerance))
-                    {
-                        average = (max + min) / 2;
-
-                        // Select the sum of the supplied water, trimming any values greater than the average
-                        averageSum = supply.Select(d => d > average ? average : d).Sum();
-
-                        // Select the sum of the supplied water, trimming values greater than the max value
-                        maxSum = supply.Select(d => d > max ? max : d).Sum();
-
-                        // If available water is between the average and high values, adjust the min value upwards
-                        if (averageSum < soilWaterAvail && soilWaterAvail < maxSum)
-                            min = average;
-                        // Otherwise, if available water is between the average and min values, adjust the max value downwards
-                        else if (min < soilWaterAvail && soilWaterAvail < averageSum)
-                            max = average;
-                    }
-                    return supply.Select(d => d > average ? average : d).ToArray();
-                }
-                else
-                    return supply;
+                // If available water is between the average and high values, adjust the min value upwards
+                if (averageSum < soilWaterAvail && soilWaterAvail < maxSum)
+                    min = average;
+                // Otherwise, if available water is between the average and min values, adjust the max value downwards
+                else if (min < soilWaterAvail && soilWaterAvail < averageSum)
+                    max = average;
             }
-            else 
-                return supply.Select(d => 0.0).ToArray();
+            return demand.Select(d => d > average ? average : d).ToArray();             
         }
     }
 
