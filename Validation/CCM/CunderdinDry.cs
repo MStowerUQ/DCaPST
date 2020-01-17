@@ -41,7 +41,7 @@ namespace Validation.CCM
             double expectedBIOshootDAYPot
         )
         {
-            var CPath = Initialise.NewWheat() as IPathwayParameters;
+            var CPath = Initialise.NewWheat() as ICanopyParameters;
 
             ISolarGeometry Solar = new SolarGeometryModel(DOY, latitude);
             IRadiation Radiation = new RadiationModel(Solar, radn) { RPAR = 0.5 };

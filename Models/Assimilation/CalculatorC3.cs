@@ -10,7 +10,7 @@ namespace DCAPST
 {
     public class CalculatorC3 : AssimilationCalculator
     {
-        public CalculatorC3(IPathwayParameters path, PartialCanopy partial, Assimilation assimilation) : base(path, partial, assimilation)
+        public CalculatorC3(ICanopyParameters path, PartialCanopy partial, Assimilation assimilation) : base(path, partial, assimilation)
         { }
 
         protected override AssimilationParameters GetAc1Params()

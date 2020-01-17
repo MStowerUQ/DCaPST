@@ -4,8 +4,6 @@ namespace DCAPST
 {   
     public class PathwayParameters : IPathwayParameters
     {
-        public ICanopyParameters Canopy { get; set; } 
-
         public double CiCaRatio { get; set; }
         public double Fcyc { get; set; }        
         public double PsiRd { get; set; }        

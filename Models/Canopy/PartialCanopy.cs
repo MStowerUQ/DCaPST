@@ -13,35 +13,35 @@ namespace DCAPST.Canopy
         public double A { get; set; } = 0.0;
         public double WaterUse { get; set; } = 0.0;        
 
-        public PartialCanopy(IPathwayParameters cPath, int layers, double layerLAI)
+        public PartialCanopy(ICanopyParameters canopy, int layers, double layerLAI)
         {
-            CPath = cPath;
+            Canopy = canopy;
 
             Rad = new AbsorbedRadiation(layers, layerLAI)
             {
-                DiffuseExtCoeff = CPath.Canopy.DiffuseExtCoeff,
-                LeafScatteringCoeff = CPath.Canopy.LeafScatteringCoeff,
-                DiffuseReflectionCoeff = CPath.Canopy.DiffuseReflectionCoeff
+                DiffuseExtCoeff = Canopy.DiffuseExtCoeff,
+                LeafScatteringCoeff = Canopy.LeafScatteringCoeff,
+                DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeff
             };
 
             PAR = new AbsorbedRadiation(layers, layerLAI)
             {
-                DiffuseExtCoeff = CPath.Canopy.DiffuseExtCoeff,
-                LeafScatteringCoeff = CPath.Canopy.LeafScatteringCoeff,
-                DiffuseReflectionCoeff = CPath.Canopy.DiffuseReflectionCoeff
+                DiffuseExtCoeff = Canopy.DiffuseExtCoeff,
+                LeafScatteringCoeff = Canopy.LeafScatteringCoeff,
+                DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeff
             };
 
             NIR = new AbsorbedRadiation(layers, layerLAI)
             {
-                DiffuseExtCoeff = CPath.Canopy.DiffuseExtCoeffNIR,
-                LeafScatteringCoeff = CPath.Canopy.LeafScatteringCoeffNIR,
-                DiffuseReflectionCoeff = CPath.Canopy.DiffuseReflectionCoeffNIR
+                DiffuseExtCoeff = Canopy.DiffuseExtCoeffNIR,
+                LeafScatteringCoeff = Canopy.LeafScatteringCoeffNIR,
+                DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeffNIR
             };
 
             partials = new List<Assimilation>();
-            partials.Add(new Assimilation(AssimilationType.Ac1, cPath, this));
-            if (CPath.Canopy.Type != CanopyType.C3) partials.Add(new Assimilation(AssimilationType.Ac2, cPath, this));
-            partials.Add(new Assimilation(AssimilationType.Aj, cPath, this));
+            partials.Add(new Assimilation(AssimilationType.Ac1, canopy, this));
+            if (Canopy.Type != CanopyType.C3) partials.Add(new Assimilation(AssimilationType.Ac2, canopy, this));
+            partials.Add(new Assimilation(AssimilationType.Aj, canopy, this));
         }
 
         public void CalcPartialPhotosynthesis(ITemperature temperature, PhotosynthesisParams Params)

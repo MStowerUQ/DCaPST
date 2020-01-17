@@ -21,50 +21,50 @@ namespace DCAPST.Canopy
         public double PropnInterceptedRadns { get; set; }
 
         public int Layers { get; }
-        public TotalCanopy(IPathwayParameters path, int layers)
+        public TotalCanopy(ICanopyParameters canopy, int layers)
         {
-            CPath = path;
+            Canopy = canopy;
             Layers = layers;            
         }
 
         public void Initialise(double lai, double sln)
         {
             LAI = lai;
-            CPath.Canopy.SLNAv = sln;
+            Canopy.SLNAv = sln;
 
             // CalcLeafNitrogenDistribution
-            var SLNTop = CPath.Canopy.SLNAv * CPath.Canopy.SLNRatioTop;
+            var SLNTop = Canopy.SLNAv * Canopy.SLNRatioTop;
             LeafNTopCanopy = SLNTop * 1000 / 14;
 
-            var NcAv = CPath.Canopy.SLNAv * 1000 / 14;
-            NAllocationCoeff = -1 * Math.Log((NcAv - CPath.Canopy.StructuralN) / (LeafNTopCanopy - CPath.Canopy.StructuralN)) * 2;
+            var NcAv = Canopy.SLNAv * 1000 / 14;
+            NAllocationCoeff = -1 * Math.Log((NcAv - Canopy.StructuralN) / (LeafNTopCanopy - Canopy.StructuralN)) * 2;
 
-            WindSpeed = CPath.Canopy.Windspeed;
-            WindSpeedExtinction = CPath.Canopy.WindSpeedExtinction;
-            LeafAngle = new Angle(CPath.Canopy.LeafAngle, AngleType.Deg);
-            LeafWidth = CPath.Canopy.LeafWidth;
+            WindSpeed = Canopy.Windspeed;
+            WindSpeedExtinction = Canopy.WindSpeedExtinction;
+            LeafAngle = new Angle(Canopy.LeafAngle, AngleType.Deg);
+            LeafWidth = Canopy.LeafWidth;
 
             var layerLAI = LAI / Layers;
 
             Rad = new AbsorbedRadiation(Layers, layerLAI)
             {
-                DiffuseExtCoeff = CPath.Canopy.DiffuseExtCoeff,
-                LeafScatteringCoeff = CPath.Canopy.LeafScatteringCoeff,
-                DiffuseReflectionCoeff = CPath.Canopy.DiffuseReflectionCoeff
+                DiffuseExtCoeff = Canopy.DiffuseExtCoeff,
+                LeafScatteringCoeff = Canopy.LeafScatteringCoeff,
+                DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeff
             };
 
             PAR = new AbsorbedRadiation(Layers, layerLAI)
             {
-                DiffuseExtCoeff = CPath.Canopy.DiffuseExtCoeff,
-                LeafScatteringCoeff = CPath.Canopy.LeafScatteringCoeff,
-                DiffuseReflectionCoeff = CPath.Canopy.DiffuseReflectionCoeff
+                DiffuseExtCoeff = Canopy.DiffuseExtCoeff,
+                LeafScatteringCoeff = Canopy.LeafScatteringCoeff,
+                DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeff
             };
 
             NIR = new AbsorbedRadiation(Layers, layerLAI)
             {
-                DiffuseExtCoeff = CPath.Canopy.DiffuseExtCoeffNIR,
-                LeafScatteringCoeff = CPath.Canopy.LeafScatteringCoeffNIR,
-                DiffuseReflectionCoeff = CPath.Canopy.DiffuseReflectionCoeffNIR
+                DiffuseExtCoeff = Canopy.DiffuseExtCoeffNIR,
+                LeafScatteringCoeff = Canopy.LeafScatteringCoeffNIR,
+                DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeffNIR
             };            
         }
 
@@ -79,8 +79,8 @@ namespace DCAPST.Canopy
         public void ResetPartials()
         {
             // Reset the partial canopies
-            Sunlit = new PartialCanopy(CPath, Layers, LAI / Layers);
-            Shaded = new PartialCanopy(CPath, Layers, LAI / Layers);
+            Sunlit = new PartialCanopy(Canopy, Layers, LAI / Layers);
+            Shaded = new PartialCanopy(Canopy, Layers, LAI / Layers);
 
             // TODO: This mess can be cleaned up with better structure, just getting it working
             Sunlit.NIR.BeamExtinctionCoeff = Sunlit.PAR.BeamExtinctionCoeff = Sunlit.Rad.BeamExtinctionCoeff = Rad.BeamExtinctionCoeff;
@@ -179,24 +179,24 @@ namespace DCAPST.Canopy
         {
             var nTerm = NAllocationCoeff + (Rad.BeamExtinctionCoeff * LAI);
             
-            VcMax25 = CalcMaximumRate(CPath.PsiVc, NAllocationCoeff);
-            Sunlit.VcMax25 = CalcMaximumRate(CPath.PsiVc, nTerm);
+            VcMax25 = CalcMaximumRate(Canopy.Pathway.PsiVc, NAllocationCoeff);
+            Sunlit.VcMax25 = CalcMaximumRate(Canopy.Pathway.PsiVc, nTerm);
             Shaded.VcMax25 = VcMax25 - Sunlit.VcMax25;
 
-            Rd25 = CalcMaximumRate(CPath.PsiRd, NAllocationCoeff);
-            Sunlit.Rd25 = CalcMaximumRate(CPath.PsiRd, nTerm);
+            Rd25 = CalcMaximumRate(Canopy.Pathway.PsiRd, NAllocationCoeff);
+            Sunlit.Rd25 = CalcMaximumRate(Canopy.Pathway.PsiRd, nTerm);
             Shaded.Rd25 = Rd25 - Sunlit.Rd25;
 
-            JMax25 = CalcMaximumRate(CPath.PsiJ, NAllocationCoeff);
-            Sunlit.JMax25 = CalcMaximumRate(CPath.PsiJ, nTerm);
+            JMax25 = CalcMaximumRate(Canopy.Pathway.PsiJ, NAllocationCoeff);
+            Sunlit.JMax25 = CalcMaximumRate(Canopy.Pathway.PsiJ, nTerm);
             Shaded.JMax25 = JMax25 - Sunlit.JMax25;
 
-            VpMax25 = CalcMaximumRate(CPath.PsiVp, NAllocationCoeff);
-            Sunlit.VpMax25 = CalcMaximumRate(CPath.PsiVp, nTerm);
+            VpMax25 = CalcMaximumRate(Canopy.Pathway.PsiVp, NAllocationCoeff);
+            Sunlit.VpMax25 = CalcMaximumRate(Canopy.Pathway.PsiVp, nTerm);
             Shaded.VpMax25 = VpMax25 - Sunlit.VpMax25;
 
-            Gm25 = CalcMaximumRate(CPath.PsiGm, NAllocationCoeff);
-            Sunlit.Gm25 = CalcMaximumRate(CPath.PsiGm, nTerm);
+            Gm25 = CalcMaximumRate(Canopy.Pathway.PsiGm, NAllocationCoeff);
+            Sunlit.Gm25 = CalcMaximumRate(Canopy.Pathway.PsiGm, nTerm);
             Shaded.Gm25 = Gm25 - Sunlit.Gm25;
         }
 
@@ -204,7 +204,7 @@ namespace DCAPST.Canopy
         // Sunlit: nTerm = NAllocationCoeff + (BeamExtCoeff * LAI)
         public double CalcMaximumRate(double psi, double nTerm)
         {
-            var factor = LAI * (LeafNTopCanopy - CPath.Canopy.StructuralN) * psi;
+            var factor = LAI * (LeafNTopCanopy - Canopy.StructuralN) * psi;
             var exp = Rad.CalcExp(nTerm / LAI);
 
             return factor * exp / nTerm;

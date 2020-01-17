@@ -6,36 +6,10 @@ namespace Validation.C4
 {
     public static class Initialise
     {
-        public static PathwayParameters NewSorghumParameters()
+        public static CanopyParameters NewSorghumParameters()
         {
             double PsiFactor = 0.4;
-
-            //Set the parameters
-            var canopy = new CanopyParameters()
-            {
-                Type = CanopyType.C4,
-
-                Ca = 363,
-                ConvexityFactor = 0.7,
-                DiffusivitySolubilityRatio = 0.047,
-
-                DiffuseExtCoeff = 0.78,
-                DiffuseExtCoeffNIR = 0.8,
-                DiffuseReflectionCoeff = 0.036,
-                DiffuseReflectionCoeffNIR = 0.389,
-
-                LeafAngle = 60,
-                LeafScatteringCoeff = 0.15,
-                LeafScatteringCoeffNIR = 0.8,                
-                LeafWidth = 0.15,
-
-                SLNRatioTop = 1.3,
-                StructuralN = 14,
-
-                Windspeed = 1.5,
-                WindSpeedExtinction = 1.5
-            };
-
+            
             var j = new ValParameters()
             {
                 TMin = 0,
@@ -56,8 +30,6 @@ namespace Validation.C4
 
             var CPath = new PathwayParameters()
             {
-                Canopy = canopy,
-
                 Vpr_l = 120,
                 SpectralCorrectionFactor = 0.15,
                 Alpha = 0.1,
@@ -92,10 +64,35 @@ namespace Validation.C4
                 J = j,
                 Gm = g                
             };
-                        
-                     
 
-            return CPath;
+            var canopy = new CanopyParameters()
+            {
+                Type = CanopyType.C4,
+
+                Pathway = CPath,
+
+                Ca = 363,
+                ConvexityFactor = 0.7,
+                DiffusivitySolubilityRatio = 0.047,
+
+                DiffuseExtCoeff = 0.78,
+                DiffuseExtCoeffNIR = 0.8,
+                DiffuseReflectionCoeff = 0.036,
+                DiffuseReflectionCoeffNIR = 0.389,
+
+                LeafAngle = 60,
+                LeafScatteringCoeff = 0.15,
+                LeafScatteringCoeffNIR = 0.8,
+                LeafWidth = 0.15,
+
+                SLNRatioTop = 1.3,
+                StructuralN = 14,
+
+                Windspeed = 1.5,
+                WindSpeedExtinction = 1.5
+            };
+
+            return canopy;
         }
     }
 }

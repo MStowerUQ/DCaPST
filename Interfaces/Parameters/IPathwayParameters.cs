@@ -1,11 +1,7 @@
-﻿using DCAPST.Canopy;
-
-namespace DCAPST.Interfaces
+﻿namespace DCAPST.Interfaces
 {
     public interface IPathwayParameters
     {
-        ICanopyParameters Canopy { get; set; }
-
         double SpectralCorrectionFactor { get; set; }
         double Alpha { get; set; }
         double Vpr_l { get; set; }

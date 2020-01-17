@@ -1,5 +1,4 @@
-﻿using System;
-using DCAPST.Canopy;
+﻿using DCAPST.Canopy;
 using DCAPST.Interfaces;
 
 namespace DCAPST
@@ -10,7 +9,8 @@ namespace DCAPST
     {
         public AssimilationType Type;
 
-        public IPathwayParameters CPath;
+        public ICanopyParameters Canopy;
+        public IPathwayParameters Path;
         public PartialCanopy Partial;       
 
         public double A { get; set; } = 0.0;
@@ -24,30 +24,31 @@ namespace DCAPST
 
         public double OxygenPartialPressure { get; set; } = 210000;
 
-        public Assimilation(AssimilationType type, IPathwayParameters path, PartialCanopy partial)
+        public Assimilation(AssimilationType type, ICanopyParameters canopy, PartialCanopy partial)
         {
             Type = type;
 
-            CPath = path;
+            Canopy = canopy;
+            Path = canopy.Pathway;
             Partial = partial;
 
-            Cm = CPath.Canopy.Ca * CPath.CiCaRatio;
+            Cm = Canopy.Ca * Path.CiCaRatio;
             Cc = Cm + 20;
             Oc = 210000;
         }
         
-        public double GmT => TemperatureFunction.Val(LeafTemperature, Partial.Gm25, CPath.Gm);
+        public double GmT => TemperatureFunction.Val(LeafTemperature, Partial.Gm25, Path.Gm);
 
         public bool CalculateAssimilation(IWaterInteraction Water, PhotosynthesisParams Params)
         {
             AssimilationCalculator calc;
 
-            if (CPath.Canopy.Type == CanopyType.C3) 
-                calc = new CalculatorC3(CPath, Partial, this);
-            else if (CPath.Canopy.Type == CanopyType.C4) 
-                calc = new CalculatorC4(CPath, Partial, this);
+            if (Canopy.Type == CanopyType.C3) 
+                calc = new CalculatorC3(Canopy, Partial, this);
+            else if (Canopy.Type == CanopyType.C4) 
+                calc = new CalculatorC4(Canopy, Partial, this);
             else 
-                calc = new CalculatorCCM(CPath, Partial, this);
+                calc = new CalculatorCCM(Canopy, Partial, this);
 
             var aparam = calc.GetAssimilationParams(this);
 
@@ -56,13 +57,13 @@ namespace DCAPST
 
             if (!Params.limited)
             {
-                Ci = CPath.CiCaRatio * CPath.Canopy.Ca;
+                Ci = Path.CiCaRatio * Canopy.Ca;
 
                 aparam.p = Ci;
                 aparam.q = 1 / GmT;
 
                 A = aparam.CalculateAssimilation();
-                rtw = Water.CalcUnlimitedRtw(A, CPath.Canopy.Ca, Ci);
+                rtw = Water.CalcUnlimitedRtw(A, Canopy.Ca, Ci);
                 WaterUse = Water.HourlyWaterUse(rtw, Rn);
             }
             else
@@ -73,13 +74,13 @@ namespace DCAPST
                 rtw = Water.CalcLimitedRtw(WaterUse, Rn);
                 var Gt = Water.CalcGt(rtw);
 
-                aparam.p = CPath.Canopy.Ca - WaterUseMolsSecond * CPath.Canopy.Ca / (Gt + WaterUseMolsSecond / 2.0);
+                aparam.p = Canopy.Ca - WaterUseMolsSecond * Canopy.Ca / (Gt + WaterUseMolsSecond / 2.0);
                 aparam.q = 1 / (Gt + WaterUseMolsSecond / 2) + 1.0 / GmT;
 
                 A = aparam.CalculateAssimilation();
 
                 if (!(calc is CalculatorC3))
-                    Ci = ((Gt - WaterUseMolsSecond / 2.0) * CPath.Canopy.Ca - A) / (Gt + WaterUseMolsSecond / 2.0);
+                    Ci = ((Gt - WaterUseMolsSecond / 2.0) * Canopy.Ca - A) / (Gt + WaterUseMolsSecond / 2.0);
             }
 
             // C4 & CCM
@@ -89,7 +90,7 @@ namespace DCAPST
             // CCM ONLY
             if (calc is CalculatorCCM)
             {
-                Oc = CPath.Alpha * A / (CPath.Canopy.DiffusivitySolubilityRatio * calc.Gbs) + OxygenPartialPressure;
+                Oc = Path.Alpha * A / (Canopy.DiffusivitySolubilityRatio * calc.Gbs) + OxygenPartialPressure;
                 Cc = Cm + (Cm * aparam.x4 + aparam.x5 - aparam.x6 * A - aparam.m - aparam.x7) * aparam.x8 / calc.Gbs;
             }
 

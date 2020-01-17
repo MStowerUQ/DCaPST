@@ -6,7 +6,8 @@ namespace DCAPST
 {
     public abstract class AssimilationCalculator
     {
-        public IPathwayParameters CPath;
+        public ICanopyParameters Canopy;
+        public IPathwayParameters Path;
         public PartialCanopy Partial;       
 
         public double Cm { get; set; }
@@ -17,9 +18,10 @@ namespace DCAPST
 
         public double LeafTemperature;
 
-        public AssimilationCalculator(IPathwayParameters path, PartialCanopy partial, Assimilation assimilation)
+        public AssimilationCalculator(ICanopyParameters canopy, PartialCanopy partial, Assimilation assimilation)
         {
-            CPath = path;
+            Canopy = canopy;
+            Path = canopy.Pathway;
             Partial = partial;
 
             LeafTemperature = assimilation.LeafTemperature;
@@ -28,27 +30,27 @@ namespace DCAPST
             Oc = assimilation.Oc;
         }
         
-        public double VcMaxT => TemperatureFunction.Val2(LeafTemperature, Partial.VcMax25, CPath.VcTEa);
-        public double RdT => TemperatureFunction.Val2(LeafTemperature, Partial.Rd25, CPath.RdTEa);
-        public double JMaxT => TemperatureFunction.Val(LeafTemperature, Partial.JMax25, CPath.J);
-        public double VpMaxT => TemperatureFunction.Val2(LeafTemperature, Partial.VpMax25, CPath.VpMaxTEa);
+        public double VcMaxT => TemperatureFunction.Val2(LeafTemperature, Partial.VcMax25, Path.VcTEa);
+        public double RdT => TemperatureFunction.Val2(LeafTemperature, Partial.Rd25, Path.RdTEa);
+        public double JMaxT => TemperatureFunction.Val(LeafTemperature, Partial.JMax25, Path.J);
+        public double VpMaxT => TemperatureFunction.Val2(LeafTemperature, Partial.VpMax25, Path.VpMaxTEa);
 
-        public double Kc => TemperatureFunction.Val2(LeafTemperature, CPath.KcP25, CPath.KcTEa);
-        public double Ko => TemperatureFunction.Val2(LeafTemperature, CPath.KoP25, CPath.KoTEa);
-        public double VcVo => TemperatureFunction.Val2(LeafTemperature, CPath.VcMax_VoMaxP25, CPath.VcMax_VoMaxTEa);
-        public double Kp => TemperatureFunction.Val2(LeafTemperature, CPath.KpP25, CPath.KpTEa);
+        public double Kc => TemperatureFunction.Val2(LeafTemperature, Path.KcP25, Path.KcTEa);
+        public double Ko => TemperatureFunction.Val2(LeafTemperature, Path.KoP25, Path.KoTEa);
+        public double VcVo => TemperatureFunction.Val2(LeafTemperature, Path.VcMax_VoMaxP25, Path.VcMax_VoMaxTEa);
+        public double Kp => TemperatureFunction.Val2(LeafTemperature, Path.KpP25, Path.KpTEa);
 
-        public double Ja => (1.0 - CPath.SpectralCorrectionFactor) / 2.0;
+        public double Ja => (1.0 - Path.SpectralCorrectionFactor) / 2.0;
         private double JaXRad => Ja * Partial.Rad.TotalIrradiance;
         public double J =>
-            (JaXRad + JMaxT - Math.Pow(Math.Pow(JaXRad + JMaxT, 2) - 4 * CPath.Canopy.ConvexityFactor * JMaxT * JaXRad, 0.5))
-            / (2 * CPath.Canopy.ConvexityFactor);
+            (JaXRad + JMaxT - Math.Pow(Math.Pow(JaXRad + JMaxT, 2) - 4 * Canopy.ConvexityFactor * JMaxT * JaXRad, 0.5))
+            / (2 * Canopy.ConvexityFactor);
 
         public double ScO => Ko / Kc * VcVo;
         public double G_ => 0.5 / ScO;
         public double Rm => RdT * 0.5;
-        public double Gbs => CPath.Gbs_CO2 * Partial.LAI;
-        public double Vpr => CPath.Vpr_l * Partial.LAI;
+        public double Gbs => Path.Gbs_CO2 * Partial.LAI;
+        public double Vpr => Path.Vpr_l * Partial.LAI;
 
         public AssimilationParameters GetAssimilationParams(Assimilation canopy)
         {

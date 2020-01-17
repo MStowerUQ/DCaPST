@@ -21,7 +21,7 @@ namespace DCAPST
         private readonly double timestep = 1.0;
         private readonly int iterations;
 
-        public PhotosynthesisModel(ISolarGeometry solar, IRadiation radiation, ITemperature temperature, IPathwayParameters pathway)
+        public PhotosynthesisModel(ISolarGeometry solar, IRadiation radiation, ITemperature temperature, ICanopyParameters canopy)
         {
             Solar = solar;
             Radiation = radiation;
@@ -30,7 +30,7 @@ namespace DCAPST
             int layers = 1;
             if (layers <= 0) throw new Exception("There must be at least 1 layer");
 
-            Canopy = new TotalCanopy(pathway, layers);
+            Canopy = new TotalCanopy(canopy, layers);
 
             iterations = (int)Math.Floor(1.0 + ((end - start) / timestep));
         }
@@ -82,10 +82,10 @@ namespace DCAPST
 
         private bool IsSensible()
         {
-            var CPath = Canopy.CPath;
+            var CPath = Canopy.Canopy;
             var temp = Temperature.AirTemperature;
 
-            bool invalidTemp = temp > CPath.J.TMax || temp < CPath.J.TMin || temp > CPath.Gm.TMax || temp < CPath.Gm.TMin;
+            bool invalidTemp = temp > CPath.Pathway.J.TMax || temp < CPath.Pathway.J.TMin || temp > CPath.Pathway.Gm.TMax || temp < CPath.Pathway.Gm.TMin;
             bool invalidRadn = Radiation.TotalIncidentRadiation <= double.Epsilon;
 
             if (invalidTemp || invalidRadn)

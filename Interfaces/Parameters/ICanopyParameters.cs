@@ -6,6 +6,8 @@
     {
         CanopyType Type { get; set; }
 
+        IPathwayParameters Pathway { get; set; }
+
         double Ca { get; set; }
         double Windspeed { get; set; }
         double LeafAngle { get; set; }

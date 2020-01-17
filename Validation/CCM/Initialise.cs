@@ -6,34 +6,9 @@ namespace Validation.CCM
 {
     public static class Initialise
     {        
-        public static PathwayParameters NewWheat()
+        public static CanopyParameters NewWheat()
         {
             double PsiFactor = 1.0;
-
-            var canopy = new CanopyParameters()
-            {
-                Type = CanopyType.CCM,
-
-                Ca = 370,
-                ConvexityFactor = 0.7,
-                DiffusivitySolubilityRatio = 0.047,
-
-                DiffuseExtCoeff = 0.78,
-                DiffuseExtCoeffNIR = 0.8,
-                DiffuseReflectionCoeff = 0.036,
-                DiffuseReflectionCoeffNIR = 0.389,
-
-                LeafAngle = 60,
-                LeafScatteringCoeff = 0.15,
-                LeafScatteringCoeffNIR = 0.8,                
-                LeafWidth = 0.05,
-
-                SLNRatioTop = 1.3,
-                StructuralN = 14,
-
-                Windspeed = 1.5,
-                WindSpeedExtinction = 1.5
-            };
 
             var j = new ValParameters()
             {
@@ -55,8 +30,6 @@ namespace Validation.CCM
 
             var CPath = new PathwayParameters()
             {
-                Canopy = canopy,                
-
                 Vpr_l = 400,
                 SpectralCorrectionFactor = 0.15,
                 Alpha = 0.1,
@@ -91,9 +64,36 @@ namespace Validation.CCM
             };
             CPath.X = CPath.Phi / (3.0 + CPath.Phi);
             CPath.Fcyc = 0.25 * CPath.Phi;
-            CPath.z = (3.0 - CPath.Fcyc) / (4.0 * (1.0 - CPath.Fcyc));                      
+            CPath.z = (3.0 - CPath.Fcyc) / (4.0 * (1.0 - CPath.Fcyc));
 
-            return CPath;
+            var canopy = new CanopyParameters()
+            {
+                Type = CanopyType.CCM,
+
+                Pathway = CPath,
+
+                Ca = 370,
+                ConvexityFactor = 0.7,
+                DiffusivitySolubilityRatio = 0.047,
+
+                DiffuseExtCoeff = 0.78,
+                DiffuseExtCoeffNIR = 0.8,
+                DiffuseReflectionCoeff = 0.036,
+                DiffuseReflectionCoeffNIR = 0.389,
+
+                LeafAngle = 60,
+                LeafScatteringCoeff = 0.15,
+                LeafScatteringCoeffNIR = 0.8,
+                LeafWidth = 0.05,
+
+                SLNRatioTop = 1.3,
+                StructuralN = 14,
+
+                Windspeed = 1.5,
+                WindSpeedExtinction = 1.5
+            };
+
+            return canopy;
         }
     }
 }
