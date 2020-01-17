@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using DCAPST.Canopy;
-using DCAPST.Environment;
 using DCAPST.Interfaces;
 
 namespace DCAPST
@@ -47,7 +45,6 @@ namespace DCAPST
             Canopy.Initialise(lai, SLN);
 
             // POTENTIAL CALCULATIONS
-            // TODO: Total canopy -> CanopySection ?
             // Note: In the potential case, we assume unlimited water and therefore supply = demand
             CalculatePotential(out double intercepted, out double[] assimilations, out double[] sunlitDemand, out double[] shadedDemand);
             var waterSupply = sunlitDemand.Zip(shadedDemand, (x, y) => x + y).ToArray();
@@ -59,7 +56,7 @@ namespace DCAPST
             double maxHourlyT = Math.Min(waterSupply.Max(), MaxHourlyTRate);
             waterSupply = waterSupply.Select(w => w > maxHourlyT ? maxHourlyT : w).ToArray();
 
-            var limitedSupply = CalculateWaterSupplyLimits(soilWater, maxHourlyT, totalDemand, waterSupply);
+            var limitedSupply = CalculateWaterSupplyLimits(soilWater, maxHourlyT, waterSupply);
 
             var actual = (soilWater > totalDemand) ? potential : CalculateActual(limitedSupply, sunlitDemand, shadedDemand);
 
@@ -73,8 +70,6 @@ namespace DCAPST
             return results;
         }
 
-        // TODO: temp has more or less been moved into Temperature.AirTemperature, there should be simplifications that can
-        // can be made as a result of this
         private bool TryInitiliase(double time)
         {
             Temperature.UpdateAirTemperature(time);
@@ -111,7 +106,7 @@ namespace DCAPST
             {
                 double time = start + i * timestep;
 
-                // Note: double array values default to 0.0, which is the intended case if initialisation fails
+                // Note: double arrays default value is 0.0, which is the intended case if initialisation fails
                 if (!TryInitiliase(time)) continue;
 
                 intercepted += Radiation.TotalIncidentRadiation * Canopy.PropnInterceptedRadns * 3600;
@@ -151,10 +146,7 @@ namespace DCAPST
             };
             if (maxHourlyT != -1) Params.limited = true;
 
-            Canopy.ResetPartials();
-            Canopy.CalcLAI();
             Canopy.Run(Radiation);
-
 
             var gbh = Canopy.CalcGbh();
             var sunlitGbh = Canopy.CalcSunlitGbh();
@@ -168,56 +160,43 @@ namespace DCAPST
             Canopy.Shaded.CalcPartialPhotosynthesis(Temperature, Params);
         }
 
-             
-
         /// <summary>
         /// In the case where there is greater water demand than supply allows, the water supply limit for each hour
-        /// must be calculated. This is done by partitioning the water demand into each hour, then trimming the supply
-        /// of any hour which demands more water than some maxHourlyT. 
+        /// must be calculated. 
         /// 
-        /// If this brings the water demand too far below the supply, it is adjusted upwards again, by a smaller margin.
-        /// This process is repeated until the difference between the demand and supply is within some minor tolerance.
+        /// This is done by adjusting the maximum rate of water supply each hour, until the total water demand across
+        /// the day is within some tolerance of the actual water available, as we want to make use of all the 
+        /// accessible water.
         /// </summary>
-        private double[] CalculateWaterSupplyLimits(double soilWaterAvail, double maxHourlyT, double totalDemand, double[] supply)
+        private double[] CalculateWaterSupplyLimits(double soilWaterAvail, double maxHourlyT, double[] demand)
         {
-            if (soilWaterAvail > 0.0001)
+            double initialDemand = demand.Sum();
+            if (soilWaterAvail < 0.0001) return demand.Select(d => 0.0).ToArray();
+            if (initialDemand < soilWaterAvail) return demand;
+            
+            double maxDemandRate = maxHourlyT;
+            double minDemandRate = 0;
+            double averageDemandRate = 0;
+
+            double dailyDemand = initialDemand;
+
+            // While the daily demand is outside some tolerance of the available water
+            while (dailyDemand < (soilWaterAvail - 0.000001) || (0.000001 + soilWaterAvail) < dailyDemand)
             {
-                if (totalDemand > soilWaterAvail)
-                {
-                    double tolerance = 0.000001;
+                averageDemandRate = (maxDemandRate + minDemandRate) / 2;
 
-                    double max = maxHourlyT;
-                    double min = 0;
-                    double average = 0;
+                // Find the total daily demand when the hourly rate is limited to the average rate
+                dailyDemand = demand.Select(d => d > averageDemandRate ? averageDemandRate : d).Sum();
 
-                    double averageSum = supply.Sum();
-                    double maxSum = 0;
+                // Find the total daily demand when the hourly rate is limited to the maximum rate
+                var maxDemand = demand.Select(d => d > maxDemandRate ? maxDemandRate : d).Sum();
 
-                    // While averageTotal is outside some tolerance of the soilwater
-                    while ((soilWaterAvail + tolerance) < averageSum || averageSum < (soilWaterAvail - tolerance))
-                    {
-                        average = (max + min) / 2;
-
-                        // Select the sum of the supplied water, trimming any values greater than the average
-                        averageSum = supply.Select(d => d > average ? average : d).Sum();
-
-                        // Select the sum of the supplied water, trimming values greater than the max value
-                        maxSum = supply.Select(d => d > max ? max : d).Sum();
-
-                        // If available water is between the average and high values, adjust the min value upwards
-                        if (averageSum < soilWaterAvail && soilWaterAvail < maxSum)
-                            min = average;
-                        // Otherwise, if available water is between the average and min values, adjust the max value downwards
-                        else if (min < soilWaterAvail && soilWaterAvail < averageSum)
-                            max = average;
-                    }
-                    return supply.Select(d => d > average ? average : d).ToArray();
-                }
-                else
-                    return supply;
+                // If there is more water available than is being demanded, adjust the minimum demand upwards
+                if (dailyDemand < soilWaterAvail) minDemandRate = averageDemandRate;
+                // Else, there is less water available than is being demanded, so adjust the maximum demand downwards
+                else maxDemandRate = averageDemandRate;
             }
-            else 
-                return supply.Select(d => 0.0).ToArray();
+            return demand.Select(d => d > averageDemandRate ? averageDemandRate : d).ToArray();
         }
     }
 

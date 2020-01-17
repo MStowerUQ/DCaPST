@@ -32,6 +32,18 @@ namespace DCAPST.Canopy
             LAI = lai;
             CPath.Canopy.SLNAv = sln;
 
+            // CalcLeafNitrogenDistribution
+            var SLNTop = CPath.Canopy.SLNAv * CPath.Canopy.SLNRatioTop;
+            LeafNTopCanopy = SLNTop * 1000 / 14;
+
+            var NcAv = CPath.Canopy.SLNAv * 1000 / 14;
+            NAllocationCoeff = -1 * Math.Log((NcAv - CPath.Canopy.StructuralN) / (LeafNTopCanopy - CPath.Canopy.StructuralN)) * 2;
+
+            WindSpeed = CPath.Canopy.Windspeed;
+            WindSpeedExtinction = CPath.Canopy.WindSpeedExtinction;
+            LeafAngle = new Angle(CPath.Canopy.LeafAngle, AngleType.Deg);
+            LeafWidth = CPath.Canopy.LeafWidth;
+
             var layerLAI = LAI / Layers;
 
             Rad = new AbsorbedRadiation(Layers, layerLAI)
@@ -53,12 +65,15 @@ namespace DCAPST.Canopy
                 DiffuseExtCoeff = CPath.Canopy.DiffuseExtCoeffNIR,
                 LeafScatteringCoeff = CPath.Canopy.LeafScatteringCoeffNIR,
                 DiffuseReflectionCoeff = CPath.Canopy.DiffuseReflectionCoeffNIR
-            };
+            };            
+        }
 
-            WindSpeed = CPath.Canopy.Windspeed;
-            WindSpeedExtinction = CPath.Canopy.WindSpeedExtinction;
-            LeafAngle = new Angle(CPath.Canopy.LeafAngle, AngleType.Deg);
-            LeafWidth = CPath.Canopy.LeafWidth;
+        public void Run(IRadiation radiation)
+        {
+            ResetPartials();
+            CalcLAI();
+            CalcAbsorbedRadiations(radiation);
+            CalcMaximumRates();
         }
 
         public void ResetPartials()
@@ -70,23 +85,7 @@ namespace DCAPST.Canopy
             // TODO: This mess can be cleaned up with better structure, just getting it working
             Sunlit.NIR.BeamExtinctionCoeff = Sunlit.PAR.BeamExtinctionCoeff = Sunlit.Rad.BeamExtinctionCoeff = Rad.BeamExtinctionCoeff;
             Shaded.NIR.BeamExtinctionCoeff = Shaded.PAR.BeamExtinctionCoeff = Shaded.Rad.BeamExtinctionCoeff = Rad.BeamExtinctionCoeff;
-        }
-
-        public void Run(IRadiation radiation)
-        {
-            // CalcAbsorbedRadiation
-            CalcAbsorbedRadiations(radiation);
-
-            // CalcLeafNitrogenDistribution
-            var SLNTop = CPath.Canopy.SLNAv * CPath.Canopy.SLNRatioTop;
-            LeafNTopCanopy = SLNTop * 1000 / 14;
-            
-            var NcAv = CPath.Canopy.SLNAv * 1000 / 14;
-            NAllocationCoeff = -1 * Math.Log((NcAv - CPath.Canopy.StructuralN) / (LeafNTopCanopy - CPath.Canopy.StructuralN)) * 2;
-
-            // CalcMaxRates
-            CalcMaximumRates();
-        }
+        }        
 
         public double CalcGbh()
         {
@@ -137,16 +136,10 @@ namespace DCAPST.Canopy
             else
             {
                 double value = Math.Acos(1 / Math.Tan(LeafAngle.Rad) * Math.Tan(sunAngleRadians));
-                Angle θ0 = new Angle(value, AngleType.Rad);
+                Angle theta = new Angle(value, AngleType.Rad);
 
-                return 2 / Math.PI
-                    * Math.Sin(LeafAngle.Rad)
-                    * Math.Cos(sunAngleRadians)
-                    * Math.Sin(θ0.Rad)
-                    +
-                    ((1 - θ0.Deg / 90)
-                    * Math.Cos(LeafAngle.Rad)
-                    * Math.Sin(sunAngleRadians));
+                return 2 / Math.PI * Math.Sin(LeafAngle.Rad) * Math.Cos(sunAngleRadians) * Math.Sin(theta.Rad)
+                    + ((1 - theta.Deg / 90) * Math.Cos(LeafAngle.Rad) * Math.Sin(sunAngleRadians));
             }
         }
 
