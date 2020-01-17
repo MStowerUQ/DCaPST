@@ -6,12 +6,12 @@ namespace DCAPST
 {
     public enum AssimilationType { Ac1, Ac2, Aj }
 
-    public class PartialAssimilation
+    public class Assimilation
     {
         public AssimilationType Type;
 
         public IPathwayParameters CPath;
-        public PartialCanopy Canopy;       
+        public PartialCanopy Partial;       
 
         public double A { get; set; } = 0.0;
         public double WaterUse { get; set; } = 0.0;
@@ -24,24 +24,24 @@ namespace DCAPST
 
         public double OxygenPartialPressure { get; set; } = 210000;
 
-        public PartialAssimilation(AssimilationType type, IPathwayParameters path, PartialCanopy canopy)
+        public Assimilation(AssimilationType type, IPathwayParameters path, PartialCanopy partial)
         {
             Type = type;
 
             CPath = path;
-            Canopy = canopy;
-            LeafTemperature = canopy.LeafTemperature;
+            Partial = partial;
+            LeafTemperature = partial.LeafTemperature;
 
             Cm = CPath.Canopy.Ca * CPath.CiCaRatio;
             Cc = Cm + 20;
             Oc = 210000;
         }
         
-        public double VcMaxT => TemperatureFunction.Val2(LeafTemperature, Canopy.VcMax25, CPath.VcTEa);
-        public double RdT => TemperatureFunction.Val2(LeafTemperature, Canopy.Rd25, CPath.RdTEa);
-        public double JMaxT => TemperatureFunction.Val(LeafTemperature, Canopy.JMax25, CPath.JMaxC, CPath.JTMax, CPath.JTMin, CPath.JTOpt, CPath.JBeta);
-        public double VpMaxT => TemperatureFunction.Val2(LeafTemperature, Canopy.VpMax25, CPath.VpMaxTEa);
-        public double GmT => TemperatureFunction.Val(LeafTemperature, Canopy.Gm25, CPath.GmC, CPath.GmTMax, CPath.GmTMin, CPath.GmTOpt, CPath.GmBeta);
+        public double VcMaxT => TemperatureFunction.Val2(LeafTemperature, Partial.VcMax25, CPath.VcTEa);
+        public double RdT => TemperatureFunction.Val2(LeafTemperature, Partial.Rd25, CPath.RdTEa);
+        public double JMaxT => TemperatureFunction.Val(LeafTemperature, Partial.JMax25, CPath.J);
+        public double VpMaxT => TemperatureFunction.Val2(LeafTemperature, Partial.VpMax25, CPath.VpMaxTEa);
+        public double GmT => TemperatureFunction.Val(LeafTemperature, Partial.Gm25, CPath.Gm);
 
         public double Kc => TemperatureFunction.Val2(LeafTemperature, CPath.KcP25, CPath.KcTEa);
         public double Ko => TemperatureFunction.Val2(LeafTemperature, CPath.KoP25, CPath.KoTEa);
@@ -49,7 +49,7 @@ namespace DCAPST
         public double Kp => TemperatureFunction.Val2(LeafTemperature, CPath.KpP25, CPath.KpTEa);
 
         public double Ja => (1.0 - CPath.SpectralCorrectionFactor) / 2.0;
-        private double JaXRad => Ja * Canopy.Rad.TotalIrradiance;
+        private double JaXRad => Ja * Partial.Rad.TotalIrradiance;
         public double J =>
             (JaXRad + JMaxT - Math.Pow(Math.Pow(JaXRad + JMaxT, 2) - 4 * CPath.Canopy.ConvexityFactor * JMaxT * JaXRad, 0.5))
             / (2 * CPath.Canopy.ConvexityFactor);
@@ -58,16 +58,14 @@ namespace DCAPST
         public double G_ => 0.5 / ScO;
         public double K_ => Kc * (1 + OxygenPartialPressure / Ko);
         public double Rm => RdT * 0.5;
-        public double Gbs => CPath.Gbs_CO2 * Canopy.LAI;
-        public double Vpr => CPath.Vpr_l * Canopy.LAI;
+        public double Gbs => CPath.Gbs_CO2 * Partial.LAI;
+        public double Vpr => CPath.Vpr_l * Partial.LAI;
 
-        public bool TryCalculatePhotosynthesis(IWaterInteraction Water, PhotosynthesisParams Params)
+        public bool CalculateAssimilation(IWaterInteraction Water, PhotosynthesisParams Params)
         {
-            //var Water = new WaterInteractionModel(Temp, CPath, LeafTemperature, Params.Gbh);
-
             var aparam = CPath.GetAssimilationParams(this);
 
-            double Rn = Canopy.PAR.TotalIrradiance + Canopy.NIR.TotalIrradiance;
+            double Rn = Partial.PAR.TotalIrradiance + Partial.NIR.TotalIrradiance;
             double rtw;
 
             if (!Params.limited)

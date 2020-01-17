@@ -90,7 +90,7 @@ namespace DCAPST
             var CPath = Canopy.CPath;
             var temp = Temperature.AirTemperature;
 
-            bool invalidTemp = temp > CPath.JTMax || temp < CPath.JTMin || temp > CPath.GmTMax || temp < CPath.GmTMin;
+            bool invalidTemp = temp > CPath.J.TMax || temp < CPath.J.TMin || temp > CPath.Gm.TMax || temp < CPath.Gm.TMin;
             bool invalidRadn = Radiation.TotalIncidentRadiation <= double.Epsilon;
 
             if (invalidTemp || invalidRadn)

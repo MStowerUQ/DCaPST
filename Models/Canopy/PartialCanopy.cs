@@ -8,7 +8,7 @@ namespace DCAPST.Canopy
 {
     public class PartialCanopy : BaseCanopy
     {
-        public List<PartialAssimilation> partials = new List<PartialAssimilation>();
+        public List<Assimilation> partials = new List<Assimilation>();
 
         public double A { get; set; } = 0.0;
         public double WaterUse { get; set; } = 0.0;
@@ -39,9 +39,9 @@ namespace DCAPST.Canopy
                 DiffuseReflectionCoeff = CPath.Canopy.DiffuseReflectionCoeffNIR
             };
 
-            partials.Add(new PartialAssimilation(AssimilationType.Ac1, cPath, this));
-            if (CPath.Canopy.Type != CanopyType.C3) partials.Add(new PartialAssimilation(AssimilationType.Ac2, cPath, this));
-            partials.Add(new PartialAssimilation(AssimilationType.Aj, cPath, this));
+            partials.Add(new Assimilation(AssimilationType.Ac1, cPath, this));
+            if (CPath.Canopy.Type != CanopyType.C3) partials.Add(new Assimilation(AssimilationType.Ac2, cPath, this));
+            partials.Add(new Assimilation(AssimilationType.Aj, cPath, this));
         }
 
         public void CalcPartialPhotosynthesis(ITemperature temperature, PhotosynthesisParams Params)
@@ -53,7 +53,7 @@ namespace DCAPST.Canopy
             var test = partials.Select(s =>
             {
                 IWaterInteraction water = new WaterInteractionModel(temperature, s.LeafTemperature, Params.Gbh);
-                return s.TryCalculatePhotosynthesis(water, Params);
+                return s.CalculateAssimilation(water, Params);
             }).ToList();
 
             var initialA = partials.Select(s => s.A).ToArray();
@@ -74,7 +74,7 @@ namespace DCAPST.Canopy
                     test = partials.Select(s =>
                     {
                         IWaterInteraction water = new WaterInteractionModel(temperature, s.LeafTemperature, Params.Gbh);
-                        return s.TryCalculatePhotosynthesis(water, Params);
+                        return s.CalculateAssimilation(water, Params);
                     }).ToList();
 
                     // If any calculation fails, all results are set to the value calculated initially
@@ -93,8 +93,6 @@ namespace DCAPST.Canopy
 
             A = partials.Min(p => p.A);
             WaterUse = partials.Min(p => p.WaterUse);
-        }
-
-        
+        }        
     }
 }

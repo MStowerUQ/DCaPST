@@ -25,29 +25,23 @@ namespace DCAPST
         public double KoP25 { get; set; }        
         public double KoTEa { get; set; }
         public double VcTEa { get; set; }
-        public double JMaxC { get; set; }
-        public double JTMax { get; set; }
-        public double JTMin { get; set; }
-        public double JTOpt { get; set; }
-        public double JBeta { get; set; }
+        
         public double VcMax_VoMaxP25 { get; set; }
         public double VcMax_VoMaxTEa { get; set; }
         public double KpP25 { get; set; }
         public double KpTEa { get; set; }
         public double VpMaxTEa { get; set; }
         public double RdTEa { get; set; }
-        public double GmC { get; set; }
-        public double GmTMax { get; set; }
-        public double GmTMin { get; set; }
-        public double GmTOpt { get; set; }
-        public double GmBeta { get; set; }
+
+        public ValParameters J { get; set; }
+        public ValParameters Gm { get; set; }
 
         public double SpectralCorrectionFactor { get; set; }
         public double Alpha { get; set; }
         public double Vpr_l { get; set; }
         public double Gbs_CO2 { get; set; }
 
-        public AssimilationParameters GetAssimilationParams(PartialAssimilation canopy)
+        public AssimilationParameters GetAssimilationParams(Assimilation canopy)
         {            
             if (canopy.Type == AssimilationType.Ac1) 
                 return GetAc1Params(canopy);
@@ -57,9 +51,9 @@ namespace DCAPST
                 return GetAjParams(canopy);
         }
 
-        protected abstract AssimilationParameters GetAc1Params(PartialAssimilation canopy);
-        protected abstract AssimilationParameters GetAc2Params(PartialAssimilation canopy);
-        protected abstract AssimilationParameters GetAjParams(PartialAssimilation canopy);
+        protected abstract AssimilationParameters GetAc1Params(Assimilation canopy);
+        protected abstract AssimilationParameters GetAc2Params(Assimilation canopy);
+        protected abstract AssimilationParameters GetAjParams(Assimilation canopy);
         
     }
 
