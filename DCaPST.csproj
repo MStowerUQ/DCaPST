@@ -67,22 +67,24 @@
     <Compile Include="Interfaces\Models\ITemperature.cs" />
     <Compile Include="Interfaces\Models\ISolarGeometry.cs" />
     <Compile Include="Interfaces\Models\IRadiation.cs" />
+    <Compile Include="Models\Assimilation\AssimilationCalculator.cs" />
     <Compile Include="Models\Assimilation\Assimilation.cs" />
+    <Compile Include="Models\Assimilation\CalculatorCCM.cs" />
+    <Compile Include="Models\Assimilation\CalculatorC4.cs" />
+    <Compile Include="Models\Assimilation\CalculatorC3.cs" />
     <Compile Include="Models\Canopy\AbsorbedRadiation.cs" />
     <Compile Include="Models\Canopy\BaseCanopy.cs" />
     <Compile Include="Parameters\CanopyParameters.cs" />
     <Compile Include="Models\Canopy\PartialCanopy.cs" />
     <Compile Include="Models\Canopy\TotalCanopy.cs" />
+    <Compile Include="Parameters\AssimilationParameters.cs" />
     <Compile Include="Utilities\Angle.cs" />
     <Compile Include="Models\Environment\TemperatureModel.cs" />
     <Compile Include="Models\Environment\RadiationModel.cs" />
     <Compile Include="Models\Environment\SolarGeometryModel.cs" />
     <Compile Include="Models\Environment\WaterInteractionModel.cs" />
-    <Compile Include="Parameters\PathwayParametersCCM.cs" />
     <Compile Include="Models\PhotosynthesisModel.cs" />
     <Compile Include="Parameters\PathwayParameters.cs" />
-    <Compile Include="Parameters\PathwayParametersC3.cs" />
-    <Compile Include="Parameters\PathwayParametersC4.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\TempFunctionExp.cs" />
   </ItemGroup>

@@ -21,11 +21,9 @@ namespace DCAPST.Interfaces
         double PsiGm { get; set; }
         double X { get; set; }
         double z { get; set; }
-
-        // KineticParams       
+ 
         double Phi { get; set; }
 
-        // Curvilinear Temperature Model
         double KcP25 { get; set; }
         double KcTEa { get; set; }
         double KoP25 { get; set; }
@@ -41,7 +39,5 @@ namespace DCAPST.Interfaces
 
         ValParameters J { get; set; }
         ValParameters Gm { get; set; }
-
-        AssimilationParameters GetAssimilationParams(Assimilation canopy);
     }
 }

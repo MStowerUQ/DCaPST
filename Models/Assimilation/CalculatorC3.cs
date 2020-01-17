@@ -1,16 +1,25 @@
 ﻿using DCAPST.Canopy;
+using DCAPST.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 namespace DCAPST
 {
-    public class PathwayParametersC3 : PathwayParameters
+    public class CalculatorC3 : AssimilationCalculator
     {
+        public CalculatorC3(IPathwayParameters path, PartialCanopy partial, Assimilation assimilation) : base(path, partial, assimilation)
+        { }
 
-        protected override AssimilationParameters GetAc1Params(Assimilation s)
+        protected override AssimilationParameters GetAc1Params()
         {
             var param = new AssimilationParameters()
             {
-                x1 = s.VcMaxT,
-                x2 = s.Kc / s.Ko,
-                x3 = s.Kc,
+                x1 = VcMaxT,
+                x2 = Kc / Ko,
+                x3 = Kc,
                 x4 = 0.0,
                 x5 = 0.0,
                 x6 = 0.0,
@@ -18,18 +27,18 @@ namespace DCAPST
                 x8 = 0.0,
                 x9 = 0.0,
 
-                m = s.Rm,
-                t = s.G_,
+                m = Rm,
+                t = G_,
                 sb = 0.0,
                 j = 1.0,
-                e = s.OxygenPartialPressure,
-                R = s.RdT
+                e = OxygenPartialPressure,
+                R = RdT
             };
 
             return param;
         }
 
-        protected override AssimilationParameters GetAc2Params(Assimilation s)
+        protected override AssimilationParameters GetAc2Params()
         {
             var param = new AssimilationParameters()
             {
@@ -54,12 +63,12 @@ namespace DCAPST
             return param;
         }
 
-        protected override AssimilationParameters GetAjParams(Assimilation s)
+        protected override AssimilationParameters GetAjParams()
         {
             var param = new AssimilationParameters()
             {
-                x1 = s.J / 4,
-                x2 = 2 * s.G_,
+                x1 = J / 4,
+                x2 = 2 * G_,
                 x3 = 0.0,
                 x4 = 0.0,
                 x5 = 0.0,
@@ -68,12 +77,12 @@ namespace DCAPST
                 x8 = 0.0,
                 x9 = 0.0,
 
-                m = s.Rm,
-                t = s.G_,
+                m = Rm,
+                t = G_,
                 sb = 0.0,
                 j = 1.0,
-                e = s.OxygenPartialPressure,
-                R = s.RdT
+                e = OxygenPartialPressure,
+                R = RdT
             };
 
             return param;

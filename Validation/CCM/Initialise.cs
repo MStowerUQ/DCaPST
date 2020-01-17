@@ -53,7 +53,7 @@ namespace Validation.CCM
                 Beta = 1.0
             };
 
-            var CPath = new PathwayParametersCCM()
+            var CPath = new PathwayParameters()
             {
                 Canopy = canopy,                
 

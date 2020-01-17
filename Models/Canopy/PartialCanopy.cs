@@ -8,11 +8,10 @@ namespace DCAPST.Canopy
 {
     public class PartialCanopy : BaseCanopy
     {
-        public List<Assimilation> partials = new List<Assimilation>();
+        public List<Assimilation> partials;
 
         public double A { get; set; } = 0.0;
-        public double WaterUse { get; set; } = 0.0;
-        public double LeafTemperature { get; set; }        
+        public double WaterUse { get; set; } = 0.0;        
 
         public PartialCanopy(IPathwayParameters cPath, int layers, double layerLAI)
         {
@@ -39,6 +38,7 @@ namespace DCAPST.Canopy
                 DiffuseReflectionCoeff = CPath.Canopy.DiffuseReflectionCoeffNIR
             };
 
+            partials = new List<Assimilation>();
             partials.Add(new Assimilation(AssimilationType.Ac1, cPath, this));
             if (CPath.Canopy.Type != CanopyType.C3) partials.Add(new Assimilation(AssimilationType.Ac2, cPath, this));
             partials.Add(new Assimilation(AssimilationType.Aj, cPath, this));

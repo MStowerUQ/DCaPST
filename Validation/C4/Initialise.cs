@@ -6,7 +6,7 @@ namespace Validation.C4
 {
     public static class Initialise
     {
-        public static PathwayParametersC4 NewSorghumParameters()
+        public static PathwayParameters NewSorghumParameters()
         {
             double PsiFactor = 0.4;
 
@@ -54,7 +54,7 @@ namespace Validation.C4
                 Beta = 1,
             };
 
-            var CPath = new PathwayParametersC4()
+            var CPath = new PathwayParameters()
             {
                 Canopy = canopy,
 
