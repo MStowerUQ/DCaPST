@@ -46,21 +46,21 @@ namespace DCAPST.Canopy
 
             var layerLAI = LAI / Layers;
 
-            Rad = new AbsorbedRadiation(Layers, layerLAI)
+            Rad = new CanopyRadiation(Layers, layerLAI)
             {
                 DiffuseExtCoeff = Canopy.DiffuseExtCoeff,
                 LeafScatteringCoeff = Canopy.LeafScatteringCoeff,
                 DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeff
             };
 
-            PAR = new AbsorbedRadiation(Layers, layerLAI)
+            PAR = new CanopyRadiation(Layers, layerLAI)
             {
                 DiffuseExtCoeff = Canopy.DiffuseExtCoeff,
                 LeafScatteringCoeff = Canopy.LeafScatteringCoeff,
                 DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeff
             };
 
-            NIR = new AbsorbedRadiation(Layers, layerLAI)
+            NIR = new CanopyRadiation(Layers, layerLAI)
             {
                 DiffuseExtCoeff = Canopy.DiffuseExtCoeffNIR,
                 LeafScatteringCoeff = Canopy.LeafScatteringCoeffNIR,
@@ -87,7 +87,7 @@ namespace DCAPST.Canopy
             Shaded.NIR.BeamExtinctionCoeff = Shaded.PAR.BeamExtinctionCoeff = Shaded.Rad.BeamExtinctionCoeff = Rad.BeamExtinctionCoeff;
         }        
 
-        public double CalcGbh()
+        public double CalcBoundaryHeatConductance()
         {
             var a = 0.5 * WindSpeedExtinction;
             var b = 0.01 * Math.Pow(WindSpeed / LeafWidth, 0.5);
@@ -96,7 +96,7 @@ namespace DCAPST.Canopy
             return b * c / a;
         }
 
-        public double CalcSunlitGbh()
+        public double CalcSunlitBoundaryHeatConductance()
         {
             var a = 0.5 * WindSpeedExtinction + Rad.BeamExtinctionCoeff;
             var b = 0.01 * Math.Pow(WindSpeed / LeafWidth, 0.5);
@@ -124,7 +124,7 @@ namespace DCAPST.Canopy
             // Intercepted radiation
             PropnInterceptedRadns = Rad.CalculateAccumInterceptedRadn();
             // TODO: Make this work with multiple layers
-            //PropnInterceptedRadns = Rad.CalculateAccumInterceptedRadn() - PropnInterceptedRadns;
+            //PropnInterceptedRadns = Rad.CalculateAccumInterceptedRadn() - PropnInterceptedRadns0;
         }
 
         private double CalcShadowProjection(double sunAngleRadians)
@@ -145,28 +145,40 @@ namespace DCAPST.Canopy
 
         public void CalcAbsorbedRadiations(IRadiation radiation)
         {
+            // water interaction uses energy
+            // photosynthesis uses photons
+
+            // These values are energy
             PAR.Direct = radiation.DirectRadiation * 0.5 * 1000000;
             PAR.Diffuse = radiation.DiffuseRadiation * 0.5 * 1000000;
             NIR.Direct = radiation.DirectRadiation * 0.5 * 1000000;
             NIR.Diffuse = radiation.DiffuseRadiation * 0.5 * 1000000;           
 
-            // Total
+            // photons
             Rad.TotalIrradiance = Rad.CalculateTotalRadiation(radiation.DirectRadiationPAR, radiation.DiffuseRadiationPAR);
+            
+            // energy
             PAR.TotalIrradiance = PAR.CalculateTotalRadiation(PAR.Direct, PAR.Diffuse);
             NIR.TotalIrradiance = NIR.CalculateTotalRadiation(NIR.Direct, NIR.Diffuse);
 
             // Sunlit
+            // photons
             CalcSunlitRadiation(Sunlit.Rad, radiation.DirectRadiationPAR, radiation.DiffuseRadiationPAR);
+            
+            // energy
             CalcSunlitRadiation(Sunlit.PAR, PAR.Direct, PAR.Diffuse);
             CalcSunlitRadiation(Sunlit.NIR, NIR.Direct, NIR.Diffuse);
 
             // Shaded
+            // photons
             Shaded.Rad.TotalIrradiance = Rad.TotalIrradiance - Sunlit.Rad.TotalIrradiance;
+            
+            // energy
             Shaded.PAR.TotalIrradiance = PAR.TotalIrradiance - Sunlit.PAR.TotalIrradiance;
             Shaded.NIR.TotalIrradiance = NIR.TotalIrradiance - Sunlit.NIR.TotalIrradiance;
         }
 
-        public void CalcSunlitRadiation(AbsorbedRadiation rad, double direct, double diffuse)
+        public void CalcSunlitRadiation(CanopyRadiation rad, double direct, double diffuse)
         {
             rad.Direct = rad.CalculateDirectSunlit(direct);
             rad.Diffuse = rad.CalculateDiffuseSunlit(diffuse);
@@ -179,24 +191,24 @@ namespace DCAPST.Canopy
         {
             var nTerm = NAllocationCoeff + (Rad.BeamExtinctionCoeff * LAI);
             
-            VcMax25 = CalcMaximumRate(Canopy.Pathway.PsiVc, NAllocationCoeff);
-            Sunlit.VcMax25 = CalcMaximumRate(Canopy.Pathway.PsiVc, nTerm);
+            VcMax25 = CalcMaximumRate(Canopy.Pathway.MaxRubiscoActivitySLNRatio, NAllocationCoeff);
+            Sunlit.VcMax25 = CalcMaximumRate(Canopy.Pathway.MaxRubiscoActivitySLNRatio, nTerm);
             Shaded.VcMax25 = VcMax25 - Sunlit.VcMax25;
 
-            Rd25 = CalcMaximumRate(Canopy.Pathway.PsiRd, NAllocationCoeff);
-            Sunlit.Rd25 = CalcMaximumRate(Canopy.Pathway.PsiRd, nTerm);
+            Rd25 = CalcMaximumRate(Canopy.Pathway.RespirationSLNRatio, NAllocationCoeff);
+            Sunlit.Rd25 = CalcMaximumRate(Canopy.Pathway.RespirationSLNRatio, nTerm);
             Shaded.Rd25 = Rd25 - Sunlit.Rd25;
 
-            JMax25 = CalcMaximumRate(Canopy.Pathway.PsiJ, NAllocationCoeff);
-            Sunlit.JMax25 = CalcMaximumRate(Canopy.Pathway.PsiJ, nTerm);
+            JMax25 = CalcMaximumRate(Canopy.Pathway.MaxElectronTransportSLNRatio, NAllocationCoeff);
+            Sunlit.JMax25 = CalcMaximumRate(Canopy.Pathway.MaxElectronTransportSLNRatio, nTerm);
             Shaded.JMax25 = JMax25 - Sunlit.JMax25;
 
-            VpMax25 = CalcMaximumRate(Canopy.Pathway.PsiVp, NAllocationCoeff);
-            Sunlit.VpMax25 = CalcMaximumRate(Canopy.Pathway.PsiVp, nTerm);
+            VpMax25 = CalcMaximumRate(Canopy.Pathway.MaxPEPcActivitySLNRatio, NAllocationCoeff);
+            Sunlit.VpMax25 = CalcMaximumRate(Canopy.Pathway.MaxPEPcActivitySLNRatio, nTerm);
             Shaded.VpMax25 = VpMax25 - Sunlit.VpMax25;
 
-            Gm25 = CalcMaximumRate(Canopy.Pathway.PsiGm, NAllocationCoeff);
-            Sunlit.Gm25 = CalcMaximumRate(Canopy.Pathway.PsiGm, nTerm);
+            Gm25 = CalcMaximumRate(Canopy.Pathway.MesophyllCO2ConductanceSLNRatio, NAllocationCoeff);
+            Sunlit.Gm25 = CalcMaximumRate(Canopy.Pathway.MesophyllCO2ConductanceSLNRatio, nTerm);
             Shaded.Gm25 = Gm25 - Sunlit.Gm25;
         }
 

@@ -5,6 +5,7 @@ namespace DCAPST
 {   
     public class AssimilationParameters
     {
+        // These are all just dummy variables
         public double p;
         public double q;
 

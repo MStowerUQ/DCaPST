@@ -22,7 +22,7 @@ namespace ModelsTests.Environment.UnitTests
             var temperature = new Mock<ITemperature>(MockBehavior.Strict);
             temperature.Setup(t => t.AtmosphericPressure).Returns(1.01325).Verifiable();
             temperature.Setup(t => t.MinTemperature).Returns(16.2).Verifiable();
-            temperature.Setup(t => t.Rair).Returns(40.63).Verifiable();
+            temperature.Setup(t => t.AirMolarDensity).Returns(40.63).Verifiable();
 
             var leafTemp = 27.0;
             var gbh = 0.127634;
@@ -98,7 +98,7 @@ namespace ModelsTests.Environment.UnitTests
         {
             // Arrange
             var temperature = new Mock<ITemperature>(MockBehavior.Strict);
-            temperature.Setup(t => t.Rair).Returns(40.63).Verifiable();
+            temperature.Setup(t => t.AirMolarDensity).Returns(40.63).Verifiable();
             temperature.Setup(t => t.AtmosphericPressure).Returns(1.01325).Verifiable();
 
             var leafTemp = 27;
@@ -110,7 +110,7 @@ namespace ModelsTests.Environment.UnitTests
 
             // Act
             var water = new WaterInteractionModel(temperature.Object, leafTemp, gbh);
-            var actual = water.CalcGt(rtw);
+            var actual = water.CalcTotalLeafCO2Conductance(rtw);
 
             // Assert
             Assert.AreEqual(expected, actual);
@@ -136,7 +136,7 @@ namespace ModelsTests.Environment.UnitTests
 
             // Act
             var water = new WaterInteractionModel(temperature.Object,leafTemp, gbh);
-            var actual = water.CalcTemperature(rtw, rn);
+            var actual = water.CalcLeafTemperature(rtw, rn);
 
             // Assert
             Assert.AreEqual(expected, actual);

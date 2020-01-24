@@ -30,39 +30,39 @@ namespace Validation.C4
 
             var CPath = new PathwayParameters()
             {
-                Vpr_l = 120,
+                PEPRegenerationPerLeaf = 120,
                 SpectralCorrectionFactor = 0.15,
-                Alpha = 0.1,
-                Gbs_CO2 = 0.003,
+                PS2ActivityInBundleSheathFraction = 0.1,
+                BundleSheathCO2ConductancePerLeaf = 0.003,
                 
-                PsiVc = 0.465 * PsiFactor,
-                PsiJ = 2.7 * PsiFactor,
-                PsiRd = 0.0 * PsiFactor,
-                PsiVp = 1.55 * PsiFactor,
-                PsiGm = 0.0135 * PsiFactor,
+                MaxRubiscoActivitySLNRatio = 0.465 * PsiFactor,
+                MaxElectronTransportSLNRatio = 2.7 * PsiFactor,
+                RespirationSLNRatio = 0.0 * PsiFactor,
+                MaxPEPcActivitySLNRatio = 1.55 * PsiFactor,
+                MesophyllCO2ConductanceSLNRatio = 0.0135 * PsiFactor,
 
-                Phi = 2,
-                X = 0.4,
-                CiCaRatio = 0.45,
+                ExtraATPCost = 2,
+                MesophyllElectronTransportFraction = 0.4,
+                IntercellularToAirCO2Ratio = 0.45,
 
-                KcP25 = 1210,
-                KcTEa = 64200,
+                RubiscoCarboxylationMMConstant25 = 1210,
+                RubiscoCarboxylationMMConstantTemperatureResponseFactor = 64200,
 
-                KoP25 = 292000,
-                KoTEa = 10500,
+                RubiscoOxygenationMMConstant25 = 292000,
+                RubiscoOxygenationMMConstantTemperatureResponseFactor = 10500,
                 
-                VcMax_VoMaxP25 = 5.51328906454566,
-                VcMax_VoMaxTEa = 21265.4029552906,
+                RubiscoCarboxylationToOxygenation25 = 5.51328906454566,
+                RubiscoCarboxylationToOxygenationTemperatureResponseFactor = 21265.4029552906,
 
-                KpP25 = 75,
-                KpTEa = 36300,                
+                PEPcMMConstant25 = 75,
+                PEPcMMConstantTemperatureResponseFactor = 36300,                
 
-                VcTEa = 78000,
-                RdTEa = 46390,
-                VpMaxTEa = 57043.2677590512,
+                RubiscoActivityTemperatureResponseFactor = 78000,
+                RespirationTemperatureResponseFactor = 46390,
+                PEPcActivityTemperatureResponseFactor = 57043.2677590512,
 
-                J = j,
-                Gm = g                
+                ElectronTransportRateParams = j,
+                MesophyllCO2ConductanceParams = g                
             };
 
             var canopy = new CanopyParameters()
@@ -71,7 +71,7 @@ namespace Validation.C4
 
                 Pathway = CPath,
 
-                Ca = 363,
+                AirCO2 = 363,
                 ConvexityFactor = 0.7,
                 DiffusivitySolubilityRatio = 0.047,
 

@@ -12,9 +12,9 @@ namespace DCAPST.Interfaces
 
         double CalcLimitedRtw(double wateruse, double Rn);
 
-        double CalcGt(double rtw);
+        double CalcTotalLeafCO2Conductance(double rtw);
 
-        double CalcTemperature(double rtw, double Rn);
+        double CalcLeafTemperature(double rtw, double Rn);
 
         double HourlyWaterUse(double rtw, double Rn);
     }

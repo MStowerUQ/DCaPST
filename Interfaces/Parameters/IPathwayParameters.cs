@@ -3,37 +3,37 @@
     public interface IPathwayParameters
     {
         double SpectralCorrectionFactor { get; set; }
-        double Alpha { get; set; }
-        double Vpr_l { get; set; }
-        double Gbs_CO2 { get; set; }
+        double PS2ActivityInBundleSheathFraction { get; set; }
+        double PEPRegenerationPerLeaf { get; set; }
+        double BundleSheathCO2ConductancePerLeaf { get; set; }
 
-        double CiCaRatio { get; set; }
+        double IntercellularToAirCO2Ratio { get; set; }
 
-        double Fcyc { get; set; }
-        double PsiRd { get; set; }
-        double PsiVc { get; set; }
-        double PsiJ { get; set; }
-        double PsiVp { get; set; }
-        double PsiGm { get; set; }
-        double X { get; set; }
-        double z { get; set; }
+        double FractionOfCyclicElectronFlow { get; set; }
+        double RespirationSLNRatio { get; set; }
+        double MaxRubiscoActivitySLNRatio { get; set; }
+        double MaxElectronTransportSLNRatio { get; set; }
+        double MaxPEPcActivitySLNRatio { get; set; }
+        double MesophyllCO2ConductanceSLNRatio { get; set; }
+        double MesophyllElectronTransportFraction { get; set; }
+        double ATPProductionElectronTransportFactor { get; set; }
  
-        double Phi { get; set; }
+        double ExtraATPCost { get; set; }
 
-        double KcP25 { get; set; }
-        double KcTEa { get; set; }
-        double KoP25 { get; set; }
-        double KoTEa { get; set; }
-        double VcTEa { get; set; }
+        double RubiscoCarboxylationMMConstant25 { get; set; }
+        double RubiscoCarboxylationMMConstantTemperatureResponseFactor { get; set; }
+        double RubiscoOxygenationMMConstant25 { get; set; }
+        double RubiscoOxygenationMMConstantTemperatureResponseFactor { get; set; }
+        double RubiscoActivityTemperatureResponseFactor { get; set; }
 
-        double VcMax_VoMaxP25 { get; set; }
-        double VcMax_VoMaxTEa { get; set; }
-        double KpP25 { get; set; }
-        double KpTEa { get; set; }
-        double VpMaxTEa { get; set; }
-        double RdTEa { get; set; }
+        double RubiscoCarboxylationToOxygenation25 { get; set; }
+        double RubiscoCarboxylationToOxygenationTemperatureResponseFactor { get; set; }
+        double PEPcMMConstant25 { get; set; }
+        double PEPcMMConstantTemperatureResponseFactor { get; set; }
+        double PEPcActivityTemperatureResponseFactor { get; set; }
+        double RespirationTemperatureResponseFactor { get; set; }
 
-        ValParameters J { get; set; }
-        ValParameters Gm { get; set; }
+        ValParameters ElectronTransportRateParams { get; set; }
+        ValParameters MesophyllCO2ConductanceParams { get; set; }
     }
 }

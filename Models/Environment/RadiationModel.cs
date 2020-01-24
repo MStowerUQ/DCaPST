@@ -8,6 +8,10 @@ namespace DCAPST.Environment
         public ISolarGeometry Solar;
 
         public double FracDiffuseATM { get; } = 0.1725;
+        
+        /// <summary>
+        /// PAR energy fraction
+        /// </summary>
         public double RPAR { get; set; }
 
         public double TotalIncidentRadiation { get; private set; }
@@ -34,6 +38,8 @@ namespace DCAPST.Environment
             TotalIncidentRadiation = CalcTotalIncidentRadiation(time);
             DiffuseRadiation = CalcDiffuseRadiation(time);
             DirectRadiation = TotalIncidentRadiation - DiffuseRadiation;
+
+            // Photon count
             DiffuseRadiationPAR = DiffuseRadiation * RPAR * 4.25 * 1E6;
             DirectRadiationPAR = DirectRadiation * RPAR * 4.56 * 1E6;
         }

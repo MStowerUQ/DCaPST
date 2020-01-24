@@ -9,7 +9,7 @@ namespace DCAPST.Interfaces
     public interface ITemperature
     {
         double AtmosphericPressure { get; }
-        double Rair { get; }
+        double AirMolarDensity { get; }
 
         double AirTemperature { get; }
         double AbsoluteTemperature { get; }

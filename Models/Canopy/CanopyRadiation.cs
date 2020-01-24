@@ -2,7 +2,7 @@
 
 namespace DCAPST.Canopy
 {
-    public class AbsorbedRadiation
+    public class CanopyRadiation
     {
         public double TotalIrradiance { get; set; }
 
@@ -26,7 +26,7 @@ namespace DCAPST.Canopy
         public double LAIAccum { get; set; }
         public double LAIAccum0 { get; set; }
 
-        public AbsorbedRadiation(int layers, double layerLAI)
+        public CanopyRadiation(int layers, double layerLAI)
         {
             LAIAccum = layers * layerLAI;
             LAIAccum0 = (layers - 1) * layerLAI;

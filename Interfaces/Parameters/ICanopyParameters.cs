@@ -8,7 +8,7 @@
 
         IPathwayParameters Pathway { get; set; }
 
-        double Ca { get; set; }
+        double AirCO2 { get; set; }
         double Windspeed { get; set; }
         double LeafAngle { get; set; }
         double DiffuseExtCoeff { get; set; }

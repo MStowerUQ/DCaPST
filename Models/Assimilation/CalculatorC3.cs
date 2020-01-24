@@ -27,7 +27,7 @@ namespace DCAPST
                 x8 = 0.0,
                 x9 = 0.0,
 
-                m = Rm,
+                m = MesophyllRespiration,
                 t = G_,
                 sb = 0.0,
                 j = 1.0,
@@ -67,7 +67,7 @@ namespace DCAPST
         {
             var param = new AssimilationParameters()
             {
-                x1 = J / 4,
+                x1 = ElectronTransportRate / 4,
                 x2 = 2 * G_,
                 x3 = 0.0,
                 x4 = 0.0,
@@ -77,7 +77,7 @@ namespace DCAPST
                 x8 = 0.0,
                 x9 = 0.0,
 
-                m = Rm,
+                m = MesophyllRespiration,
                 t = G_,
                 sb = 0.0,
                 j = 1.0,

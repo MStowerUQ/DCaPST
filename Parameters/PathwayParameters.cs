@@ -4,37 +4,40 @@ namespace DCAPST
 {   
     public class PathwayParameters : IPathwayParameters
     {
-        public double CiCaRatio { get; set; }
-        public double Fcyc { get; set; }        
-        public double PsiRd { get; set; }        
-        public double PsiVc { get; set; }        
-        public double PsiJ { get; set; }        
-        public double PsiVp { get; set; }
-        public double PsiGm { get; set; }
-        public double X { get; set; }
-        public double z { get; set; }
+        public double IntercellularToAirCO2Ratio { get; set; }
+        public double FractionOfCyclicElectronFlow { get; set; }        
+        public double RespirationSLNRatio { get; set; }        
+        public double MaxRubiscoActivitySLNRatio { get; set; }        
+        public double MaxElectronTransportSLNRatio { get; set; }        
+        public double MaxPEPcActivitySLNRatio { get; set; }
+        public double MesophyllCO2ConductanceSLNRatio { get; set; }
+        public double MesophyllElectronTransportFraction { get; set; }
+        public double ATPProductionElectronTransportFactor { get; set; }
        
-        public double Phi { get; set; }
+        public double ExtraATPCost { get; set; }
 
-        public double KcP25 { get; set; }
-        public double KcTEa { get; set; }
-        public double KoP25 { get; set; }        
-        public double KoTEa { get; set; }
-        public double VcTEa { get; set; }
+        // MM: Michaelis Menten
+        // PEPc: Phosphoenolpyruvate carboxylase
+        public double RubiscoCarboxylationMMConstant25 { get; set; }
+        public double RubiscoCarboxylationMMConstantTemperatureResponseFactor { get; set; }
+        public double RubiscoOxygenationMMConstant25 { get; set; }        
+        public double RubiscoOxygenationMMConstantTemperatureResponseFactor { get; set; }
+        public double RubiscoActivityTemperatureResponseFactor { get; set; }
         
-        public double VcMax_VoMaxP25 { get; set; }
-        public double VcMax_VoMaxTEa { get; set; }
-        public double KpP25 { get; set; }
-        public double KpTEa { get; set; }
-        public double VpMaxTEa { get; set; }
-        public double RdTEa { get; set; }
+        public double RubiscoCarboxylationToOxygenation25 { get; set; }
+        public double RubiscoCarboxylationToOxygenationTemperatureResponseFactor { get; set; }
+        public double PEPcMMConstant25 { get; set; }
+        public double PEPcMMConstantTemperatureResponseFactor { get; set; }
+        public double PEPcActivityTemperatureResponseFactor { get; set; }
+        public double RespirationTemperatureResponseFactor { get; set; }
 
-        public ValParameters J { get; set; }
-        public ValParameters Gm { get; set; }
+        public ValParameters ElectronTransportRateParams { get; set; }
+        public ValParameters MesophyllCO2ConductanceParams { get; set; }
 
         public double SpectralCorrectionFactor { get; set; }
-        public double Alpha { get; set; }
-        public double Vpr_l { get; set; }
-        public double Gbs_CO2 { get; set; }       
+        // PS2: Photosystem 2
+        public double PS2ActivityInBundleSheathFraction { get; set; }
+        public double PEPRegenerationPerLeaf { get; set; }
+        public double BundleSheathCO2ConductancePerLeaf { get; set; }       
     }
 }

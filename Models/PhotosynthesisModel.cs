@@ -14,6 +14,9 @@ namespace DCAPST
 
         public TotalCanopy Canopy;
 
+        /// <summary>
+        /// Biochemical Conversion & Maintenance Respiration
+        /// </summary>
         public double B { get; set; } = 0.409;
 
         private readonly double start = 6.0;
@@ -85,7 +88,7 @@ namespace DCAPST
             var CPath = Canopy.Canopy;
             var temp = Temperature.AirTemperature;
 
-            bool invalidTemp = temp > CPath.Pathway.J.TMax || temp < CPath.Pathway.J.TMin || temp > CPath.Pathway.Gm.TMax || temp < CPath.Pathway.Gm.TMin;
+            bool invalidTemp = temp > CPath.Pathway.ElectronTransportRateParams.TMax || temp < CPath.Pathway.ElectronTransportRateParams.TMin || temp > CPath.Pathway.MesophyllCO2ConductanceParams.TMax || temp < CPath.Pathway.MesophyllCO2ConductanceParams.TMin;
             bool invalidRadn = Radiation.TotalIncidentRadiation <= double.Epsilon;
 
             if (invalidTemp || invalidRadn)
@@ -148,14 +151,14 @@ namespace DCAPST
 
             Canopy.Run(Radiation);
 
-            var gbh = Canopy.CalcGbh();
-            var sunlitGbh = Canopy.CalcSunlitGbh();
+            var heat = Canopy.CalcBoundaryHeatConductance();
+            var sunlitHeat = Canopy.CalcSunlitBoundaryHeatConductance();
 
-            Params.Gbh = sunlitGbh;
+            Params.BoundaryHeatConductance = sunlitHeat;
             Params.fraction = sunFraction;
             Canopy.Sunlit.CalcPartialPhotosynthesis(Temperature, Params);
 
-            Params.Gbh = gbh - sunlitGbh;
+            Params.BoundaryHeatConductance = heat - sunlitHeat;
             Params.fraction = shadeFraction;
             Canopy.Shaded.CalcPartialPhotosynthesis(Temperature, Params);
         }
@@ -203,7 +206,7 @@ namespace DCAPST
     public struct PhotosynthesisParams
     {
         public bool limited;
-        public double Gbh;
+        public double BoundaryHeatConductance;
         public double maxHourlyT;
         public double fraction;
     }

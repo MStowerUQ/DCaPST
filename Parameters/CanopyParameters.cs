@@ -8,7 +8,7 @@ namespace DCAPST.Canopy
 
         public IPathwayParameters Pathway { get; set; }
 
-        public double Ca { get; set; }
+        public double AirCO2 { get; set; }
         public double Windspeed { get; set; }
         public double LeafAngle { get; set; }
         public double DiffuseExtCoeff { get; set; }
