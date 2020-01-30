@@ -31,17 +31,17 @@ namespace DCAPST
         }
         
         // T: At T Per Leaf
-        public double VcMaxT => TemperatureFunction.Val2(LeafTemperature, Partial.VcMax25, Path.RubiscoActivityTemperatureResponseFactor);
-        public double RdT => TemperatureFunction.Val2(LeafTemperature, Partial.Rd25, Path.RespirationTemperatureResponseFactor);
+        public double VcMaxT => TemperatureFunction.Val2(LeafTemperature, Partial.VcMax25, Path.RubiscoActivity.Factor);
+        public double RdT => TemperatureFunction.Val2(LeafTemperature, Partial.Rd25, Path.Respiration.Factor);
         public double JMaxT => TemperatureFunction.Val(LeafTemperature, Partial.JMax25, Path.ElectronTransportRateParams);
-        public double VpMaxT => TemperatureFunction.Val2(LeafTemperature, Partial.VpMax25, Path.PEPcActivityTemperatureResponseFactor);
+        public double VpMaxT => TemperatureFunction.Val2(LeafTemperature, Partial.VpMax25, Path.PEPcActivity.Factor);
 
 
         // These ones are not per leaf
-        public double Kc => TemperatureFunction.Val2(LeafTemperature, Path.RubiscoCarboxylationMMConstant25, Path.RubiscoCarboxylationMMConstantTemperatureResponseFactor);
-        public double Ko => TemperatureFunction.Val2(LeafTemperature, Path.RubiscoOxygenationMMConstant25, Path.RubiscoOxygenationMMConstantTemperatureResponseFactor);
-        public double VcVo => TemperatureFunction.Val2(LeafTemperature, Path.RubiscoCarboxylationToOxygenation25, Path.RubiscoCarboxylationToOxygenationTemperatureResponseFactor);
-        public double Kp => TemperatureFunction.Val2(LeafTemperature, Path.PEPcMMConstant25, Path.PEPcMMConstantTemperatureResponseFactor);
+        public double Kc => TemperatureFunction.Val2(LeafTemperature, Path.RubiscoCarboxylation.At25, Path.RubiscoCarboxylation.Factor);
+        public double Ko => TemperatureFunction.Val2(LeafTemperature, Path.RubiscoOxygenation.At25, Path.RubiscoOxygenation.Factor);
+        public double VcVo => TemperatureFunction.Val2(LeafTemperature, Path.RubiscoCarboxylationToOxygenation.At25, Path.RubiscoCarboxylationToOxygenation.Factor);
+        public double Kp => TemperatureFunction.Val2(LeafTemperature, Path.PEPc.At25, Path.PEPc.Factor);
 
         private double JFactor => Partial.Rad.TotalIrradiance * (1.0 - Path.SpectralCorrectionFactor) / 2.0;
         public double ElectronTransportRate =>

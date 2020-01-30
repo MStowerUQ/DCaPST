@@ -18,18 +18,14 @@ namespace DCAPST
 
         // MM: Michaelis Menten
         // PEPc: Phosphoenolpyruvate carboxylase
-        public double RubiscoCarboxylationMMConstant25 { get; set; }
-        public double RubiscoCarboxylationMMConstantTemperatureResponseFactor { get; set; }
-        public double RubiscoOxygenationMMConstant25 { get; set; }        
-        public double RubiscoOxygenationMMConstantTemperatureResponseFactor { get; set; }
-        public double RubiscoActivityTemperatureResponseFactor { get; set; }
-        
-        public double RubiscoCarboxylationToOxygenation25 { get; set; }
-        public double RubiscoCarboxylationToOxygenationTemperatureResponseFactor { get; set; }
-        public double PEPcMMConstant25 { get; set; }
-        public double PEPcMMConstantTemperatureResponseFactor { get; set; }
-        public double PEPcActivityTemperatureResponseFactor { get; set; }
-        public double RespirationTemperatureResponseFactor { get; set; }
+        public TemperatureResponse RubiscoCarboxylation { get; set; }
+        public TemperatureResponse RubiscoOxygenation { get; set; }
+        public TemperatureResponse RubiscoCarboxylationToOxygenation { get; set; }
+        public TemperatureResponse RubiscoActivity { get; set; }
+
+        public TemperatureResponse PEPc { get; set; }
+        public TemperatureResponse PEPcActivity { get; set; }
+        public TemperatureResponse Respiration { get; set; }
 
         public ValParameters ElectronTransportRateParams { get; set; }
         public ValParameters MesophyllCO2ConductanceParams { get; set; }
@@ -39,5 +35,18 @@ namespace DCAPST
         public double PS2ActivityInBundleSheathFraction { get; set; }
         public double PEPRegenerationPerLeaf { get; set; }
         public double BundleSheathCO2ConductancePerLeaf { get; set; }       
+    }
+
+    public struct TemperatureResponse
+    {
+        /// <summary>
+        /// The value of the temperature response factor for a given parameter
+        /// </summary>
+        public double Factor;
+
+        /// <summary>
+        /// The value of the temperature response factor at 25 degrees
+        /// </summary>
+        public double At25;
     }
 }

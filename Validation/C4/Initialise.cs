@@ -28,6 +28,45 @@ namespace Validation.C4
                 Beta = 1,
             };
 
+            var rubiscoCarboxylation = new TemperatureResponse()
+            {
+                At25 = 1210,
+                Factor = 64200
+            };
+
+            var rubiscoOxygenation = new TemperatureResponse()
+            {
+                At25 = 292000,
+                Factor = 10500
+            };
+
+            var rubiscoCarboxylationToOxygenation = new TemperatureResponse()
+            {
+                At25 = 5.51328906454566,
+                Factor = 21265.4029552906
+            };
+
+            var pepc = new TemperatureResponse()
+            {
+                At25 = 75,
+                Factor = 36300
+            };
+
+            var rubiscoActivity = new TemperatureResponse()
+            {
+                Factor = 78000
+            };
+
+            var respiration = new TemperatureResponse()
+            {
+                Factor = 46390
+            };
+
+            var pepcActivity = new TemperatureResponse()
+            {
+                Factor = 57043.2677590512
+            };
+
             var CPath = new PathwayParameters()
             {
                 PEPRegenerationPerLeaf = 120,
@@ -45,25 +84,17 @@ namespace Validation.C4
                 MesophyllElectronTransportFraction = 0.4,
                 IntercellularToAirCO2Ratio = 0.45,
 
-                RubiscoCarboxylationMMConstant25 = 1210,
-                RubiscoCarboxylationMMConstantTemperatureResponseFactor = 64200,
-
-                RubiscoOxygenationMMConstant25 = 292000,
-                RubiscoOxygenationMMConstantTemperatureResponseFactor = 10500,
-                
-                RubiscoCarboxylationToOxygenation25 = 5.51328906454566,
-                RubiscoCarboxylationToOxygenationTemperatureResponseFactor = 21265.4029552906,
-
-                PEPcMMConstant25 = 75,
-                PEPcMMConstantTemperatureResponseFactor = 36300,                
-
-                RubiscoActivityTemperatureResponseFactor = 78000,
-                RespirationTemperatureResponseFactor = 46390,
-                PEPcActivityTemperatureResponseFactor = 57043.2677590512,
+                RubiscoCarboxylation = rubiscoCarboxylation,
+                RubiscoOxygenation = rubiscoOxygenation,                
+                RubiscoCarboxylationToOxygenation = rubiscoCarboxylationToOxygenation,
+                PEPc = pepc,
+                RubiscoActivity = rubiscoActivity,
+                Respiration = respiration,
+                PEPcActivity = pepcActivity,
 
                 ElectronTransportRateParams = j,
-                MesophyllCO2ConductanceParams = g                
-            };
+                MesophyllCO2ConductanceParams = g
+            };            
 
             var canopy = new CanopyParameters()
             {
