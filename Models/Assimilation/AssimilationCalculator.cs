@@ -43,7 +43,7 @@ namespace DCAPST
         public double VcVo => TemperatureFunction.Val2(LeafTemperature, Path.RubiscoCarboxylationToOxygenation.At25, Path.RubiscoCarboxylationToOxygenation.Factor);
         public double Kp => TemperatureFunction.Val2(LeafTemperature, Path.PEPc.At25, Path.PEPc.Factor);
 
-        private double JFactor => Partial.Rad.TotalIrradiance * (1.0 - Path.SpectralCorrectionFactor) / 2.0;
+        private double JFactor => Partial.PhotonCount * (1.0 - Path.SpectralCorrectionFactor) / 2.0;
         public double ElectronTransportRate =>
             (JFactor + JMaxT - Math.Pow(Math.Pow(JFactor + JMaxT, 2) - 4 * Canopy.ConvexityFactor * JMaxT * JFactor, 0.5))
             / (2 * Canopy.ConvexityFactor);

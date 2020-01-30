@@ -4,11 +4,7 @@ namespace DCAPST.Canopy
 {
     public abstract class BaseCanopy
     {
-        public ICanopyParameters Canopy { get; set; }
-
-        public CanopyRadiation Rad;
-        public CanopyRadiation PAR;
-        public CanopyRadiation NIR;
+        public ICanopyParameters Canopy { get; set; }        
 
         // [Description("Total Leaf Area Index of the plant")]
         // [Units("m2 / m2")]

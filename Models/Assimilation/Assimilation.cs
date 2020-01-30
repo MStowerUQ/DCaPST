@@ -53,7 +53,6 @@ namespace DCAPST
 
             var aparam = calc.GetAssimilationParams(this);
 
-            double radiation = Partial.PAR.TotalIrradiance + Partial.NIR.TotalIrradiance;
             double rtw;
 
             if (!Params.limited)
@@ -65,14 +64,14 @@ namespace DCAPST
 
                 CO2AssimilationRate = aparam.CalculateAssimilation();
                 rtw = Water.CalcUnlimitedRtw(CO2AssimilationRate, Canopy.AirCO2, IntercellularCO2);
-                WaterUse = Water.HourlyWaterUse(rtw, radiation);
+                WaterUse = Water.HourlyWaterUse(rtw, Partial.AbsorbedRadiation);
             }
             else
             {
                 WaterUse = Params.maxHourlyT * Params.fraction;
                 var WaterUseMolsSecond = WaterUse / 18 * 1000 / 3600;
 
-                rtw = Water.CalcLimitedRtw(WaterUse, radiation);
+                rtw = Water.CalcLimitedRtw(WaterUse, Partial.AbsorbedRadiation);
                 var Gt = Water.CalcTotalLeafCO2Conductance(rtw);
 
                 aparam.p = Canopy.AirCO2 - WaterUseMolsSecond * Canopy.AirCO2 / (Gt + WaterUseMolsSecond / 2.0);
@@ -96,7 +95,7 @@ namespace DCAPST
             }
 
             // New leaf temperature
-            LeafTemperature = (Water.CalcLeafTemperature(rtw, radiation) + LeafTemperature) / 2.0;
+            LeafTemperature = (Water.CalcLeafTemperature(rtw, Partial.AbsorbedRadiation) + LeafTemperature) / 2.0;
 
             // If the assimilation is not sensible
             if (double.IsNaN(CO2AssimilationRate) || CO2AssimilationRate <= 0.0)

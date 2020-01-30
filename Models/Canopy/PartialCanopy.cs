@@ -10,33 +10,14 @@ namespace DCAPST.Canopy
     {
         public List<Assimilation> partials;
 
+        public double AbsorbedRadiation { get; set; }
+        public double PhotonCount { get; set; }
         public double A { get; set; } = 0.0;
         public double WaterUse { get; set; } = 0.0;        
 
-        public PartialCanopy(ICanopyParameters canopy, int layers, double layerLAI)
+        public PartialCanopy(ICanopyParameters canopy)
         {
             Canopy = canopy;
-
-            Rad = new CanopyRadiation(layers, layerLAI)
-            {
-                DiffuseExtCoeff = Canopy.DiffuseExtCoeff,
-                LeafScatteringCoeff = Canopy.LeafScatteringCoeff,
-                DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeff
-            };
-
-            PAR = new CanopyRadiation(layers, layerLAI)
-            {
-                DiffuseExtCoeff = Canopy.DiffuseExtCoeff,
-                LeafScatteringCoeff = Canopy.LeafScatteringCoeff,
-                DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeff
-            };
-
-            NIR = new CanopyRadiation(layers, layerLAI)
-            {
-                DiffuseExtCoeff = Canopy.DiffuseExtCoeffNIR,
-                LeafScatteringCoeff = Canopy.LeafScatteringCoeffNIR,
-                DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeffNIR
-            };
 
             partials = new List<Assimilation>
             {

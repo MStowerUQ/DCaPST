@@ -15,10 +15,10 @@ namespace DCAPST.Environment
         public double RPAR { get; set; }
 
         public double TotalIncidentRadiation { get; private set; }
-        public double DirectRadiation { get; private set; }
-        public double DiffuseRadiation { get; private set; }
-        public double DirectRadiationPAR { get; private set; }
-        public double DiffuseRadiationPAR { get; private set; }
+        public double Direct { get; private set; }
+        public double Diffuse { get; private set; }
+        public double DirectPAR { get; private set; }
+        public double DiffusePAR { get; private set; }
 
         public double DailyRadiation { get; private set; }
 
@@ -36,12 +36,12 @@ namespace DCAPST.Environment
             if (time < 0 || 24 < time) throw new Exception("Time must be between 0 and 24");
 
             TotalIncidentRadiation = CalcTotalIncidentRadiation(time);
-            DiffuseRadiation = CalcDiffuseRadiation(time);
-            DirectRadiation = TotalIncidentRadiation - DiffuseRadiation;
+            Diffuse = CalcDiffuseRadiation(time);
+            Direct = TotalIncidentRadiation - Diffuse;
 
             // Photon count
-            DiffuseRadiationPAR = DiffuseRadiation * RPAR * 4.25 * 1E6;
-            DirectRadiationPAR = DirectRadiation * RPAR * 4.56 * 1E6;
+            DiffusePAR = Diffuse * RPAR * 4.25 * 1E6;
+            DirectPAR = Direct * RPAR * 4.56 * 1E6;
         }
 
         private double CalcTotalIncidentRadiation(double time)

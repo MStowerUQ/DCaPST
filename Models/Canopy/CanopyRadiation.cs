@@ -4,12 +4,6 @@ namespace DCAPST.Canopy
 {
     public class CanopyRadiation
     {
-        public double TotalIrradiance { get; set; }
-
-        public double Direct { get; set; }
-        public double Diffuse { get; set; }
-        public double Scattered { get; set; }
-
         public double DiffuseExtCoeff { get; set; }
         public double BeamExtinctionCoeff { get; set; }
         public double BeamReflectionCoeff => 1 - Math.Exp(-2 * ReflectionCoefficientHorizontal * BeamExtinctionCoeff / (1 + BeamExtinctionCoeff));
@@ -38,6 +32,15 @@ namespace DCAPST.Canopy
             var b = (1 - DiffuseReflectionCoeff) * diffuse * CalcExp(DiffuseScatteredDiffuse);
 
             return a + b;
+        }
+
+        public double CalcSunlitRadiation(double direct, double diffuse)
+        {
+            var dir = CalculateDirectSunlit(direct);
+            var dif = CalculateDiffuseSunlit(diffuse);
+            var sct = CalculateScatteredSunlit(direct);
+
+            return dir + dif + sct;
         }
 
         public double CalculateDirectSunlit(double direct)

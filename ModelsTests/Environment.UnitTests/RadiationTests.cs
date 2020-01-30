@@ -70,7 +70,7 @@ namespace ModelsTests.Environment.UnitTests
 
             // Act
             radiation.UpdateHourlyRadiation(time);
-            var actual = radiation.DiffuseRadiation;
+            var actual = radiation.Diffuse;
 
             // Assert
             Assert.AreEqual(expected, actual);
@@ -86,7 +86,7 @@ namespace ModelsTests.Environment.UnitTests
 
             // Act
             radiation.UpdateHourlyRadiation(time);
-            var actual = radiation.DirectRadiation;
+            var actual = radiation.Direct;
 
             // Assert
             Assert.AreEqual(expected, actual);
@@ -102,7 +102,7 @@ namespace ModelsTests.Environment.UnitTests
 
             // Act
             radiation.UpdateHourlyRadiation(time);
-            var actual = radiation.DiffuseRadiationPAR;
+            var actual = radiation.DiffusePAR;
 
             // Assert
             Assert.AreEqual(expected, actual);
@@ -118,7 +118,7 @@ namespace ModelsTests.Environment.UnitTests
 
             // Act
             radiation.UpdateHourlyRadiation(time);
-            var actual = radiation.DirectRadiationPAR;
+            var actual = radiation.DirectPAR;
 
             // Assert
             Assert.AreEqual(expected, actual);

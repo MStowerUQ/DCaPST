@@ -9,6 +9,8 @@ namespace DCAPST.Canopy
         public PartialCanopy Sunlit { get; private set; }
         public PartialCanopy Shaded { get; private set; }
 
+        public CanopyRadiation Absorbed;
+
         public Angle LeafAngle { get; set; } 
         public double LeafWidth { get; set; }
         public double LeafNTopCanopy { get; set; }
@@ -30,13 +32,12 @@ namespace DCAPST.Canopy
         public void Initialise(double lai, double sln)
         {
             LAI = lai;
-            Canopy.SLNAv = sln;
 
             // CalcLeafNitrogenDistribution
-            var SLNTop = Canopy.SLNAv * Canopy.SLNRatioTop;
+            var SLNTop = sln * Canopy.SLNRatioTop;
             LeafNTopCanopy = SLNTop * 1000 / 14;
 
-            var NcAv = Canopy.SLNAv * 1000 / 14;
+            var NcAv = sln * 1000 / 14;
             NAllocationCoeff = -1 * Math.Log((NcAv - Canopy.StructuralN) / (LeafNTopCanopy - Canopy.StructuralN)) * 2;
 
             WindSpeed = Canopy.Windspeed;
@@ -46,26 +47,12 @@ namespace DCAPST.Canopy
 
             var layerLAI = LAI / Layers;
 
-            Rad = new CanopyRadiation(Layers, layerLAI)
+            Absorbed = new CanopyRadiation(Layers, layerLAI)
             {
                 DiffuseExtCoeff = Canopy.DiffuseExtCoeff,
                 LeafScatteringCoeff = Canopy.LeafScatteringCoeff,
                 DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeff
-            };
-
-            PAR = new CanopyRadiation(Layers, layerLAI)
-            {
-                DiffuseExtCoeff = Canopy.DiffuseExtCoeff,
-                LeafScatteringCoeff = Canopy.LeafScatteringCoeff,
-                DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeff
-            };
-
-            NIR = new CanopyRadiation(Layers, layerLAI)
-            {
-                DiffuseExtCoeff = Canopy.DiffuseExtCoeffNIR,
-                LeafScatteringCoeff = Canopy.LeafScatteringCoeffNIR,
-                DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeffNIR
-            };            
+            };         
         }
 
         public void Run(IRadiation radiation)
@@ -79,12 +66,8 @@ namespace DCAPST.Canopy
         public void ResetPartials()
         {
             // Reset the partial canopies
-            Sunlit = new PartialCanopy(Canopy, Layers, LAI / Layers);
-            Shaded = new PartialCanopy(Canopy, Layers, LAI / Layers);
-
-            // TODO: This mess can be cleaned up with better structure, just getting it working
-            Sunlit.NIR.BeamExtinctionCoeff = Sunlit.PAR.BeamExtinctionCoeff = Sunlit.Rad.BeamExtinctionCoeff = Rad.BeamExtinctionCoeff;
-            Shaded.NIR.BeamExtinctionCoeff = Shaded.PAR.BeamExtinctionCoeff = Shaded.Rad.BeamExtinctionCoeff = Rad.BeamExtinctionCoeff;
+            Sunlit = new PartialCanopy(Canopy);
+            Shaded = new PartialCanopy(Canopy);
         }        
 
         public double CalcBoundaryHeatConductance()
@@ -98,7 +81,7 @@ namespace DCAPST.Canopy
 
         public double CalcSunlitBoundaryHeatConductance()
         {
-            var a = 0.5 * WindSpeedExtinction + Rad.BeamExtinctionCoeff;
+            var a = 0.5 * WindSpeedExtinction + Absorbed.BeamExtinctionCoeff;
             var b = 0.01 * Math.Pow(WindSpeed / LeafWidth, 0.5);
             var c = 1 - Math.Exp(-a * LAI);            
 
@@ -107,7 +90,7 @@ namespace DCAPST.Canopy
 
         public void CalcLAI()
         {
-            Sunlit.LAI = Rad.CalculateSunlitLAI();
+            Sunlit.LAI = Absorbed.CalculateSunlitLAI();
             Shaded.LAI = LAI - Sunlit.LAI;
         }
 
@@ -115,14 +98,12 @@ namespace DCAPST.Canopy
         {        
             // Beam Extinction Coefficient
             if (sunAngleRadians > 0)
-                Rad.BeamExtinctionCoeff = CalcShadowProjection(sunAngleRadians) / Math.Sin(sunAngleRadians);
+                Absorbed.BeamExtinctionCoeff = CalcShadowProjection(sunAngleRadians) / Math.Sin(sunAngleRadians);
             else
-                Rad.BeamExtinctionCoeff = 0;
-
-            NIR.BeamExtinctionCoeff = PAR.BeamExtinctionCoeff = Rad.BeamExtinctionCoeff;
+                Absorbed.BeamExtinctionCoeff = 0;
 
             // Intercepted radiation
-            PropnInterceptedRadns = Rad.CalculateAccumInterceptedRadn();
+            PropnInterceptedRadns = Absorbed.CalculateAccumInterceptedRadn();
             // TODO: Make this work with multiple layers
             //PropnInterceptedRadns = Rad.CalculateAccumInterceptedRadn() - PropnInterceptedRadns0;
         }
@@ -145,51 +126,42 @@ namespace DCAPST.Canopy
 
         public void CalcAbsorbedRadiations(IRadiation radiation)
         {
-            // water interaction uses energy
-            // photosynthesis uses photons
+            // Set parameters
+            Absorbed.DiffuseExtCoeff = Canopy.DiffuseExtCoeff;
+            Absorbed.LeafScatteringCoeff = Canopy.LeafScatteringCoeff;
+            Absorbed.DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeff;
+        
+            // Photon calculations (used by photosynthesis)
+            var photons = Absorbed.CalculateTotalRadiation(radiation.DirectPAR, radiation.DiffusePAR);
+            Sunlit.PhotonCount = Absorbed.CalcSunlitRadiation(radiation.DirectPAR, radiation.DiffusePAR);
+            Shaded.PhotonCount = photons - Sunlit.PhotonCount;
 
-            // These values are energy
-            PAR.Direct = radiation.DirectRadiation * 0.5 * 1000000;
-            PAR.Diffuse = radiation.DiffuseRadiation * 0.5 * 1000000;
-            NIR.Direct = radiation.DirectRadiation * 0.5 * 1000000;
-            NIR.Diffuse = radiation.DiffuseRadiation * 0.5 * 1000000;           
+            // Energy calculations (used by water interaction)
+            var PARDirect = radiation.Direct * 0.5 * 1000000;
+            var PARDiffuse = radiation.Diffuse * 0.5 * 1000000;
+            var NIRDirect = radiation.Direct * 0.5 * 1000000;
+            var NIRDiffuse = radiation.Diffuse * 0.5 * 1000000;
 
-            // photons
-            Rad.TotalIrradiance = Rad.CalculateTotalRadiation(radiation.DirectRadiationPAR, radiation.DiffuseRadiationPAR);
-            
-            // energy
-            PAR.TotalIrradiance = PAR.CalculateTotalRadiation(PAR.Direct, PAR.Diffuse);
-            NIR.TotalIrradiance = NIR.CalculateTotalRadiation(NIR.Direct, NIR.Diffuse);
+            var PARTotalIrradiance = Absorbed.CalculateTotalRadiation(PARDirect, PARDiffuse);           
+            var SunlitPARTotalIrradiance = Absorbed.CalcSunlitRadiation(PARDirect, PARDiffuse);
+            var ShadedPARTotalIrradiance = PARTotalIrradiance - SunlitPARTotalIrradiance;
 
-            // Sunlit
-            // photons
-            CalcSunlitRadiation(Sunlit.Rad, radiation.DirectRadiationPAR, radiation.DiffuseRadiationPAR);
-            
-            // energy
-            CalcSunlitRadiation(Sunlit.PAR, PAR.Direct, PAR.Diffuse);
-            CalcSunlitRadiation(Sunlit.NIR, NIR.Direct, NIR.Diffuse);
+            // Adjust parameters for NIR calculations
+            Absorbed.DiffuseExtCoeff = Canopy.DiffuseExtCoeffNIR;
+            Absorbed.LeafScatteringCoeff = Canopy.LeafScatteringCoeffNIR;
+            Absorbed.DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeffNIR;
 
-            // Shaded
-            // photons
-            Shaded.Rad.TotalIrradiance = Rad.TotalIrradiance - Sunlit.Rad.TotalIrradiance;
-            
-            // energy
-            Shaded.PAR.TotalIrradiance = PAR.TotalIrradiance - Sunlit.PAR.TotalIrradiance;
-            Shaded.NIR.TotalIrradiance = NIR.TotalIrradiance - Sunlit.NIR.TotalIrradiance;
-        }
+            var NIRTotalIrradiance = Absorbed.CalculateTotalRadiation(NIRDirect, NIRDiffuse);
+            var SunlitNIRTotalIrradiance = Absorbed.CalcSunlitRadiation(NIRDirect, NIRDiffuse);
+            var ShadedNIRTotalIrradiance = NIRTotalIrradiance - SunlitNIRTotalIrradiance;
 
-        public void CalcSunlitRadiation(CanopyRadiation rad, double direct, double diffuse)
-        {
-            rad.Direct = rad.CalculateDirectSunlit(direct);
-            rad.Diffuse = rad.CalculateDiffuseSunlit(diffuse);
-            rad.Scattered = rad.CalculateScatteredSunlit(direct);
-
-            rad.TotalIrradiance = rad.Direct + rad.Diffuse + rad.Scattered;
-        }
+            Sunlit.AbsorbedRadiation = SunlitPARTotalIrradiance + SunlitNIRTotalIrradiance;
+            Shaded.AbsorbedRadiation = ShadedPARTotalIrradiance + ShadedNIRTotalIrradiance;
+        }        
 
         public void CalcMaximumRates()
         {
-            var nTerm = NAllocationCoeff + (Rad.BeamExtinctionCoeff * LAI);
+            var nTerm = NAllocationCoeff + (Absorbed.BeamExtinctionCoeff * LAI);
             
             VcMax25 = CalcMaximumRate(Canopy.Pathway.MaxRubiscoActivitySLNRatio, NAllocationCoeff);
             Sunlit.VcMax25 = CalcMaximumRate(Canopy.Pathway.MaxRubiscoActivitySLNRatio, nTerm);
@@ -217,7 +189,7 @@ namespace DCAPST.Canopy
         public double CalcMaximumRate(double psi, double nTerm)
         {
             var factor = LAI * (LeafNTopCanopy - Canopy.StructuralN) * psi;
-            var exp = Rad.CalcExp(nTerm / LAI);
+            var exp = Absorbed.CalcExp(nTerm / LAI);
 
             return factor * exp / nTerm;
         }
