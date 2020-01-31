@@ -1,80 +1,80 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DCAPST.Environment;
 using DCAPST.Interfaces;
 
 namespace DCAPST.Canopy
 {
-    public class PartialCanopy : BaseCanopy
+    public class PartialCanopy : IPartialCanopy
     {
-        public List<Assimilation> partials;
+        public ICanopyParameters Canopy { get; set; }
+        public List<IAssimilation> partials;
+
+        public double LAI { get; set; }
+
+        public double RubiscoActivity25 { get; set; }
+        public double Rd25 { get; set; }
+        public double JMax25 { get; set; }
+        public double PEPcActivity25 { get; set; }
+        public double MesophyllCO2Conductance25 { get; set; }
 
         public double AbsorbedRadiation { get; set; }
         public double PhotonCount { get; set; }
-        public double A { get; set; } = 0.0;
-        public double WaterUse { get; set; } = 0.0;        
+        public double CO2AssimilationRate { get; set; }
+        public double WaterUse { get; set; }
 
         public PartialCanopy(ICanopyParameters canopy)
         {
-            Canopy = canopy;
-
-            partials = new List<Assimilation>
-            {
-                new Assimilation(AssimilationType.Ac1, canopy, this),
-                (Canopy.Type != CanopyType.C3) ? new Assimilation(AssimilationType.Ac2, canopy, this) : null,
-                new Assimilation(AssimilationType.Aj, canopy, this)
-            };
+            Canopy = canopy;            
         }
 
-        public void CalcPartialPhotosynthesis(ITemperature temperature, PhotosynthesisParams Params)
+        public void CalculatePhotosynthesis(ITemperature temperature, PhotosynthesisParams Params)
         {
-            // Initialise the leaf temperature as the air temperature
-            partials.ForEach(p => p.LeafTemperature = temperature.AirTemperature);
+            partials = new List<IAssimilation>
+            {
+                new Assimilation(AssimilationType.Ac1, this),
+                (Canopy.Type != CanopyType.C3) ? new Assimilation(AssimilationType.Ac2, this) : null,
+                new Assimilation(AssimilationType.Aj, this)
+            };
 
             // Determine initial results            
-            var test = partials.Select(s =>
+            foreach (var p in partials)
             {
-                IWaterInteraction water = new WaterInteractionModel(temperature, s.LeafTemperature, Params.BoundaryHeatConductance);
-                return s.CalculateAssimilation(water, Params);
-            }).ToList();
+                p.LeafTemperature = temperature.AirTemperature;
+                var water = new LeafWaterInteractionModel(temperature, p.LeafTemperature, Params.BoundaryHeatConductance);
 
-            var initialA = partials.Select(s => s.CO2AssimilationRate).ToArray();
-            var initialWater = partials.Select(s => s.WaterUse).ToArray();
-
-            // If any calculation fails, all results are zeroed
-            if (test.Any(b => b == false))
-            {
-                partials.ForEach(s => s.ZeroVariables());
-                return;
+                if (!p.TryUpdateAssimilation(water, Params))
+                {
+                    CO2AssimilationRate = 0;
+                    WaterUse = 0;
+                    return;
+                }
             }
 
-            // Do not proceed if there is any insufficient assimilation
+            // Store the initial results in case the subsequent updates fail
+            var initialA = partials.Select(s => s.CO2AssimilationRate);
+            var initialWater = partials.Select(s => s.WaterUse);
+
+            // Do not try to update assimilation if the initial value is too low
             if (!partials.Any(s => s.CO2AssimilationRate < 0.5))
             {
                 for (int n = 0; n < 3; n++)
                 {
-                    test = partials.Select(s =>
+                    foreach (var p in partials)
                     {
-                        IWaterInteraction water = new WaterInteractionModel(temperature, s.LeafTemperature, Params.BoundaryHeatConductance);
-                        return s.CalculateAssimilation(water, Params);
-                    }).ToList();
+                        var water = new LeafWaterInteractionModel(temperature, p.LeafTemperature, Params.BoundaryHeatConductance);
 
-                    // If any calculation fails, all results are set to the value calculated initially
-                    if (test.Any(b => b == false))
-                    {
-                        partials.Select((s, index) =>
+                        if (!p.TryUpdateAssimilation(water, Params))
                         {
-                            s.CO2AssimilationRate = initialA[index];
-                            s.WaterUse = initialWater[index];
-                            return s;
-                        });
-                        break;
+                            CO2AssimilationRate = initialA.Min();
+                            WaterUse = initialWater.Min();
+                            return;
+                        }
                     }
                 }
             }
 
-            A = partials.Min(p => p.CO2AssimilationRate);
+            CO2AssimilationRate = partials.Min(p => p.CO2AssimilationRate);
             WaterUse = partials.Min(p => p.WaterUse);
         }        
     }

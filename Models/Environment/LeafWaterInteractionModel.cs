@@ -3,7 +3,7 @@ using DCAPST.Interfaces;
 
 namespace DCAPST.Environment
 {
-    public class WaterInteractionModel : IWaterInteraction
+    public class LeafWaterInteractionModel : ILeafWaterInteraction
     {
         private ITemperature Temp;
 
@@ -16,7 +16,7 @@ namespace DCAPST.Environment
         private double LeafTemp;   
         private double boundaryHeatConductance;
 
-        public WaterInteractionModel(ITemperature temperature, double leafTemp, double gbh)
+        public LeafWaterInteractionModel(ITemperature temperature, double leafTemp, double gbh)
         {
             Temp = temperature ?? throw new Exception("The temperature model cannot be null");
             LeafTemp = leafTemp;
@@ -27,7 +27,7 @@ namespace DCAPST.Environment
         public double boundaryHeatResistance => 1 / boundaryHeatConductance;
         public double BoundaryCO2Conductance => Temp.AtmosphericPressure * Temp.AirMolarDensity * BoundaryH20Conductance / 1.37;        
                 
-        private double OutgoingThermalRadiation => 8 * boltzmannConstant * Math.Pow(Temp.AirTemperature + Temp.AbsoluteTemperature, 3) * (LeafTemp - Temp.AirTemperature);
+        private double OutgoingThermalRadiation => 8 * boltzmannConstant * Math.Pow(Temp.AirTemperature + 273, 3) * (LeafTemp - Temp.AirTemperature);
         // VPT: Vapour Pressure at T
         private double VPTLeaf => 0.61365 * Math.Exp(17.502 * LeafTemp / (240.97 + LeafTemp));
         private double VPTAir => 0.61365 * Math.Exp(17.502 * Temp.AirTemperature / (240.97 + Temp.AirTemperature));
@@ -39,7 +39,7 @@ namespace DCAPST.Environment
         private double VPD_la => VPTLeaf - VPTMin;  
 
         // Rtw : Total leaf resistance to water
-        public double CalcUnlimitedRtw(double Assimilation, double Ca, double Ci)
+        public double UnlimitedWaterResistance(double Assimilation, double Ca, double Ci)
         {
             // Leaf water mol fraction
             double Wl = VPTLeaf / (Temp.AtmosphericPressure * 100) * 1000;
@@ -73,7 +73,7 @@ namespace DCAPST.Environment
             return rtw;
         }
 
-        public double CalcLimitedRtw(double availableWater, double Rn)
+        public double LimitedWaterResistance(double availableWater, double Rn)
         {
             // Transpiration in kilos of water per second
             double ekg = latentHeatOfVapourisation * availableWater / 3600;
@@ -91,7 +91,7 @@ namespace DCAPST.Environment
             return (latentHeatLoss / latentHeatOfVapourisation) * 3600;
         }
 
-        public double CalcTotalLeafCO2Conductance(double rtw)
+        public double TotalLeafCO2Conductance(double rtw)
         {
             // Limited water gsCO2
             var gsCO2 = Temp.AirMolarDensity * (Temp.AtmosphericPressure / (rtw - (1 / BoundaryH20Conductance))) / 1.6;
@@ -100,7 +100,7 @@ namespace DCAPST.Environment
             return 1 / (boundaryCO2Resistance + stomatalCO2Resistance);
         }
 
-        public double CalcLeafTemperature(double rtw, double Rn)
+        public double LeafTemperature(double rtw, double Rn)
         {
             // dummy variables
             double a = psychrometricConstant * (Rn - OutgoingThermalRadiation) * rtw / airVolumetricHeatCapacity - VPD_la;

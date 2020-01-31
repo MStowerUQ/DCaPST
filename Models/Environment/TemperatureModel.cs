@@ -7,7 +7,6 @@ namespace DCAPST.Environment
     {
         public ISolarGeometry Solar;
 
-        public double AbsoluteTemperature { get; } = 273;
         public double AtmosphericPressure { get; set; } = 1.01325;
         public double MaxTemperature { get; set; }
         public double MinTemperature { get; set; }

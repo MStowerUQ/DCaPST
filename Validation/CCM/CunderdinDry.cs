@@ -44,7 +44,7 @@ namespace Validation.CCM
             var CPath = Initialise.NewWheat() as ICanopyParameters;
 
             ISolarGeometry Solar = new SolarGeometryModel(DOY, latitude);
-            IRadiation Radiation = new RadiationModel(Solar, radn) { RPAR = 0.5 };
+            ISolarRadiation Radiation = new SolarRadiationModel(Solar, radn) { RPAR = 0.5 };
             ITemperature Temperature = new TemperatureModel(Solar, maxT, minT) { AtmosphericPressure = 1.01325 };
 
             var PM = new PhotosynthesisModel(Solar, Radiation, Temperature, CPath);

@@ -1,63 +1,51 @@
 ﻿using System;
-using DCAPST.Canopy;
 using DCAPST.Interfaces;
 
 namespace DCAPST
 {
     public abstract class AssimilationCalculator
     {
-        public ICanopyParameters Canopy;
-        public IPathwayParameters Path;
-        public PartialCanopy Partial;       
+        protected readonly ICanopyParameters canopy;        
+        protected readonly IPartialCanopy partial;
+        protected readonly IAssimilation assimilation;
+        protected readonly IPathwayParameters path;
 
-        public double Cm { get; set; }
-        public double Cc { get; set; }
-        public double Oc { get; set; }
-
-        public double OxygenPartialPressure { get; set; } = 210000;
-
-        public double LeafTemperature;
-
-        public AssimilationCalculator(ICanopyParameters canopy, PartialCanopy partial, Assimilation assimilation)
-        {
-            Canopy = canopy;
-            Path = canopy.Pathway;
-            Partial = partial;
-
-            LeafTemperature = assimilation.LeafTemperature;
-            Cm = assimilation.MesophyllCO2;
-            Cc = assimilation.ChloroplasticCO2;
-            Oc = assimilation.ChloroplasticO2;
+        public AssimilationCalculator(IAssimilation assimilation, IPartialCanopy partial)
+        {            
+            this.assimilation = assimilation;
+            this.partial = partial;
+            canopy = partial.Canopy;
+            path = canopy.Pathway;
         }
         
         // T: At T Per Leaf
-        public double VcMaxT => TemperatureFunction.Val2(LeafTemperature, Partial.VcMax25, Path.RubiscoActivity.Factor);
-        public double RdT => TemperatureFunction.Val2(LeafTemperature, Partial.Rd25, Path.Respiration.Factor);
-        public double JMaxT => TemperatureFunction.Val(LeafTemperature, Partial.JMax25, Path.ElectronTransportRateParams);
-        public double VpMaxT => TemperatureFunction.Val2(LeafTemperature, Partial.VpMax25, Path.PEPcActivity.Factor);
+        public double VcMaxT => TemperatureFunction.Val2(assimilation.LeafTemperature, partial.RubiscoActivity25, path.RubiscoActivity.Factor);
+        public double RdT => TemperatureFunction.Val2(assimilation.LeafTemperature, partial.Rd25, path.Respiration.Factor);
+        public double JMaxT => TemperatureFunction.Val(assimilation.LeafTemperature, partial.JMax25, path.ElectronTransportRateParams);
+        public double VpMaxT => TemperatureFunction.Val2(assimilation.LeafTemperature, partial.PEPcActivity25, path.PEPcActivity.Factor);
 
 
         // These ones are not per leaf
-        public double Kc => TemperatureFunction.Val2(LeafTemperature, Path.RubiscoCarboxylation.At25, Path.RubiscoCarboxylation.Factor);
-        public double Ko => TemperatureFunction.Val2(LeafTemperature, Path.RubiscoOxygenation.At25, Path.RubiscoOxygenation.Factor);
-        public double VcVo => TemperatureFunction.Val2(LeafTemperature, Path.RubiscoCarboxylationToOxygenation.At25, Path.RubiscoCarboxylationToOxygenation.Factor);
-        public double Kp => TemperatureFunction.Val2(LeafTemperature, Path.PEPc.At25, Path.PEPc.Factor);
+        public double Kc => TemperatureFunction.Val2(assimilation.LeafTemperature, path.RubiscoCarboxylation.At25, path.RubiscoCarboxylation.Factor);
+        public double Ko => TemperatureFunction.Val2(assimilation.LeafTemperature, path.RubiscoOxygenation.At25, path.RubiscoOxygenation.Factor);
+        public double VcVo => TemperatureFunction.Val2(assimilation.LeafTemperature, path.RubiscoCarboxylationToOxygenation.At25, path.RubiscoCarboxylationToOxygenation.Factor);
+        public double Kp => TemperatureFunction.Val2(assimilation.LeafTemperature, path.PEPc.At25, path.PEPc.Factor);
 
-        private double JFactor => Partial.PhotonCount * (1.0 - Path.SpectralCorrectionFactor) / 2.0;
+        private double JFactor => partial.PhotonCount * (1.0 - path.SpectralCorrectionFactor) / 2.0;
         public double ElectronTransportRate =>
-            (JFactor + JMaxT - Math.Pow(Math.Pow(JFactor + JMaxT, 2) - 4 * Canopy.ConvexityFactor * JMaxT * JFactor, 0.5))
-            / (2 * Canopy.ConvexityFactor);
+            (JFactor + JMaxT - Math.Pow(Math.Pow(JFactor + JMaxT, 2) - 4 * canopy.ConvexityFactor * JMaxT * JFactor, 0.5))
+            / (2 * canopy.ConvexityFactor);
 
         public double RubiscoSpecificityFactor => Ko / Kc * VcVo;
         public double G_ => 0.5 / RubiscoSpecificityFactor;
         public double MesophyllRespiration => RdT * 0.5;
-        public double Gbs => Path.BundleSheathCO2ConductancePerLeaf * Partial.LAI;
-        public double Vpr => Path.PEPRegenerationPerLeaf * Partial.LAI;
+        public double Gbs => path.BundleSheathCO2ConductancePerLeaf * partial.LAI;
+        public double Vpr => path.PEPRegenerationPerLeaf * partial.LAI;
 
-        public AssimilationParameters GetAssimilationParams(Assimilation canopy)
+        public AssimilationParameters GetAssimilationParams()
         {
-            if (canopy.Type == AssimilationType.Ac1) return GetAc1Params();
-            else if (canopy.Type == AssimilationType.Ac2) return GetAc2Params();
+            if (assimilation.Type == AssimilationType.Ac1) return GetAc1Params();
+            else if (assimilation.Type == AssimilationType.Ac2) return GetAc2Params();
             else return GetAjParams();
         }
 

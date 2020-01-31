@@ -107,6 +107,7 @@ namespace Validation.CCM
                 AirCO2 = 370,
                 ConvexityFactor = 0.7,
                 DiffusivitySolubilityRatio = 0.047,
+                OxygenPartialPressure = 210000,
 
                 DiffuseExtCoeff = 0.78,
                 DiffuseExtCoeffNIR = 0.8,

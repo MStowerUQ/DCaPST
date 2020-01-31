@@ -4,26 +4,34 @@ namespace DCAPST.Canopy
 {
     public class CanopyRadiation
     {
-        public double DiffuseExtCoeff { get; set; }
-        public double BeamExtinctionCoeff { get; set; }
-        public double BeamReflectionCoeff => 1 - Math.Exp(-2 * ReflectionCoefficientHorizontal * BeamExtinctionCoeff / (1 + BeamExtinctionCoeff));
-        public double DiffuseReflectionCoeff { get; set; }
         public double LeafScatteringCoeff { get; set; }
 
-        public double BeamScatteredBeam => BeamExtinctionCoeff * Math.Pow(1 - LeafScatteringCoeff, 0.5);
+        public double DiffuseExtCoeff { get; set; }
+        public double DiffuseReflectionCoeff { get; set; }
         public double DiffuseScatteredDiffuse => DiffuseExtCoeff * Math.Pow(1 - LeafScatteringCoeff, 0.5);
+
+        public double BeamExtinctionCoeff { get; set; }
+        public double BeamReflectionCoeff => 1 - Math.Exp(-2 * ReflectionCoefficientHorizontal * BeamExtinctionCoeff / (1 + BeamExtinctionCoeff));
+        public double BeamScatteredBeam => BeamExtinctionCoeff * Math.Pow(1 - LeafScatteringCoeff, 0.5);
+        
         public double ReflectionCoefficientHorizontal => (1 - Math.Pow(1 - LeafScatteringCoeff, 0.5)) / (1 + Math.Pow(1 - LeafScatteringCoeff, 0.5));
 
-        // Note: In the case of n layers, the layerLAI is totalLAI / n. 
-        // The LAIAccum of the nth layer is n * layerLAI
-        // LAIAccum 0 is (n - 1) * layerLAI
-        public double LAIAccum { get; set; }
-        public double LAIAccum0 { get; set; }
+        /// <summary>
+        /// The cumulative LAI of all layers up to the Nth layer
+        /// </summary>
+        private readonly double laiAccum1;
 
-        public CanopyRadiation(int layers, double layerLAI)
+        /// <summary>
+        /// The cumulative LAI of all layers up to the (N - 1)th layer
+        /// </summary>
+        private readonly double laiAccum0;
+
+        public CanopyRadiation(int layers, double lai)
         {
-            LAIAccum = layers * layerLAI;
-            LAIAccum0 = (layers - 1) * layerLAI;
+            var layerLAI = lai / layers;
+
+            laiAccum1 = layers * layerLAI;
+            laiAccum0 = (layers - 1) * layerLAI;
         }
 
         public double CalculateTotalRadiation(double direct, double diffuse)
@@ -76,13 +84,13 @@ namespace DCAPST.Canopy
 
         public double CalculateAccumInterceptedRadn()
         {
-            return 1 - Math.Exp(-BeamExtinctionCoeff * LAIAccum);
+            return 1 - Math.Exp(-BeamExtinctionCoeff * laiAccum1);
         }
 
         public double CalcExp(double x)
         {
-            var a = Math.Exp(-x * LAIAccum0);
-            var b = Math.Exp(-x * LAIAccum);
+            var a = Math.Exp(-x * laiAccum0);
+            var b = Math.Exp(-x * laiAccum1);
 
             return a - b;
         }

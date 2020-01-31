@@ -9,10 +9,9 @@ namespace DCAPST
     public class PhotosynthesisModel
     {
         public ISolarGeometry Solar { get; set; }
-        public IRadiation Radiation { get; set; }
+        public ISolarRadiation Radiation { get; set; }
         public ITemperature Temperature { get; set; }
-
-        public TotalCanopy Canopy;
+        public ITotalCanopy Canopy { get; set; }
 
         /// <summary>
         /// Biochemical Conversion & Maintenance Respiration
@@ -24,7 +23,7 @@ namespace DCAPST
         private readonly double timestep = 1.0;
         private readonly int iterations;
 
-        public PhotosynthesisModel(ISolarGeometry solar, IRadiation radiation, ITemperature temperature, ICanopyParameters canopy)
+        public PhotosynthesisModel(ISolarGeometry solar, ISolarRadiation radiation, ITemperature temperature, ICanopyParameters canopy)
         {
             Solar = solar;
             Radiation = radiation;
@@ -45,7 +44,7 @@ namespace DCAPST
             double RootShootRatio, 
             double MaxHourlyTRate = 100)
         {            
-            Canopy.Initialise(lai, SLN);
+            Canopy.InitialiseDay(lai, SLN);
 
             // POTENTIAL CALCULATIONS
             // Note: In the potential case, we assume unlimited water and therefore supply = demand
@@ -76,27 +75,41 @@ namespace DCAPST
         private bool TryInitiliase(double time)
         {
             Temperature.UpdateAirTemperature(time);
-            Radiation.UpdateHourlyRadiation(time);
+            Radiation.UpdateRadiationValues(time);
             var sunAngle = Solar.SunAngle(time).Rad;            
             Canopy.CalcCanopyStructure(sunAngle);
 
             return IsSensible();
         }
 
+        /// <summary>
+        /// Check if the basic conditions for photosynthesis to occur are met
+        /// </summary>
         private bool IsSensible()
         {
             var CPath = Canopy.Canopy;
             var temp = Temperature.AirTemperature;
 
-            bool invalidTemp = temp > CPath.Pathway.ElectronTransportRateParams.TMax || temp < CPath.Pathway.ElectronTransportRateParams.TMin || temp > CPath.Pathway.MesophyllCO2ConductanceParams.TMax || temp < CPath.Pathway.MesophyllCO2ConductanceParams.TMin;
-            bool invalidRadn = Radiation.TotalIncidentRadiation <= double.Epsilon;
+            bool[] tempConditions = new bool[4]
+            {
+                temp > CPath.Pathway.ElectronTransportRateParams.TMax,
+                temp < CPath.Pathway.ElectronTransportRateParams.TMin,
+                temp > CPath.Pathway.MesophyllCO2ConductanceParams.TMax,
+                temp < CPath.Pathway.MesophyllCO2ConductanceParams.TMin
+            };
+
+            bool invalidTemp = tempConditions.Any(b => b == true);
+            bool invalidRadn = Radiation.Total <= double.Epsilon;
 
             if (invalidTemp || invalidRadn)
                 return false;
             else
                 return true;
-        }        
+        }
 
+        /// <summary>
+        /// Determine the total potential biomass for the day under ideal conditions
+        /// </summary>
         public void CalculatePotential(out double intercepted, out double[] assimilations, out double[] sunlitDemand, out double[] shadedDemand)
         {
             // Water demands
@@ -112,16 +125,19 @@ namespace DCAPST
                 // Note: double arrays default value is 0.0, which is the intended case if initialisation fails
                 if (!TryInitiliase(time)) continue;
 
-                intercepted += Radiation.TotalIncidentRadiation * Canopy.PropnInterceptedRadns * 3600;
+                intercepted += Radiation.Total * Canopy.PropnInterceptedRadns * 3600;
 
                 DoHourlyCalculation();
 
                 sunlitDemand[i] = Canopy.Sunlit.WaterUse;
                 shadedDemand[i] = Canopy.Shaded.WaterUse;
-                assimilations[i] = Canopy.Sunlit.A + Canopy.Shaded.A;
+                assimilations[i] = Canopy.Sunlit.CO2AssimilationRate + Canopy.Shaded.CO2AssimilationRate;
             }
         }
 
+        /// <summary>
+        /// Determine the total biomass that can be assimilated under the actual conditions 
+        /// </summary>
         public double CalculateActual(double[] waterSupply, double[] sunlitDemand, double[] shadedDemand)
         {
             double assimilation = 0.0;
@@ -135,7 +151,7 @@ namespace DCAPST
                 double total = sunlitDemand[i] + shadedDemand[i];
                 DoHourlyCalculation(waterSupply[i], sunlitDemand[i] / total, shadedDemand[i] / total);
 
-                assimilation += Canopy.Sunlit.A + Canopy.Shaded.A;
+                assimilation += Canopy.Sunlit.CO2AssimilationRate + Canopy.Shaded.CO2AssimilationRate;
             }
             return assimilation;
         }
@@ -149,18 +165,18 @@ namespace DCAPST
             };
             if (maxHourlyT != -1) Params.limited = true;
 
-            Canopy.Run(Radiation);
+            Canopy.PerformTimeAdjustment(Radiation);
 
             var heat = Canopy.CalcBoundaryHeatConductance();
             var sunlitHeat = Canopy.CalcSunlitBoundaryHeatConductance();
 
             Params.BoundaryHeatConductance = sunlitHeat;
             Params.fraction = sunFraction;
-            Canopy.Sunlit.CalcPartialPhotosynthesis(Temperature, Params);
+            Canopy.Sunlit.CalculatePhotosynthesis(Temperature, Params);
 
             Params.BoundaryHeatConductance = heat - sunlitHeat;
             Params.fraction = shadeFraction;
-            Canopy.Shaded.CalcPartialPhotosynthesis(Temperature, Params);
+            Canopy.Shaded.CalculatePhotosynthesis(Temperature, Params);
         }
 
         /// <summary>

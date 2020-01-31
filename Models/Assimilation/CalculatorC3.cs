@@ -1,16 +1,11 @@
 ﻿using DCAPST.Canopy;
 using DCAPST.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DCAPST
 {
     public class CalculatorC3 : AssimilationCalculator
     {
-        public CalculatorC3(ICanopyParameters path, PartialCanopy partial, Assimilation assimilation) : base(path, partial, assimilation)
+        public CalculatorC3(IAssimilation assimilation, IPartialCanopy partial) : base(assimilation, partial)
         { }
 
         protected override AssimilationParameters GetAc1Params()
@@ -31,7 +26,7 @@ namespace DCAPST
                 t = G_,
                 sb = 0.0,
                 j = 1.0,
-                e = OxygenPartialPressure,
+                e = canopy.OxygenPartialPressure,
                 R = RdT
             };
 
@@ -81,7 +76,7 @@ namespace DCAPST
                 t = G_,
                 sb = 0.0,
                 j = 1.0,
-                e = OxygenPartialPressure,
+                e = canopy.OxygenPartialPressure,
                 R = RdT
             };
 

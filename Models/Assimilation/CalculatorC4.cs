@@ -1,16 +1,11 @@
 ﻿using DCAPST.Canopy;
 using DCAPST.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DCAPST
 {
     public class CalculatorC4 : AssimilationCalculator
     {
-        public CalculatorC4(ICanopyParameters path, PartialCanopy partial, Assimilation assimilation) : base(path, partial, assimilation)
+        public CalculatorC4(IAssimilation assimilation, IPartialCanopy partial) : base(assimilation, partial)
         { }
 
         protected override AssimilationParameters GetAc1Params()
@@ -20,7 +15,7 @@ namespace DCAPST
                 x1 = VcMaxT,
                 x2 = Kc / Ko,
                 x3 = Kc,
-                x4 = VpMaxT / (Cm + Kp),
+                x4 = VpMaxT / (assimilation.MesophyllCO2 + Kp),
                 x5 = 0.0,
                 x6 = 1.0,
                 x7 = 0.0,
@@ -29,9 +24,9 @@ namespace DCAPST
 
                 m = MesophyllRespiration,
                 t = G_,
-                sb = 0.1 / Canopy.DiffusivitySolubilityRatio,
+                sb = 0.1 / canopy.DiffusivitySolubilityRatio,
                 j = Gbs,
-                e = OxygenPartialPressure,
+                e = canopy.OxygenPartialPressure,
                 R = RdT
             };
 
@@ -54,9 +49,9 @@ namespace DCAPST
 
                 m = MesophyllRespiration,
                 t = G_,
-                sb = 0.1 / Canopy.DiffusivitySolubilityRatio,
+                sb = 0.1 / canopy.DiffusivitySolubilityRatio,
                 j = Gbs,
-                e = OxygenPartialPressure,
+                e = canopy.OxygenPartialPressure,
                 R = RdT
             };
 
@@ -67,11 +62,11 @@ namespace DCAPST
         {
             var param = new AssimilationParameters()
             {
-                x1 = (1.0 - Canopy.Pathway.MesophyllElectronTransportFraction) * ElectronTransportRate / 3.0,
+                x1 = (1.0 - path.MesophyllElectronTransportFraction) * ElectronTransportRate / 3.0,
                 x2 = 7.0 / 3.0 * G_,
                 x3 = 0.0,
                 x4 = 0.0,
-                x5 = Canopy.Pathway.MesophyllElectronTransportFraction * ElectronTransportRate / Canopy.Pathway.ExtraATPCost,
+                x5 = path.MesophyllElectronTransportFraction * ElectronTransportRate / path.ExtraATPCost,
                 x6 = 1.0,
                 x7 = 0.0,
                 x8 = 1.0,
@@ -79,9 +74,9 @@ namespace DCAPST
 
                 m = MesophyllRespiration,
                 t = G_,
-                sb = 0.1 / Canopy.DiffusivitySolubilityRatio,
+                sb = 0.1 / canopy.DiffusivitySolubilityRatio,
                 j = Gbs,
-                e = OxygenPartialPressure,
+                e = canopy.OxygenPartialPressure,
                 R = RdT
             };
 

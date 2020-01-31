@@ -12,7 +12,7 @@ namespace ModelsTests.Environment.UnitTests
         [TestCaseSource(typeof(WaterInteractionTestData), "ConstructorTestCases")]
         public void Constructor_IfInvalidArguments_ThrowsException(ITemperature temperature,double leafTemp, double gbh)
         {
-            Assert.Throws<Exception>(() => new WaterInteractionModel(temperature, leafTemp, gbh));
+            Assert.Throws<Exception>(() => new LeafWaterInteractionModel(temperature, leafTemp, gbh));
         }
 
         [Test]
@@ -34,8 +34,8 @@ namespace ModelsTests.Environment.UnitTests
             var expected = 1262.0178666386046;
 
             // Act
-            var water = new WaterInteractionModel(temperature.Object, leafTemp, gbh);
-            var actual = water.CalcUnlimitedRtw(A, Ca, Ci);
+            var water = new LeafWaterInteractionModel(temperature.Object, leafTemp, gbh);
+            var actual = water.UnlimitedWaterResistance(A, Ca, Ci);
 
             // Assert
             Assert.AreEqual(expected, actual);
@@ -48,7 +48,6 @@ namespace ModelsTests.Environment.UnitTests
             // Arrange
             var temperature = new Mock<ITemperature>(MockBehavior.Strict);
             temperature.Setup(t => t.AirTemperature).Returns(27.0).Verifiable();
-            temperature.Setup(t => t.AbsoluteTemperature).Returns(273).Verifiable();
             temperature.Setup(t => t.MinTemperature).Returns(16.2).Verifiable();
 
             var leafTemp = 27;
@@ -60,8 +59,8 @@ namespace ModelsTests.Environment.UnitTests
             var expected = 340.83946167121144;
 
             // Act
-            var water = new WaterInteractionModel(temperature.Object, leafTemp, gbh);
-            var actual = water.CalcLimitedRtw(available, rn);
+            var water = new LeafWaterInteractionModel(temperature.Object, leafTemp, gbh);
+            var actual = water.LimitedWaterResistance(available, rn);
 
             // Assert
             Assert.AreEqual(expected, actual);
@@ -74,7 +73,6 @@ namespace ModelsTests.Environment.UnitTests
             // Arrange
             var temperature = new Mock<ITemperature>(MockBehavior.Strict);
             temperature.Setup(t => t.AirTemperature).Returns(27.0).Verifiable();
-            temperature.Setup(t => t.AbsoluteTemperature).Returns(273).Verifiable();
             temperature.Setup(t => t.MinTemperature).Returns(16.2).Verifiable();
 
             var leafTemp = 27;
@@ -86,7 +84,7 @@ namespace ModelsTests.Environment.UnitTests
             var expected = 0.080424818708166368;
 
             // Act
-            var water = new WaterInteractionModel(temperature.Object, leafTemp, gbh);
+            var water = new LeafWaterInteractionModel(temperature.Object, leafTemp, gbh);
             var actual = water.HourlyWaterUse(rtw, rn);
 
             // Assert
@@ -109,8 +107,8 @@ namespace ModelsTests.Environment.UnitTests
             var expected = 0.1437732786549164;
 
             // Act
-            var water = new WaterInteractionModel(temperature.Object, leafTemp, gbh);
-            var actual = water.CalcTotalLeafCO2Conductance(rtw);
+            var water = new LeafWaterInteractionModel(temperature.Object, leafTemp, gbh);
+            var actual = water.TotalLeafCO2Conductance(rtw);
 
             // Assert
             Assert.AreEqual(expected, actual);
@@ -123,7 +121,6 @@ namespace ModelsTests.Environment.UnitTests
             // Arrange
             var temperature = new Mock<ITemperature>(MockBehavior.Strict);
             temperature.Setup(t => t.AirTemperature).Returns(27.0).Verifiable();
-            temperature.Setup(t => t.AbsoluteTemperature).Returns(273).Verifiable();
             temperature.Setup(t => t.MinTemperature).Returns(16.2).Verifiable();
 
             var leafTemp = 27;
@@ -135,8 +132,8 @@ namespace ModelsTests.Environment.UnitTests
             var expected = 28.732384941224293;
 
             // Act
-            var water = new WaterInteractionModel(temperature.Object,leafTemp, gbh);
-            var actual = water.CalcLeafTemperature(rtw, rn);
+            var water = new LeafWaterInteractionModel(temperature.Object,leafTemp, gbh);
+            var actual = water.LeafTemperature(rtw, rn);
 
             // Assert
             Assert.AreEqual(expected, actual);

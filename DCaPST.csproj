@@ -61,9 +61,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\Canopy\IPartialCanopy.cs" />
+    <Compile Include="Interfaces\Canopy\ITotalCanopy.cs" />
+    <Compile Include="Interfaces\IAssimilation.cs" />
     <Compile Include="Interfaces\Parameters\ICanopyParameters.cs" />
     <Compile Include="Interfaces\Parameters\IPathwayParameters.cs" />
-    <Compile Include="Interfaces\Models\IWaterInteraction.cs" />
+    <Compile Include="Interfaces\Models\ILeafWaterInteraction.cs" />
     <Compile Include="Interfaces\Models\ITemperature.cs" />
     <Compile Include="Interfaces\Models\ISolarGeometry.cs" />
     <Compile Include="Interfaces\Models\IRadiation.cs" />
@@ -80,9 +83,9 @@
     <Compile Include="Parameters\AssimilationParameters.cs" />
     <Compile Include="Utilities\Angle.cs" />
     <Compile Include="Models\Environment\TemperatureModel.cs" />
-    <Compile Include="Models\Environment\RadiationModel.cs" />
+    <Compile Include="Models\Environment\SolarRadiationModel.cs" />
     <Compile Include="Models\Environment\SolarGeometryModel.cs" />
-    <Compile Include="Models\Environment\WaterInteractionModel.cs" />
+    <Compile Include="Models\Environment\LeafWaterInteractionModel.cs" />
     <Compile Include="Models\PhotosynthesisModel.cs" />
     <Compile Include="Parameters\PathwayParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

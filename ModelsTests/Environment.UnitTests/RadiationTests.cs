@@ -28,7 +28,7 @@ namespace ModelsTests.Environment.UnitTests
         [TestCaseSource(typeof(RadiationTestData), "ConstructorTestCases")]
         public void Constructor_IfInvalidArguments_ThrowsException(ISolarGeometry solar, double radiation)
         {
-            Assert.Throws<Exception>(() => new RadiationModel(solar, radiation) { RPAR = 0.5 });
+            Assert.Throws<Exception>(() => new SolarRadiationModel(solar, radiation) { RPAR = 0.5 });
         }
 
         [TestCaseSource(typeof(RadiationTestData), "HourlyRadiationTestCases")]
@@ -36,12 +36,12 @@ namespace ModelsTests.Environment.UnitTests
         {
             // Arrange            
             var mock = SetupMockSolar(time, sunAngle);
-            var radiation = new RadiationModel(mock.Object, 16.5) { RPAR = 0.5 };
+            var radiation = new SolarRadiationModel(mock.Object, 16.5) { RPAR = 0.5 };
 
             // Act
 
             // Assert
-            Assert.Throws<Exception>(() => radiation.UpdateHourlyRadiation(time));
+            Assert.Throws<Exception>(() => radiation.UpdateRadiationValues(time));
             mock.Verify();            
         }
 
@@ -50,11 +50,11 @@ namespace ModelsTests.Environment.UnitTests
         {
             // Arrange
             var mock = SetupMockSolar(time, sunAngle);
-            var radiation = new RadiationModel(mock.Object, 16.5) { RPAR = 0.5 };
+            var radiation = new SolarRadiationModel(mock.Object, 16.5) { RPAR = 0.5 };
 
             // Act
-            radiation.UpdateHourlyRadiation(time);
-            var actual = radiation.TotalIncidentRadiation;
+            radiation.UpdateRadiationValues(time);
+            var actual = radiation.Total;
 
             // Assert
             Assert.AreEqual(expected, actual);
@@ -66,10 +66,10 @@ namespace ModelsTests.Environment.UnitTests
         {
             // Arrange
             var mock = SetupMockSolar(time, sunAngle);
-            var radiation = new RadiationModel(mock.Object, 16.5) { RPAR = 0.5 };
+            var radiation = new SolarRadiationModel(mock.Object, 16.5) { RPAR = 0.5 };
 
             // Act
-            radiation.UpdateHourlyRadiation(time);
+            radiation.UpdateRadiationValues(time);
             var actual = radiation.Diffuse;
 
             // Assert
@@ -82,10 +82,10 @@ namespace ModelsTests.Environment.UnitTests
         {
             // Arrange
             var mock = SetupMockSolar(time, sunAngle);
-            var radiation = new RadiationModel(mock.Object, 16.5) { RPAR = 0.5 };
+            var radiation = new SolarRadiationModel(mock.Object, 16.5) { RPAR = 0.5 };
 
             // Act
-            radiation.UpdateHourlyRadiation(time);
+            radiation.UpdateRadiationValues(time);
             var actual = radiation.Direct;
 
             // Assert
@@ -98,10 +98,10 @@ namespace ModelsTests.Environment.UnitTests
         {
             // Arrange
             var mock = SetupMockSolar(time, sunAngle);
-            var radiation = new RadiationModel(mock.Object, 16.5) { RPAR = 0.5 };
+            var radiation = new SolarRadiationModel(mock.Object, 16.5) { RPAR = 0.5 };
 
             // Act
-            radiation.UpdateHourlyRadiation(time);
+            radiation.UpdateRadiationValues(time);
             var actual = radiation.DiffusePAR;
 
             // Assert
@@ -114,10 +114,10 @@ namespace ModelsTests.Environment.UnitTests
         {
             // Arrange
             var mock = SetupMockSolar(time, sunAngle);
-            var radiation = new RadiationModel(mock.Object, 16.5) { RPAR = 0.5 };
+            var radiation = new SolarRadiationModel(mock.Object, 16.5) { RPAR = 0.5 };
 
             // Act
-            radiation.UpdateHourlyRadiation(time);
+            radiation.UpdateRadiationValues(time);
             var actual = radiation.DirectPAR;
 
             // Assert
