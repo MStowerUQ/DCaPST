@@ -20,15 +20,14 @@ namespace ModelsTests.Environment.UnitTests
         {
             // Arrange
             var mock = new Mock<ISolarGeometry>(MockBehavior.Strict);
-            mock.Setup(s => s.Sunset).Returns(18.47939124591235).Verifiable();
-            mock.Setup(s => s.DayLength).Returns(12.958782491824698).Verifiable();
+            mock.Setup(s => s.Sunset).Returns(18.47939124591235);
+            mock.Setup(s => s.DayLength).Returns(12.958782491824698);
 
             // Act
             var temp = new TemperatureModel(mock.Object, 28, 16);
 
             // Assert
             Assert.Throws<Exception>(() => temp.UpdateAirTemperature(time));
-            mock.Verify();
         }
 
         [TestCaseSource(typeof(TemperatureTestData), "ValidTimeTestCases")]

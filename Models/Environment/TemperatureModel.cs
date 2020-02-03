@@ -25,10 +25,7 @@ namespace DCAPST.Environment
             if (maxTemperature < minTemperature) throw new Exception("The maximum cannot be less than the minimum");
 
             MaxTemperature = maxTemperature;
-            MinTemperature = minTemperature;            
-
-            // Initialise the air temperature at 6 AM
-            UpdateAirTemperature(6.0);
+            MinTemperature = minTemperature;
         }
 
         public void UpdateAirTemperature(double time)

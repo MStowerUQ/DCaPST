@@ -29,9 +29,6 @@ namespace DCAPST.Environment
         {
             Solar = solar ?? throw new Exception();
             daily = (dailyRadiation >= 0) ? dailyRadiation : throw new Exception();
-
-            // Initialise radiation at 6 AM
-            UpdateRadiationValues(6.0);
         }
 
         public void UpdateRadiationValues(double time)
