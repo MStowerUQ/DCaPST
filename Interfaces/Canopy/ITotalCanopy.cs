@@ -24,7 +24,7 @@ namespace DCAPST.Interfaces
         /// </summary>
         CanopyRadiation Absorbed { get; }
 
-        Angle LeafAngle { get; set; }
+        double LeafAngle { get; set; }
         double LeafWidth { get; set; }
         double LeafNTopCanopy { get; set; }
 

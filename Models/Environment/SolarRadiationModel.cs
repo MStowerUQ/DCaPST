@@ -74,7 +74,7 @@ namespace DCAPST.Environment
         /// </summary>
         private double CurrentDiffuse(double time)
         {
-            var diffuse = Math.Max(FracDiffuseATM * Solar.SolarConstant * Math.Sin(Solar.SunAngle(time).Rad) / 1000000, 0);
+            var diffuse = Math.Max(FracDiffuseATM * Solar.SolarConstant * Math.Sin(Solar.SunAngle(time)) / 1000000, 0);
 
             if (diffuse > Total)
                 return Total;

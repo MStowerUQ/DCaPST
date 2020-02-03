@@ -5,9 +5,9 @@ namespace DCAPST.Environment
 {
     public class SolarGeometryModel : ISolarGeometry
     {
-        public Angle Latitude { get; private set; }
-        public Angle SolarDeclination { get; private set; }
-        public Angle SunsetAngle { get; private set; }
+        public double Latitude { get; private set; }
+        public double SolarDeclination { get; private set; }
+        public double SunsetAngle { get; private set; }
 
         public double SolarConstant { get; } = 1360;
 
@@ -22,26 +22,26 @@ namespace DCAPST.Environment
             if (latitude < -90.0 || 90.0 < latitude) throw new Exception("Latitude cannot exceed 90 degrees");
 
             DayOfYear = dayOfYear;
-            Latitude = new Angle(latitude, AngleType.Deg);
+            Latitude = latitude.ToRadians();
 
             SolarDeclination = CalcSolarDeclination();
             SunsetAngle = CalcSunsetAngle();
-            DayLength = (SunsetAngle.Deg / 15) * 2;
+            DayLength = 2 * SunsetAngle.ToDegrees() / 15;
             Sunrise = 12.0 - DayLength / 2.0;
             Sunset = 12.0 + DayLength / 2.0;
         }     
 
-        private Angle CalcSolarDeclination() => new Angle(23.45 * Math.Sin(2 * Math.PI * (284 + DayOfYear) / 365), AngleType.Deg);
+        private double CalcSolarDeclination() => 23.45.ToRadians() * Math.Sin(2 * Math.PI * (284 + DayOfYear) / 365);
 
-        private Angle CalcSunsetAngle() => new Angle(Math.Acos(-1 * Math.Tan(Latitude.Rad) * Math.Tan(SolarDeclination.Rad)), AngleType.Rad);
+        private double CalcSunsetAngle() => Math.Acos(-1 * Math.Tan(Latitude) * Math.Tan(SolarDeclination));
         
-        public Angle SunAngle(double hour)
+        public double SunAngle(double hour)
         {
-            var angle = Math.Asin(Math.Sin(Latitude.Rad) * Math.Sin(SolarDeclination.Rad)
-                + Math.Cos(Latitude.Rad)
-                * Math.Cos(SolarDeclination.Rad)
+            var angle = Math.Asin(Math.Sin(Latitude) * Math.Sin(SolarDeclination)
+                + Math.Cos(Latitude)
+                * Math.Cos(SolarDeclination)
                 * Math.Cos(Math.PI / 12.0 * DayLength * (((hour - Sunrise) / DayLength) - 0.5)));
-            return new Angle(angle, AngleType.Rad);
+            return angle;
         }
        
     }

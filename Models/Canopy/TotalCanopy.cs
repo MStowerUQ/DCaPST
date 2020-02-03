@@ -13,7 +13,7 @@ namespace DCAPST.Canopy
 
         public CanopyRadiation Absorbed { get; private set; }
 
-        public Angle LeafAngle { get; set; } 
+        public double LeafAngle { get; set; } // RADIANS
         public double LeafWidth { get; set; }
         public double LeafNTopCanopy { get; set; }
 
@@ -33,7 +33,7 @@ namespace DCAPST.Canopy
 
             WindSpeed = canopy.Windspeed;
             WindSpeedExtinction = canopy.WindSpeedExtinction;
-            LeafAngle = new Angle(canopy.LeafAngle, AngleType.Deg);
+            LeafAngle = canopy.LeafAngle.ToRadians();
             LeafWidth = canopy.LeafWidth;
         }
 
@@ -181,17 +181,16 @@ namespace DCAPST.Canopy
 
         private double CalcShadowProjection(double sunAngle)
         {
-            if (LeafAngle.Rad <= sunAngle)
+            if (LeafAngle <= sunAngle)
             {
-                return Math.Cos(LeafAngle.Rad) * Math.Sin(sunAngle);
+                return Math.Cos(LeafAngle) * Math.Sin(sunAngle);
             }
             else
             {
-                double value = Math.Acos(1 / Math.Tan(LeafAngle.Rad) * Math.Tan(sunAngle));
-                Angle theta = new Angle(value, AngleType.Rad);
+                double theta = Math.Acos(1 / Math.Tan(LeafAngle) * Math.Tan(sunAngle));
 
-                var a = 2 / Math.PI * Math.Sin(LeafAngle.Rad) * Math.Cos(sunAngle) * Math.Sin(theta.Rad);
-                var b = (1 - theta.Deg / 90) * Math.Cos(LeafAngle.Rad) * Math.Sin(sunAngle);
+                var a = 2 / Math.PI * Math.Sin(LeafAngle) * Math.Cos(sunAngle) * Math.Sin(theta);
+                var b = (1 - theta * 2 / Math.PI) * Math.Cos(LeafAngle) * Math.Sin(sunAngle);
                 return a + b;
             }
         }

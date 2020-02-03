@@ -3,23 +3,20 @@ using NUnit.Framework;
 using DCAPST.Environment;
 using DCAPST.Interfaces;
 using Moq;
-using DCAPST;
 
 namespace ModelsTests.Environment.UnitTests
 {
     [TestFixture]
     public class RadiationTests
     {    
-        public Mock<ISolarGeometry> SetupMockSolar(double time, double sunAngle)
+        public Mock<ISolarGeometry> SetupMockSolar(double time, double angle)
         {
             Mock<ISolarGeometry> mock = new Mock<ISolarGeometry>(MockBehavior.Strict);
             mock.Setup(s => s.Sunrise).Returns(5.5206087540876512).Verifiable();
             mock.Setup(s => s.Sunset).Returns(18.47939124591235).Verifiable();
             mock.Setup(s => s.DayLength).Returns(12.958782491824698).Verifiable();
             mock.Setup(s => s.SolarConstant).Returns(1360).Verifiable();            
-            mock.Setup(s => s.SunAngle(6.0)).Returns(new Angle(0.111379441989282, AngleType.Rad)).Verifiable();
-
-            Angle angle = new Angle(sunAngle, AngleType.Rad);
+            mock.Setup(s => s.SunAngle(6.0)).Returns(0.111379441989282).Verifiable();                        
             mock.Setup(s => s.SunAngle(time)).Returns(angle);            
 
             return mock;

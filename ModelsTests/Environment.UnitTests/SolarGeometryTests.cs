@@ -24,8 +24,8 @@ namespace ModelsTests.Environment.UnitTests
         [Test]
         public void SolarDeclinationTest()
         {
-            var expected = 20.731383108171872;
-            var actual = solar.SolarDeclination.Deg;
+            var expected = 20.731383108171876;
+            var actual = solar.SolarDeclination * 180 / Math.PI;
             Assert.AreEqual(expected, actual);
         }
 
@@ -33,7 +33,7 @@ namespace ModelsTests.Environment.UnitTests
         public void SunsetAngleTest()
         {
             var expected = 97.190868688685228;
-            var actual = solar.SunsetAngle.Deg;
+            var actual = solar.SunsetAngle * 180 / Math.PI;
             Assert.AreEqual(expected, actual);
         }
 
@@ -64,7 +64,7 @@ namespace ModelsTests.Environment.UnitTests
         [TestCaseSource(typeof(SolarGeometryTestData), "SunAngleTestCases")]
         public void SunAngleTest(double hour, double expected)
         {
-            var actual = solar.SunAngle(hour).Deg;
+            var actual = solar.SunAngle(hour) * 180 / Math.PI;
             Assert.AreEqual(expected, actual);
         }
     }

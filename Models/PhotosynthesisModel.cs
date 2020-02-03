@@ -76,7 +76,7 @@ namespace DCAPST
         {
             Temperature.UpdateAirTemperature(time);
             Radiation.UpdateRadiationValues(time);
-            var sunAngle = Solar.SunAngle(time).Rad;            
+            var sunAngle = Solar.SunAngle(time);            
             Canopy.CalcCanopyStructure(sunAngle);
 
             return IsSensible();
