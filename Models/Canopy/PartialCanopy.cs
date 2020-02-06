@@ -28,7 +28,7 @@ namespace DCAPST.Canopy
             Canopy = canopy;            
         }
 
-        public void CalculatePhotosynthesis(ITemperature temperature, PhotosynthesisParams Params)
+        public void CalculatePhotosynthesis(ITemperature temperature, WaterParameters Params)
         {
             partials = new List<IAssimilation>
             {
@@ -42,7 +42,7 @@ namespace DCAPST.Canopy
             {
                 p.LeafTemperature = temperature.AirTemperature;
                 var water = new LeafWaterInteractionModel(temperature, p.LeafTemperature, Params.BoundaryHeatConductance);
-                p.TryUpdateAssimilation(water, Params);
+                p.UpdateAssimilation(water, Params);
                 if (p.CO2Rate == 0 || p.WaterUse == 0) return;                
             }
 
@@ -59,7 +59,7 @@ namespace DCAPST.Canopy
                     {
                         var water = new LeafWaterInteractionModel(temperature, p.LeafTemperature, Params.BoundaryHeatConductance);
 
-                        p.TryUpdateAssimilation(water, Params);
+                        p.UpdateAssimilation(water, Params);
                         // If the additional updates fail, the minimum amongst the initial values is taken
                         if (p.CO2Rate == 0 || p.WaterUse == 0)
                         {

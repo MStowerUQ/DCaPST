@@ -60,6 +60,6 @@
         /// <summary>
         /// Runs the photosynthesis calculations for the canopy
         /// </summary>
-        void CalculatePhotosynthesis(ITemperature temperature, PhotosynthesisParams Params);
+        void CalculatePhotosynthesis(ITemperature temperature, WaterParameters Params);
     }
 }

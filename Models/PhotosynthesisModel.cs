@@ -158,7 +158,7 @@ namespace DCAPST
 
         public void DoHourlyCalculation(double maxHourlyT = -1, double sunFraction = 0, double shadeFraction = 0)
         {
-            var Params = new PhotosynthesisParams
+            var Params = new WaterParameters
             {
                 maxHourlyT = maxHourlyT,
                 limited = false
@@ -219,7 +219,7 @@ namespace DCAPST
         }
     }
 
-    public struct PhotosynthesisParams
+    public struct WaterParameters
     {
         public bool limited;
         public double BoundaryHeatConductance;

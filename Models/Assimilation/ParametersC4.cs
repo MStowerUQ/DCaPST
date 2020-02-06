@@ -8,6 +8,11 @@ namespace DCAPST
         public ParametersC4(IAssimilation assimilation, IPartialCanopy partial) : base(assimilation, partial)
         { }
 
+        public override void UpdateMesophyllCO2(double intercellularCO2, double CO2Rate)
+        {
+            MesophyllCO2 = intercellularCO2 - CO2Rate / MesophyllCO2ConductanceAtT;
+        }
+
         protected override AssimilationCalculator GetAc1Calculator()
         {
             var param = new AssimilationCalculator()
@@ -15,7 +20,7 @@ namespace DCAPST
                 x1 = VcMaxT,
                 x2 = Kc / Ko,
                 x3 = Kc,
-                x4 = VpMaxT / (assimilation.MesophyllCO2 + Kp),
+                x4 = VpMaxT / (MesophyllCO2 + Kp),
                 x5 = 0.0,
                 x6 = 1.0,
                 x7 = 0.0,
