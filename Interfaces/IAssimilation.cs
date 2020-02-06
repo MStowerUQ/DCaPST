@@ -18,6 +18,6 @@
         /// Attempt to calculate possible changes to the assimilation value under current conditions.
         /// Returns false if the updated assimilation value is not sensible, otherwise it returns true.
         /// </summary>
-        bool TryUpdateAssimilation(ILeafWaterInteraction Water, PhotosynthesisParams Params);
+        void TryUpdateAssimilation(ILeafWaterInteraction Water, PhotosynthesisParams Params);
     }
 }

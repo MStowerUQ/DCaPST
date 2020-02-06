@@ -35,7 +35,7 @@ namespace DCAPST
         // Per Leaf
         public double MesophyllCO2ConductanceAtT => TemperatureFunction.Val(LeafTemperature, Partial.MesophyllCO2Conductance25, Path.MesophyllCO2ConductanceParams);
 
-        public bool TryUpdateAssimilation(ILeafWaterInteraction Water, PhotosynthesisParams Params)
+        public void TryUpdateAssimilation(ILeafWaterInteraction Water, PhotosynthesisParams Params)
         {
             AssimilationParameters param;
 
@@ -97,13 +97,11 @@ namespace DCAPST
             LeafTemperature = (Water.LeafTemperature(resistance, Partial.AbsorbedRadiation) + LeafTemperature) / 2.0;
 
             // If the assimilation is not sensible
-            if (double.IsNaN(CO2Rate) || CO2Rate <= 0.0)
-                return false;
-            // If the water use is not sensible
-            else if (double.IsNaN(WaterUse) || WaterUse <= 0.0)
-                return false;
-            else
-                return true;
+            if (double.IsNaN(CO2Rate) || CO2Rate <= 0.0 || double.IsNaN(WaterUse) || WaterUse <= 0.0)
+            {
+                CO2Rate = 0;
+                WaterUse = 0;
+            }
         }
     }
 }

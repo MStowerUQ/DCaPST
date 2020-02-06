@@ -42,18 +42,13 @@ namespace DCAPST.Canopy
             {
                 p.LeafTemperature = temperature.AirTemperature;
                 var water = new LeafWaterInteractionModel(temperature, p.LeafTemperature, Params.BoundaryHeatConductance);
-
-                if (!p.TryUpdateAssimilation(water, Params))
-                {
-                    CO2AssimilationRate = 0;
-                    WaterUse = 0;
-                    return;
-                }
+                p.TryUpdateAssimilation(water, Params);
+                if (p.CO2Rate == 0 || p.WaterUse == 0) return;                
             }
 
             // Store the initial results in case the subsequent updates fail
-            var initialA = partials.Select(s => s.CO2Rate);
-            var initialWater = partials.Select(s => s.WaterUse);
+            var initialA = partials.Select(s => s.CO2Rate).ToArray();
+            var initialWater = partials.Select(s => s.WaterUse).ToArray();
 
             // Do not try to update assimilation if the initial value is too low
             if (!partials.Any(s => s.CO2Rate < 0.5))
@@ -64,7 +59,9 @@ namespace DCAPST.Canopy
                     {
                         var water = new LeafWaterInteractionModel(temperature, p.LeafTemperature, Params.BoundaryHeatConductance);
 
-                        if (!p.TryUpdateAssimilation(water, Params))
+                        p.TryUpdateAssimilation(water, Params);
+                        // If the additional updates fail, the minimum amongst the initial values is taken
+                        if (p.CO2Rate == 0 || p.WaterUse == 0)
                         {
                             CO2AssimilationRate = initialA.Min();
                             WaterUse = initialWater.Min();
