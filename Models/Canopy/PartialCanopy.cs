@@ -52,11 +52,11 @@ namespace DCAPST.Canopy
             }
 
             // Store the initial results in case the subsequent updates fail
-            var initialA = partials.Select(s => s.CO2AssimilationRate);
+            var initialA = partials.Select(s => s.CO2Rate);
             var initialWater = partials.Select(s => s.WaterUse);
 
             // Do not try to update assimilation if the initial value is too low
-            if (!partials.Any(s => s.CO2AssimilationRate < 0.5))
+            if (!partials.Any(s => s.CO2Rate < 0.5))
             {
                 for (int n = 0; n < 3; n++)
                 {
@@ -74,7 +74,7 @@ namespace DCAPST.Canopy
                 }
             }
 
-            CO2AssimilationRate = partials.Min(p => p.CO2AssimilationRate);
+            CO2AssimilationRate = partials.Min(p => p.CO2Rate);
             WaterUse = partials.Min(p => p.WaterUse);
         }        
     }

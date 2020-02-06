@@ -1,16 +1,18 @@
-﻿using DCAPST.Canopy;
+﻿using System;
+
+using DCAPST.Canopy;
 using DCAPST.Interfaces;
 
 namespace DCAPST
 {
-    public class CalculatorC3 : AssimilationCalculator
+    public class ParametersC3 : AssimilationParameters
     {
-        public CalculatorC3(IAssimilation assimilation, IPartialCanopy partial) : base(assimilation, partial)
+        public ParametersC3(IAssimilation assimilation, IPartialCanopy partial) : base(assimilation, partial)
         { }
 
-        protected override AssimilationParameters GetAc1Params()
+        protected override AssimilationCalculator GetAc1Calculator()
         {
-            var param = new AssimilationParameters()
+            var param = new AssimilationCalculator()
             {
                 x1 = VcMaxT,
                 x2 = Kc / Ko,
@@ -33,34 +35,14 @@ namespace DCAPST
             return param;
         }
 
-        protected override AssimilationParameters GetAc2Params()
+        protected override AssimilationCalculator GetAc2Calculator()
         {
-            var param = new AssimilationParameters()
-            {
-                x1 = 0.0,
-                x2 = 0.0,
-                x3 = 0.0,
-                x4 = 0.0,
-                x5 = 0.0,
-                x6 = 0.0,
-                x7 = 0.0,
-                x8 = 0.0,
-                x9 = 0.0,
-
-                m = 0.0,
-                t = 0.0,
-                sb = 0.0,
-                j = 0.0,
-                e = 0.0,
-                R = 0.0
-            };
-
-            return param;
+            throw new Exception("The C3 model does not use the Ac2 pathway");
         }
 
-        protected override AssimilationParameters GetAjParams()
+        protected override AssimilationCalculator GetAjCalculator()
         {
-            var param = new AssimilationParameters()
+            var param = new AssimilationCalculator()
             {
                 x1 = ElectronTransportRate / 4,
                 x2 = 2 * G_,

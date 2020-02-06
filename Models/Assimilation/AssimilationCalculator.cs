@@ -1,57 +1,59 @@
-﻿using System;
+using System;
 using DCAPST.Interfaces;
 
 namespace DCAPST
-{
-    public abstract class AssimilationCalculator
+{   
+    public class AssimilationCalculator
     {
-        protected readonly ICanopyParameters canopy;        
-        protected readonly IPartialCanopy partial;
-        protected readonly IAssimilation assimilation;
-        protected readonly IPathwayParameters path;
+        // These are all just dummy variables
+        public double p;
+        public double q;
 
-        public AssimilationCalculator(IAssimilation assimilation, IPartialCanopy partial)
-        {            
-            this.assimilation = assimilation;
-            this.partial = partial;
-            canopy = partial.Canopy;
-            path = canopy.Pathway;
-        }
-        
-        // T: At T Per Leaf
-        public double VcMaxT => TemperatureFunction.Val2(assimilation.LeafTemperature, partial.RubiscoActivity25, path.RubiscoActivity.Factor);
-        public double RdT => TemperatureFunction.Val2(assimilation.LeafTemperature, partial.Rd25, path.Respiration.Factor);
-        public double JMaxT => TemperatureFunction.Val(assimilation.LeafTemperature, partial.JMax25, path.ElectronTransportRateParams);
-        public double VpMaxT => TemperatureFunction.Val2(assimilation.LeafTemperature, partial.PEPcActivity25, path.PEPcActivity.Factor);
+        public double x1;
+        public double x2;
+        public double x3;
+        public double x4;
+        public double x5;
+        public double x6;
+        public double x7;
+        public double x8;
+        public double x9;
 
+        public double m;
+        public double t;
+        public double sb;
+        public double j;
+        public double e;
+        public double R;
 
-        // These ones are not per leaf
-        public double Kc => TemperatureFunction.Val2(assimilation.LeafTemperature, path.RubiscoCarboxylation.At25, path.RubiscoCarboxylation.Factor);
-        public double Ko => TemperatureFunction.Val2(assimilation.LeafTemperature, path.RubiscoOxygenation.At25, path.RubiscoOxygenation.Factor);
-        public double VcVo => TemperatureFunction.Val2(assimilation.LeafTemperature, path.RubiscoCarboxylationToOxygenation.At25, path.RubiscoCarboxylationToOxygenation.Factor);
-        public double Kp => TemperatureFunction.Val2(assimilation.LeafTemperature, path.PEPc.At25, path.PEPc.Factor);
-
-        private double JFactor => partial.PhotonCount * (1.0 - path.SpectralCorrectionFactor) / 2.0;
-        public double ElectronTransportRate =>
-            (JFactor + JMaxT - Math.Pow(Math.Pow(JFactor + JMaxT, 2) - 4 * canopy.ConvexityFactor * JMaxT * JFactor, 0.5))
-            / (2 * canopy.ConvexityFactor);
-
-        public double RubiscoSpecificityFactor => Ko / Kc * VcVo;
-        public double G_ => 0.5 / RubiscoSpecificityFactor;
-        public double MesophyllRespiration => RdT * 0.5;
-        public double Gbs => path.BundleSheathCO2ConductancePerLeaf * partial.LAI;
-        public double Vpr => path.PEPRegenerationPerLeaf * partial.LAI;
-
-        public AssimilationParameters GetAssimilationParams()
+        public double CalculateAssimilation()
         {
-            if (assimilation.Type == AssimilationType.Ac1) return GetAc1Params();
-            else if (assimilation.Type == AssimilationType.Ac2) return GetAc2Params();
-            else return GetAjParams();
+            var n1 = R - x1;
+            var n2 = m - p * x4;
+            var n3 = x5 - x7;
+
+            var a1 = j * q - sb * x2 * x9;
+            var a2 = (q * x4 + x6) * x8;            
+
+            var b0 = q * n1 - p;
+            var b1 = sb * x9 * (R * x2 - t * x1);
+            var b2 = j * (b0 - e * x2 - x3);
+            var b3 = a2 * n1 + (n2 - n3) * x8;
+
+            var c1 = x8 * (n1 * n2 + n3 * x1 - x7 * R);
+            var c2 = j * (p * n1 + e * (t * x1 + x2 * R) + R * x3);            
+
+            var a = a1 + a2;
+            var b = b1 + b2 + b3;
+            var c = c1 - c2;
+
+            return SolveQuadratic(a, b, c);
         }
 
-        protected abstract AssimilationParameters GetAc1Params();
-        protected abstract AssimilationParameters GetAc2Params();
-        protected abstract AssimilationParameters GetAjParams();
-
+        private static double SolveQuadratic(double a, double b, double c)
+        {
+            var root = b * b - 4 * a * c;
+            return (-b - Math.Sqrt(root)) / (2 * a);
+        }
     }
 }

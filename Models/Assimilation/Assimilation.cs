@@ -10,7 +10,7 @@ namespace DCAPST
         public ICanopyParameters Canopy;
         public IPathwayParameters Path;              
 
-        public double CO2AssimilationRate { get; set; }
+        public double CO2Rate { get; set; }
         public double WaterUse { get; set; }
         public double LeafTemperature { get; set; }
 
@@ -37,18 +37,18 @@ namespace DCAPST
 
         public bool TryUpdateAssimilation(ILeafWaterInteraction Water, PhotosynthesisParams Params)
         {
-            AssimilationCalculator calc;
+            AssimilationParameters param;
 
             // TODO: There might be a better structure for this, since it's only used to
             // determine the assimilation parameters
             if (Canopy.Type == CanopyType.C3) 
-                calc = new CalculatorC3(this, Partial);
+                param = new ParametersC3(this, Partial);
             else if (Canopy.Type == CanopyType.C4) 
-                calc = new CalculatorC4(this, Partial);
+                param = new ParametersC4(this, Partial);
             else 
-                calc = new CalculatorCCM(this, Partial);
+                param = new ParametersCCM(this, Partial);
 
-            var aparam = calc.GetAssimilationParams();
+            var calc = param.GetCalculator();
 
             double resistance;
 
@@ -57,11 +57,11 @@ namespace DCAPST
             {
                 IntercellularCO2 = Path.IntercellularToAirCO2Ratio * Canopy.AirCO2;
 
-                aparam.p = IntercellularCO2;
-                aparam.q = 1 / MesophyllCO2ConductanceAtT;
+                calc.p = IntercellularCO2;
+                calc.q = 1 / MesophyllCO2ConductanceAtT;
 
-                CO2AssimilationRate = aparam.CalculateAssimilation();
-                resistance = Water.UnlimitedWaterResistance(CO2AssimilationRate, Canopy.AirCO2, IntercellularCO2);
+                CO2Rate = calc.CalculateAssimilation();
+                resistance = Water.UnlimitedWaterResistance(CO2Rate, Canopy.AirCO2, IntercellularCO2);
                 WaterUse = Water.HourlyWaterUse(resistance, Partial.AbsorbedRadiation);
             }
             // If water supply is limited
@@ -73,31 +73,31 @@ namespace DCAPST
                 resistance = Water.LimitedWaterResistance(WaterUse, Partial.AbsorbedRadiation);
                 var Gt = Water.TotalLeafCO2Conductance(resistance);
 
-                aparam.p = Canopy.AirCO2 - WaterUseMolsSecond * Canopy.AirCO2 / (Gt + WaterUseMolsSecond / 2.0);
-                aparam.q = 1 / (Gt + WaterUseMolsSecond / 2) + 1.0 / MesophyllCO2ConductanceAtT;
+                calc.p = Canopy.AirCO2 - WaterUseMolsSecond * Canopy.AirCO2 / (Gt + WaterUseMolsSecond / 2.0);
+                calc.q = 1 / (Gt + WaterUseMolsSecond / 2) + 1.0 / MesophyllCO2ConductanceAtT;
 
-                CO2AssimilationRate = aparam.CalculateAssimilation();
+                CO2Rate = calc.CalculateAssimilation();
 
-                if (!(calc is CalculatorC3))
-                    IntercellularCO2 = ((Gt - WaterUseMolsSecond / 2.0) * Canopy.AirCO2 - CO2AssimilationRate) / (Gt + WaterUseMolsSecond / 2.0);
+                if (!(param is ParametersC3))
+                    IntercellularCO2 = ((Gt - WaterUseMolsSecond / 2.0) * Canopy.AirCO2 - CO2Rate) / (Gt + WaterUseMolsSecond / 2.0);
             }
 
             // C4 & CCM
-            if (!(calc is CalculatorC3))
-                MesophyllCO2 = IntercellularCO2 - CO2AssimilationRate / MesophyllCO2ConductanceAtT;
+            if (!(param is ParametersC3))
+                MesophyllCO2 = IntercellularCO2 - CO2Rate / MesophyllCO2ConductanceAtT;
 
             // CCM ONLY
-            if (calc is CalculatorCCM)
+            if (param is ParametersCCM)
             {
-                ChloroplasticO2 = Path.PS2ActivityInBundleSheathFraction * CO2AssimilationRate / (Canopy.DiffusivitySolubilityRatio * calc.Gbs) + Canopy.OxygenPartialPressure;
-                ChloroplasticCO2 = MesophyllCO2 + (MesophyllCO2 * aparam.x4 + aparam.x5 - aparam.x6 * CO2AssimilationRate - aparam.m - aparam.x7) * aparam.x8 / calc.Gbs;
+                ChloroplasticO2 = Path.PS2ActivityInBundleSheathFraction * CO2Rate / (Canopy.DiffusivitySolubilityRatio * param.Gbs) + Canopy.OxygenPartialPressure;
+                ChloroplasticCO2 = MesophyllCO2 + (MesophyllCO2 * calc.x4 + calc.x5 - calc.x6 * CO2Rate - calc.m - calc.x7) * calc.x8 / param.Gbs;
             }
 
             // New leaf temperature
             LeafTemperature = (Water.LeafTemperature(resistance, Partial.AbsorbedRadiation) + LeafTemperature) / 2.0;
 
             // If the assimilation is not sensible
-            if (double.IsNaN(CO2AssimilationRate) || CO2AssimilationRate <= 0.0)
+            if (double.IsNaN(CO2Rate) || CO2Rate <= 0.0)
                 return false;
             // If the water use is not sensible
             else if (double.IsNaN(WaterUse) || WaterUse <= 0.0)

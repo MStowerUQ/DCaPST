@@ -6,7 +6,7 @@
     {
         AssimilationType Type { get; set; }
 
-        double CO2AssimilationRate { get; set; }
+        double CO2Rate { get; set; }
         double WaterUse { get; set; }
         double LeafTemperature { get; set; }
         double IntercellularCO2 { get; set; }
