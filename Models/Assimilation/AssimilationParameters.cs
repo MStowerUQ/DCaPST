@@ -41,11 +41,11 @@ namespace DCAPST
         public double ChloroplasticO2 { get; set; }
 
         // T: At T Per Leaf
-        public double VcMaxT => TemperatureFunction.Val2(assimilation.LeafTemperature, partial.RubiscoActivity25, path.RubiscoActivity.Factor);
-        public double RdT => TemperatureFunction.Val2(assimilation.LeafTemperature, partial.Rd25, path.Respiration.Factor);
-        public double JMaxT => TemperatureFunction.Val(assimilation.LeafTemperature, partial.JMax25, path.ElectronTransportRateParams);
-        public double VpMaxT => TemperatureFunction.Val2(assimilation.LeafTemperature, partial.PEPcActivity25, path.PEPcActivity.Factor);
-        public double MesophyllCO2ConductanceAtT => TemperatureFunction.Val(assimilation.LeafTemperature, partial.MesophyllCO2Conductance25, path.MesophyllCO2ConductanceParams);
+        public double VcMaxT => TemperatureFunction.Val2(assimilation.LeafTemperature, partial.At25C.VcMax, path.RubiscoActivity.Factor);
+        public double RdT => TemperatureFunction.Val2(assimilation.LeafTemperature, partial.At25C.Rd, path.Respiration.Factor);
+        public double JMaxT => TemperatureFunction.Val(assimilation.LeafTemperature, partial.At25C.JMax, path.ElectronTransportRateParams);
+        public double VpMaxT => TemperatureFunction.Val2(assimilation.LeafTemperature, partial.At25C.VpMax, path.PEPcActivity.Factor);
+        public double MesophyllCO2ConductanceAtT => TemperatureFunction.Val(assimilation.LeafTemperature, partial.At25C.Gm, path.MesophyllCO2ConductanceParams);
 
 
         // These ones are not per leaf

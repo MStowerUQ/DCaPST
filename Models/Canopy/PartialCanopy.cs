@@ -12,11 +12,7 @@ namespace DCAPST.Canopy
 
         public double LAI { get; set; }
 
-        public double RubiscoActivity25 { get; set; }
-        public double Rd25 { get; set; }
-        public double JMax25 { get; set; }
-        public double PEPcActivity25 { get; set; }
-        public double MesophyllCO2Conductance25 { get; set; }
+        public ParameterRates At25C { get; private set; }
 
         public double AbsorbedRadiation { get; set; }
         public double PhotonCount { get; set; }
@@ -25,7 +21,8 @@ namespace DCAPST.Canopy
 
         public PartialCanopy(ICanopyParameters canopy)
         {
-            Canopy = canopy;            
+            Canopy = canopy;
+            At25C = new ParameterRates();
         }
 
         public void CalculatePhotosynthesis(ITemperature temperature, WaterParameters Params)
@@ -75,4 +72,6 @@ namespace DCAPST.Canopy
             WaterUse = partials.Min(p => p.WaterUse);
         }        
     }
+
+    
 }

@@ -117,24 +117,24 @@ namespace DCAPST.Canopy
             var sunlitCoefficient = NAllocationCoeff + (Absorbed.BeamExtinctionCoeff * LAI);
 
             var RubiscoActivity25 = CalcMaximumRate(Canopy.Pathway.MaxRubiscoActivitySLNRatio, coefficient);
-            Sunlit.RubiscoActivity25 = CalcMaximumRate(Canopy.Pathway.MaxRubiscoActivitySLNRatio, sunlitCoefficient);
-            Shaded.RubiscoActivity25 = RubiscoActivity25 - Sunlit.RubiscoActivity25;
+            Sunlit.At25C.VcMax = CalcMaximumRate(Canopy.Pathway.MaxRubiscoActivitySLNRatio, sunlitCoefficient);
+            Shaded.At25C.VcMax = RubiscoActivity25 - Sunlit.At25C.VcMax;
 
             var Rd25 = CalcMaximumRate(Canopy.Pathway.RespirationSLNRatio, coefficient);
-            Sunlit.Rd25 = CalcMaximumRate(Canopy.Pathway.RespirationSLNRatio, sunlitCoefficient);
-            Shaded.Rd25 = Rd25 - Sunlit.Rd25;
+            Sunlit.At25C.Rd = CalcMaximumRate(Canopy.Pathway.RespirationSLNRatio, sunlitCoefficient);
+            Shaded.At25C.Rd = Rd25 - Sunlit.At25C.Rd;
 
             var JMax25 = CalcMaximumRate(Canopy.Pathway.MaxElectronTransportSLNRatio, coefficient);
-            Sunlit.JMax25 = CalcMaximumRate(Canopy.Pathway.MaxElectronTransportSLNRatio, sunlitCoefficient);
-            Shaded.JMax25 = JMax25 - Sunlit.JMax25;
+            Sunlit.At25C.JMax = CalcMaximumRate(Canopy.Pathway.MaxElectronTransportSLNRatio, sunlitCoefficient);
+            Shaded.At25C.JMax = JMax25 - Sunlit.At25C.JMax;
 
             var PEPcActivity25 = CalcMaximumRate(Canopy.Pathway.MaxPEPcActivitySLNRatio, coefficient);
-            Sunlit.PEPcActivity25 = CalcMaximumRate(Canopy.Pathway.MaxPEPcActivitySLNRatio, sunlitCoefficient);
-            Shaded.PEPcActivity25 = PEPcActivity25 - Sunlit.PEPcActivity25;
+            Sunlit.At25C.VpMax = CalcMaximumRate(Canopy.Pathway.MaxPEPcActivitySLNRatio, sunlitCoefficient);
+            Shaded.At25C.VpMax = PEPcActivity25 - Sunlit.At25C.VpMax;
 
             var MesophyllCO2Conductance25 = CalcMaximumRate(Canopy.Pathway.MesophyllCO2ConductanceSLNRatio, coefficient);
-            Sunlit.MesophyllCO2Conductance25 = CalcMaximumRate(Canopy.Pathway.MesophyllCO2ConductanceSLNRatio, sunlitCoefficient);
-            Shaded.MesophyllCO2Conductance25 = MesophyllCO2Conductance25 - Sunlit.MesophyllCO2Conductance25;
+            Sunlit.At25C.Gm = CalcMaximumRate(Canopy.Pathway.MesophyllCO2ConductanceSLNRatio, sunlitCoefficient);
+            Shaded.At25C.Gm = MesophyllCO2Conductance25 - Sunlit.At25C.Gm;
         }
 
         private double CalcMaximumRate(double psi, double coefficient)
