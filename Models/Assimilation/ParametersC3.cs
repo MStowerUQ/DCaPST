@@ -5,9 +5,9 @@ using DCAPST.Interfaces;
 
 namespace DCAPST
 {
-    public class ParametersC3 : AssimilationParameters
+    public class ParametersC3 : Assimilation
     {
-        public ParametersC3(IAssimilation assimilation, IPartialCanopy partial) : base(assimilation, partial)
+        public ParametersC3(AssimilationType type, IPartialCanopy partial) : base(type, partial)
         { }
 
         protected override AssimilationCalculator GetAc1Calculator()

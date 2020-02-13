@@ -29,9 +29,9 @@ namespace DCAPST.Canopy
         {
             partials = new List<IAssimilation>
             {
-                new Assimilation(AssimilationType.Ac1, this),
-                (Canopy.Type != CanopyType.C3) ? new Assimilation(AssimilationType.Ac2, this) : null,
-                new Assimilation(AssimilationType.Aj, this)
+                CreateAssimilation(AssimilationType.Ac1),
+                (Canopy.Type != CanopyType.C3) ? CreateAssimilation(AssimilationType.Ac2) : null,
+                CreateAssimilation(AssimilationType.Aj)
             };
 
             // Determine initial results            
@@ -70,8 +70,13 @@ namespace DCAPST.Canopy
 
             CO2AssimilationRate = partials.Min(p => p.CO2Rate);
             WaterUse = partials.Min(p => p.WaterUse);
-        }        
-    }
+        }
 
-    
+        private IAssimilation CreateAssimilation(AssimilationType type)
+        {
+            if (Canopy.Type == CanopyType.C3) return new ParametersC3(type, this);
+            else if (Canopy.Type == CanopyType.C4) return new ParametersC4(type, this);
+            else return new ParametersCCM(type, this);
+        }
+    }
 }

@@ -3,9 +3,9 @@ using DCAPST.Interfaces;
 
 namespace DCAPST
 {
-    public class ParametersC4 : AssimilationParameters
+    public class ParametersC4 : Assimilation
     {
-        public ParametersC4(IAssimilation assimilation, IPartialCanopy partial) : base(assimilation, partial)
+        public ParametersC4(AssimilationType type, IPartialCanopy partial) : base(type, partial)
         { }
 
         public override void UpdateMesophyllCO2(double intercellularCO2, double CO2Rate)
