@@ -53,12 +53,17 @@ namespace DCAPST
             double resistance;
 
             aParams.Current.Temperature = LeafTemperature;
-            
+            aParams.PrepareCalculator();
             // If there is no limit on the water supply
             if (!water.limited)
             {
                 IntercellularCO2 = path.IntercellularToAirCO2Ratio * canopy.AirCO2;
-                CO2Rate = aParams.GetUnlimitedAssimilation(IntercellularCO2);
+
+                aParams.Calculator.p = IntercellularCO2;
+                aParams.Calculator.q = 1 / aParams.Current.GmT;
+
+                CO2Rate = aParams.Calculator.CalculateAssimilation();
+
                 resistance = leafWater.UnlimitedWaterResistance(CO2Rate, canopy.AirCO2, IntercellularCO2);
                 WaterUse = leafWater.HourlyWaterUse(resistance, partial.AbsorbedRadiation);
             }
@@ -71,7 +76,10 @@ namespace DCAPST
                 resistance = leafWater.LimitedWaterResistance(WaterUse, partial.AbsorbedRadiation);
                 var Gt = leafWater.TotalLeafCO2Conductance(resistance);
 
-                CO2Rate = aParams.GetLimitedAssimilation(WaterUseMolsSecond, Gt);                
+                aParams.Calculator.p = canopy.AirCO2 - WaterUseMolsSecond * canopy.AirCO2 / (Gt + WaterUseMolsSecond / 2.0);
+                aParams.Calculator.q = 1 / (Gt + WaterUseMolsSecond / 2) + 1.0 / aParams.Current.GmT;
+
+                CO2Rate = aParams.Calculator.CalculateAssimilation();
 
                 if (!(aParams is ParametersC3))
                     IntercellularCO2 = ((Gt - WaterUseMolsSecond / 2.0) * canopy.AirCO2 - CO2Rate) / (Gt + WaterUseMolsSecond / 2.0);

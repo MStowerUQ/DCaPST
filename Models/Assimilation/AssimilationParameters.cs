@@ -12,7 +12,7 @@ namespace DCAPST
         protected readonly IPartialCanopy partial;
         protected readonly IAssimilation assimilation;
         protected readonly IPathwayParameters path;
-        protected AssimilationCalculator Calculator;
+        public AssimilationCalculator Calculator;
 
         public AssimilationParameters(IAssimilation assimilation, IPartialCanopy partial)
         {            
@@ -47,29 +47,11 @@ namespace DCAPST
         public double Gbs => path.BundleSheathCO2ConductancePerLeaf * partial.LAI;
         public double Vpr => path.PEPRegenerationPerLeaf * partial.LAI;
 
-        private void PrepareCalculator()
+        public void PrepareCalculator()
         {
             if (assimilation.Type == AssimilationType.Ac1) Calculator = GetAc1Calculator();
             else if (assimilation.Type == AssimilationType.Ac2) Calculator = GetAc2Calculator();
             else Calculator = GetAjCalculator();            
-        }
-
-        public double GetUnlimitedAssimilation(double intercellularCO2)
-        {
-            PrepareCalculator();
-            Calculator.p = intercellularCO2;
-            Calculator.q = 1 / Current.GmT;
-
-            return Calculator.CalculateAssimilation();
-        }
-
-        public double GetLimitedAssimilation(double waterUseMolsSecond, double Gt)
-        {
-            PrepareCalculator();
-            Calculator.p = canopy.AirCO2 - waterUseMolsSecond * canopy.AirCO2 / (Gt + waterUseMolsSecond / 2.0);
-            Calculator.q = 1 / (Gt + waterUseMolsSecond / 2) + 1.0 / Current.GmT;
-
-            return Calculator.CalculateAssimilation();
         }
 
         public virtual void UpdateMesophyllCO2(double intercellularCO2, double CO2Rate) { /*C4 & CCM overwrite this.*/ }
