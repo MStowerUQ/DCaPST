@@ -21,7 +21,7 @@ namespace DCAPST
             canopy = partial.Canopy;
             path = canopy.Pathway;
 
-            Current = new LeafTemperatureFunction(partial.At25C, canopy, path);
+            Current = new LeafTemperatureFunction(partial);
 
             MesophyllCO2 = canopy.AirCO2 * path.IntercellularToAirCO2Ratio;
             ChloroplasticCO2 = MesophyllCO2 + 20;
@@ -46,10 +46,6 @@ namespace DCAPST
 
         public double Gbs => path.BundleSheathCO2ConductancePerLeaf * partial.LAI;
         public double Vpr => path.PEPRegenerationPerLeaf * partial.LAI;
-        private double JFactor => partial.PhotonCount * (1.0 - path.SpectralCorrectionFactor) / 2.0;
-        public double ElectronTransportRate =>
-            (JFactor + Current.JMaxT - Math.Pow(Math.Pow(JFactor + Current.JMaxT, 2) - 4 * canopy.ConvexityFactor * Current.JMaxT * JFactor, 0.5))
-            / (2 * canopy.ConvexityFactor);
 
         private void PrepareCalculator()
         {

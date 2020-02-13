@@ -6,6 +6,11 @@ namespace DCAPST
 {
     public class LeafTemperatureFunction
     {
+        /// <summary>
+        /// The canopy which is calculating leaf temperature properties
+        /// </summary>
+        protected IPartialCanopy partial;
+
         private ParameterRates rateAt25;
 
         /// <summary>
@@ -18,11 +23,12 @@ namespace DCAPST
         /// </summary>
         protected IPathwayParameters path;
 
-        public LeafTemperatureFunction(ParameterRates at25, ICanopyParameters c, IPathwayParameters path)
+        public LeafTemperatureFunction(IPartialCanopy partial)
         {
-            rateAt25 = at25;
-            canopy = c;
-            this.path = path;
+            this.partial = partial;
+            rateAt25 = partial.At25C;
+            canopy = partial.Canopy;
+            path = canopy.Pathway;
         }
 
         public double Temperature { get; set; }
@@ -73,6 +79,11 @@ namespace DCAPST
         public double Kp => Val2(Temperature, path.PEPc.At25, path.PEPc.Factor);
 
         /// <summary>
+        /// Electron transport rate
+        /// </summary>
+        public double J => CalcElectronTransportRate();
+
+        /// <summary>
         /// Relative CO2/O2 specificity of Rubisco (bar bar^-1)
         /// </summary>
         public double Sco => Ko / Kc * VcVo;
@@ -100,6 +111,13 @@ namespace DCAPST
         public double Val2(double temp, double P25, double tMin)
         {
             return P25 * Math.Exp(tMin * (temp + 273 - 298.15) / (298.15 * 8.314 * (temp + 273)));
+        }
+
+        private double CalcElectronTransportRate()
+        {
+            var factor = partial.PhotonCount * (1.0 - path.SpectralCorrectionFactor) / 2.0;
+            return (factor + JMaxT - Math.Pow(Math.Pow(factor + JMaxT, 2) - 4 * canopy.ConvexityFactor * JMaxT * factor, 0.5))
+            / (2 * canopy.ConvexityFactor);
         }
     }
 

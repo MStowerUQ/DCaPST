@@ -44,7 +44,7 @@ namespace DCAPST
         {
             var param = new AssimilationCalculator()
             {
-                x1 = ElectronTransportRate / 4,
+                x1 = Current.J / 4,
                 x2 = 2 * Current.Gamma,
                 x3 = 0.0,
                 x4 = 0.0,

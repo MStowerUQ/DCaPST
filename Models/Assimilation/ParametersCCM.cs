@@ -80,13 +80,13 @@ namespace DCAPST
         {
             var param = new AssimilationCalculator()
             {
-                x1 = (1 - path.MesophyllElectronTransportFraction) * path.ATPProductionElectronTransportFactor * ElectronTransportRate / 3.0,
+                x1 = (1 - path.MesophyllElectronTransportFraction) * path.ATPProductionElectronTransportFactor * Current.J / 3.0,
                 x2 = 7.0 / 3.0 * Current.Gamma,
                 x3 = 0.0,
                 x4 = 0.0,
-                x5 = path.MesophyllElectronTransportFraction * path.ATPProductionElectronTransportFactor * ElectronTransportRate / path.ExtraATPCost,
+                x5 = path.MesophyllElectronTransportFraction * path.ATPProductionElectronTransportFactor * Current.J / path.ExtraATPCost,
                 x6 = 0.0,
-                x7 = ChloroplasticCO2 * (1 - path.MesophyllElectronTransportFraction) * path.ATPProductionElectronTransportFactor * ElectronTransportRate / (3 * ChloroplasticCO2 + 7 * Current.Gamma * ChloroplasticO2),
+                x7 = ChloroplasticCO2 * (1 - path.MesophyllElectronTransportFraction) * path.ATPProductionElectronTransportFactor * Current.J / (3 * ChloroplasticCO2 + 7 * Current.Gamma * ChloroplasticO2),
                 x8 = 1.0,
                 x9 = 1.0,
 
