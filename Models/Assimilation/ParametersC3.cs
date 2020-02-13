@@ -14,9 +14,9 @@ namespace DCAPST
         {
             var param = new AssimilationCalculator()
             {
-                x1 = VcMaxT,
-                x2 = Kc / Ko,
-                x3 = Kc,
+                x1 = Current.VcMaxT,
+                x2 = Current.Kc / Current.Ko,
+                x3 = Current.Kc,
                 x4 = 0.0,
                 x5 = 0.0,
                 x6 = 0.0,
@@ -24,12 +24,12 @@ namespace DCAPST
                 x8 = 0.0,
                 x9 = 0.0,
 
-                m = MesophyllRespiration,
-                t = G_,
+                m = Current.GmRd,
+                t = Current.Gamma,
                 sb = 0.0,
                 j = 1.0,
                 e = canopy.OxygenPartialPressure,
-                R = RdT
+                R = Current.RdT
             };
 
             return param;
@@ -45,7 +45,7 @@ namespace DCAPST
             var param = new AssimilationCalculator()
             {
                 x1 = ElectronTransportRate / 4,
-                x2 = 2 * G_,
+                x2 = 2 * Current.Gamma,
                 x3 = 0.0,
                 x4 = 0.0,
                 x5 = 0.0,
@@ -54,12 +54,12 @@ namespace DCAPST
                 x8 = 0.0,
                 x9 = 0.0,
 
-                m = MesophyllRespiration,
-                t = G_,
+                m = Current.GmRd,
+                t = Current.Gamma,
                 sb = 0.0,
                 j = 1.0,
                 e = canopy.OxygenPartialPressure,
-                R = RdT
+                R = Current.RdT
             };
 
             return param;

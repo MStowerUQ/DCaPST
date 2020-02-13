@@ -12,7 +12,7 @@ namespace DCAPST
 
         public override void UpdateMesophyllCO2(double intercellularCO2, double CO2Rate)
         {
-            MesophyllCO2 = intercellularCO2 - CO2Rate / MesophyllCO2ConductanceAtT;
+            MesophyllCO2 = intercellularCO2 - CO2Rate / Current.GmT;
         }
 
         public override void UpdateChloroplasticO2(double CO2Rate)
@@ -30,22 +30,22 @@ namespace DCAPST
         {
             var param = new AssimilationCalculator()
             {
-                x1 = VcMaxT,
-                x2 = Kc / Ko,
-                x3 = Kc,
-                x4 = VpMaxT / (MesophyllCO2 + Kp),
+                x1 = Current.VcMaxT,
+                x2 = Current.Kc / Current.Ko,
+                x3 = Current.Kc,
+                x4 = Current.VpMaxT / (MesophyllCO2 + Current.Kp),
                 x5 = 0.0,
                 x6 = 0.0,
-                x7 = ChloroplasticCO2 * VcMaxT / (ChloroplasticCO2 + Kc * (1 + ChloroplasticO2 / Ko)),
+                x7 = ChloroplasticCO2 * Current.VcMaxT / (ChloroplasticCO2 + Current.Kc * (1 + ChloroplasticO2 / Current.Ko)),
                 x8 = 1.0,
                 x9 = 1.0,
 
-                m = MesophyllRespiration,
-                t = G_,
+                m = Current.GmRd,
+                t = Current.Gamma,
                 sb = 0.1 / canopy.DiffusivitySolubilityRatio,
                 j = Gbs,
                 e = canopy.OxygenPartialPressure,
-                R = RdT
+                R = Current.RdT
             };
 
             return param;
@@ -55,22 +55,22 @@ namespace DCAPST
         {
             var param = new AssimilationCalculator()
             {
-                x1 = VcMaxT,
-                x2 = Kc / Ko,
-                x3 = Kc,
+                x1 = Current.VcMaxT,
+                x2 = Current.Kc / Current.Ko,
+                x3 = Current.Kc,
                 x4 = 0.0,
                 x5 = Vpr,
                 x6 = 0.0,
-                x7 = ChloroplasticCO2 * VcMaxT / (ChloroplasticCO2 + Kc * (1 + ChloroplasticO2 / Ko)),
+                x7 = ChloroplasticCO2 * Current.VcMaxT / (ChloroplasticCO2 + Current.Kc * (1 + ChloroplasticO2 / Current.Ko)),
                 x8 = 1.0,
                 x9 = 1.0,
 
-                m = MesophyllRespiration,
-                t = G_,
+                m = Current.GmRd,
+                t = Current.Gamma,
                 sb = 0.1 / canopy.DiffusivitySolubilityRatio,
                 j = Gbs,
                 e = canopy.OxygenPartialPressure,
-                R = RdT
+                R = Current.RdT
             };
 
             return param;
@@ -81,21 +81,21 @@ namespace DCAPST
             var param = new AssimilationCalculator()
             {
                 x1 = (1 - path.MesophyllElectronTransportFraction) * path.ATPProductionElectronTransportFactor * ElectronTransportRate / 3.0,
-                x2 = 7.0 / 3.0 * G_,
+                x2 = 7.0 / 3.0 * Current.Gamma,
                 x3 = 0.0,
                 x4 = 0.0,
                 x5 = path.MesophyllElectronTransportFraction * path.ATPProductionElectronTransportFactor * ElectronTransportRate / path.ExtraATPCost,
                 x6 = 0.0,
-                x7 = ChloroplasticCO2 * (1 - path.MesophyllElectronTransportFraction) * path.ATPProductionElectronTransportFactor * ElectronTransportRate / (3 * ChloroplasticCO2 + 7 * G_ * ChloroplasticO2),
+                x7 = ChloroplasticCO2 * (1 - path.MesophyllElectronTransportFraction) * path.ATPProductionElectronTransportFactor * ElectronTransportRate / (3 * ChloroplasticCO2 + 7 * Current.Gamma * ChloroplasticO2),
                 x8 = 1.0,
                 x9 = 1.0,
 
-                m = MesophyllRespiration,
-                t = G_,
+                m = Current.GmRd,
+                t = Current.Gamma,
                 sb = 0.1 / canopy.DiffusivitySolubilityRatio,
                 j = Gbs,
                 e = canopy.OxygenPartialPressure,
-                R = RdT
+                R = Current.RdT
             };
 
             return param;

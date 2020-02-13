@@ -52,6 +52,8 @@ namespace DCAPST
         {
             double resistance;
 
+            aParams.Current.Temperature = LeafTemperature;
+            
             // If there is no limit on the water supply
             if (!water.limited)
             {
