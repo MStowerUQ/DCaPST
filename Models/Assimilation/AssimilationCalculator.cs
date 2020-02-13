@@ -9,15 +9,7 @@ namespace DCAPST
         public double p;
         public double q;
 
-        public double x1;
-        public double x2;
-        public double x3;
-        public double x4;
-        public double x5;
-        public double x6;
-        public double x7;
-        public double x8;
-        public double x9;
+        public double[] X;
 
         public double m;
         public double t;
@@ -28,20 +20,22 @@ namespace DCAPST
 
         public double CalculateAssimilation()
         {
-            var n1 = R - x1;
-            var n2 = m - p * x4;
-            var n3 = x5 - x7;
+            if (X.Length != 9) throw new Exception("Invalid assimilation terms");
 
-            var a1 = j * q - sb * x2 * x9;
-            var a2 = (q * x4 + x6) * x8;            
+            var n1 = R - X[0];
+            var n2 = m - p * X[3];
+            var n3 = X[4] - X[6];
+
+            var a1 = j * q - sb * X[1] * X[8];
+            var a2 = (q * X[3] + X[5]) * X[7];            
 
             var b0 = q * n1 - p;
-            var b1 = sb * x9 * (R * x2 - t * x1);
-            var b2 = j * (b0 - e * x2 - x3);
-            var b3 = a2 * n1 + (n2 - n3) * x8;
+            var b1 = sb * X[8] * (R * X[1] - t * X[0]);
+            var b2 = j * (b0 - e * X[1] - X[2]);
+            var b3 = a2 * n1 + (n2 - n3) * X[7];
 
-            var c1 = x8 * (n1 * n2 + n3 * x1 - x7 * R);
-            var c2 = j * (p * n1 + e * (t * x1 + x2 * R) + R * x3);            
+            var c1 = X[7] * (n1 * n2 + n3 * X[0] - X[6] * R);
+            var c2 = j * (p * n1 + e * (t * X[0] + X[1] * R) + R * X[2]);            
 
             var a = a1 + a2;
             var b = b1 + b2 + b3;

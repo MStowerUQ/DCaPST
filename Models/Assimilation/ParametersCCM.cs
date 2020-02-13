@@ -22,23 +22,27 @@ namespace DCAPST
 
         public override void UpdateChloroplasticCO2(double CO2Rate)
         {
-            var a = (MesophyllCO2 * Calculator.x4 + Calculator.x5 - Calculator.x6 * CO2Rate - Calculator.m - Calculator.x7);
-            ChloroplasticCO2 = MesophyllCO2 + a * Calculator.x8 / Gbs;
+            var a = (MesophyllCO2 * Calculator.X[3] + Calculator.X[4] - Calculator.X[5] * CO2Rate - Calculator.m - Calculator.X[6]);
+            ChloroplasticCO2 = MesophyllCO2 + a * Calculator.X[7] / Gbs;
         }
 
         protected override AssimilationCalculator GetAc1Calculator()
         {
+            var x = new double[9];
+
+            x[0] = Current.VcMaxT;
+            x[1] = Current.Kc / Current.Ko;
+            x[2] = Current.Kc;
+            x[3] = Current.VpMaxT / (MesophyllCO2 + Current.Kp);
+            x[4] = 0.0;
+            x[5] = 0.0;
+            x[6] = ChloroplasticCO2 * Current.VcMaxT / (ChloroplasticCO2 + Current.Kc * (1 + ChloroplasticO2 / Current.Ko));
+            x[7] = 1.0;
+            x[8] = 1.0;
+
             var param = new AssimilationCalculator()
             {
-                x1 = Current.VcMaxT,
-                x2 = Current.Kc / Current.Ko,
-                x3 = Current.Kc,
-                x4 = Current.VpMaxT / (MesophyllCO2 + Current.Kp),
-                x5 = 0.0,
-                x6 = 0.0,
-                x7 = ChloroplasticCO2 * Current.VcMaxT / (ChloroplasticCO2 + Current.Kc * (1 + ChloroplasticO2 / Current.Ko)),
-                x8 = 1.0,
-                x9 = 1.0,
+                X = x,
 
                 m = Current.GmRd,
                 t = Current.Gamma,
@@ -53,17 +57,21 @@ namespace DCAPST
 
         protected override AssimilationCalculator GetAc2Calculator()
         {
+            var x = new double[9];
+
+            x[0] = Current.VcMaxT;
+            x[1] = Current.Kc / Current.Ko;
+            x[2] = Current.Kc;
+            x[3] = 0.0;
+            x[4] = Vpr;
+            x[5] = 0.0;
+            x[6] = ChloroplasticCO2 * Current.VcMaxT / (ChloroplasticCO2 + Current.Kc * (1 + ChloroplasticO2 / Current.Ko));
+            x[7] = 1.0;
+            x[8] = 1.0;
+
             var param = new AssimilationCalculator()
             {
-                x1 = Current.VcMaxT,
-                x2 = Current.Kc / Current.Ko,
-                x3 = Current.Kc,
-                x4 = 0.0,
-                x5 = Vpr,
-                x6 = 0.0,
-                x7 = ChloroplasticCO2 * Current.VcMaxT / (ChloroplasticCO2 + Current.Kc * (1 + ChloroplasticO2 / Current.Ko)),
-                x8 = 1.0,
-                x9 = 1.0,
+                X = x,
 
                 m = Current.GmRd,
                 t = Current.Gamma,
@@ -78,17 +86,21 @@ namespace DCAPST
 
         protected override AssimilationCalculator GetAjCalculator()
         {
+            var x = new double[9];
+
+            x[0] = (1 - path.MesophyllElectronTransportFraction) * path.ATPProductionElectronTransportFactor * Current.J / 3.0;
+            x[1] = 7.0 / 3.0 * Current.Gamma;
+            x[2] = 0.0;
+            x[3] = 0.0;
+            x[4] = path.MesophyllElectronTransportFraction * path.ATPProductionElectronTransportFactor * Current.J / path.ExtraATPCost;
+            x[5] = 0.0;
+            x[6] = ChloroplasticCO2 * (1 - path.MesophyllElectronTransportFraction) * path.ATPProductionElectronTransportFactor * Current.J / (3 * ChloroplasticCO2 + 7 * Current.Gamma * ChloroplasticO2);
+            x[7] = 1.0;
+            x[8] = 1.0;
+
             var param = new AssimilationCalculator()
             {
-                x1 = (1 - path.MesophyllElectronTransportFraction) * path.ATPProductionElectronTransportFactor * Current.J / 3.0,
-                x2 = 7.0 / 3.0 * Current.Gamma,
-                x3 = 0.0,
-                x4 = 0.0,
-                x5 = path.MesophyllElectronTransportFraction * path.ATPProductionElectronTransportFactor * Current.J / path.ExtraATPCost,
-                x6 = 0.0,
-                x7 = ChloroplasticCO2 * (1 - path.MesophyllElectronTransportFraction) * path.ATPProductionElectronTransportFactor * Current.J / (3 * ChloroplasticCO2 + 7 * Current.Gamma * ChloroplasticO2),
-                x8 = 1.0,
-                x9 = 1.0,
+                X = x,
 
                 m = Current.GmRd,
                 t = Current.Gamma,

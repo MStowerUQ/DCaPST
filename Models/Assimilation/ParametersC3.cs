@@ -12,17 +12,21 @@ namespace DCAPST
 
         protected override AssimilationCalculator GetAc1Calculator()
         {
+            var x = new double[9];
+
+            x[0] = Current.VcMaxT;
+            x[1] = Current.Kc / Current.Ko;
+            x[2] = Current.Kc;
+            x[3] = 0.0;
+            x[4] = 0.0;
+            x[5] = 0.0;
+            x[6] = 0.0;
+            x[7] = 0.0;
+            x[8] = 0.0;
+
             var param = new AssimilationCalculator()
             {
-                x1 = Current.VcMaxT,
-                x2 = Current.Kc / Current.Ko,
-                x3 = Current.Kc,
-                x4 = 0.0,
-                x5 = 0.0,
-                x6 = 0.0,
-                x7 = 0.0,
-                x8 = 0.0,
-                x9 = 0.0,
+                X = x,
 
                 m = Current.GmRd,
                 t = Current.Gamma,
@@ -42,18 +46,20 @@ namespace DCAPST
 
         protected override AssimilationCalculator GetAjCalculator()
         {
-            var param = new AssimilationCalculator()
-            {
-                x1 = Current.J / 4,
-                x2 = 2 * Current.Gamma,
-                x3 = 0.0,
-                x4 = 0.0,
-                x5 = 0.0,
-                x6 = 0.0,
-                x7 = 0.0,
-                x8 = 0.0,
-                x9 = 0.0,
+            var x = new double[9];
 
+            x[0] = Current.J / 4;
+            x[1] = 2 * Current.Gamma;
+            x[2] = 0.0;
+            x[3] = 0.0;
+            x[4] = 0.0;
+            x[5] = 0.0;
+            x[6] = 0.0;
+            x[7] = 0.0;
+            x[8] = 0.0;
+
+            var param = new AssimilationCalculator()
+            {                
                 m = Current.GmRd,
                 t = Current.Gamma,
                 sb = 0.0,
