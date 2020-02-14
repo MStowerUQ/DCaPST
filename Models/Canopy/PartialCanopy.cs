@@ -37,28 +37,28 @@ namespace DCAPST.Canopy
             // Determine initial results            
             foreach (var p in partials)
             {
-                p.LeafTemperature = temperature.AirTemperature;
-                var water = new LeafWaterInteractionModel(temperature, p.LeafTemperature, Params.BoundaryHeatConductance);
+                p.Path.LeafTemperature = temperature.AirTemperature;
+                var water = new LeafWaterInteractionModel(temperature, p.Path.LeafTemperature, Params.BoundaryHeatConductance);
                 p.UpdateAssimilation(water, Params);
-                if (p.CO2Rate == 0 || p.WaterUse == 0) return;                
+                if (p.Path.CO2Rate == 0 || p.Path.WaterUse == 0) return;                
             }
 
             // Store the initial results in case the subsequent updates fail
-            var initialA = partials.Select(s => s.CO2Rate).ToArray();
-            var initialWater = partials.Select(s => s.WaterUse).ToArray();
+            var initialA = partials.Select(s => s.Path.CO2Rate).ToArray();
+            var initialWater = partials.Select(s => s.Path.WaterUse).ToArray();
 
             // Do not try to update assimilation if the initial value is too low
-            if (!partials.Any(s => s.CO2Rate < 0.5))
+            if (!partials.Any(s => s.Path.CO2Rate < 0.5))
             {
                 for (int n = 0; n < 3; n++)
                 {
                     foreach (var p in partials)
                     {
-                        var water = new LeafWaterInteractionModel(temperature, p.LeafTemperature, Params.BoundaryHeatConductance);
+                        var water = new LeafWaterInteractionModel(temperature, p.Path.LeafTemperature, Params.BoundaryHeatConductance);
 
                         p.UpdateAssimilation(water, Params);
                         // If the additional updates fail, the minimum amongst the initial values is taken
-                        if (p.CO2Rate == 0 || p.WaterUse == 0)
+                        if (p.Path.CO2Rate == 0 || p.Path.WaterUse == 0)
                         {
                             CO2AssimilationRate = initialA.Min();
                             WaterUse = initialWater.Min();
@@ -68,8 +68,8 @@ namespace DCAPST.Canopy
                 }
             }
 
-            CO2AssimilationRate = partials.Min(p => p.CO2Rate);
-            WaterUse = partials.Min(p => p.WaterUse);
+            CO2AssimilationRate = partials.Min(p => p.Path.CO2Rate);
+            WaterUse = partials.Min(p => p.Path.WaterUse);
         }
 
         private IAssimilation CreateAssimilation(AssimilationType type)

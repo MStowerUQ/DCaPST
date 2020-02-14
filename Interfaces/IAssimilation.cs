@@ -6,10 +6,7 @@
     {
         AssimilationType Type { get; set; }
 
-        double CO2Rate { get; set; }
-        double WaterUse { get; set; }
-        double LeafTemperature { get; set; }
-        double IntercellularCO2 { get; set; }
+        Pathway Path { get; }
 
         /// <summary>
         /// Attempt to calculate possible changes to the assimilation value under current conditions.
