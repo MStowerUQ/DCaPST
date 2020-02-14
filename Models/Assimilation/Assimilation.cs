@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using DCAPST.Environment;
 using DCAPST.Interfaces;
 
@@ -14,9 +16,7 @@ namespace DCAPST
         protected IPathwayParameters pway;
         protected AssimilationCalculator Calculator;
 
-        protected Pathway Ac1 { get; }
-        protected Pathway Ac2 { get; }
-        protected Pathway Aj { get; }
+        protected List<Pathway> pathways;
 
         public double Gbs => pway.BundleSheathCO2ConductancePerLeaf * partial.LAI;
         public double Vpr => pway.PEPRegenerationPerLeaf * partial.LAI;
@@ -27,47 +27,22 @@ namespace DCAPST
             canopy = partial.Canopy;
             pway = partial.Canopy.Pathway;
 
-            Ac1 = new Pathway(partial) { Type = AssimilationType.Ac1 };
-            Ac2 = this is ParametersC3 ? null : new Pathway(partial) { Type = AssimilationType.Ac2 };
-            Aj = new Pathway(partial) { Type = AssimilationType.Aj };
+            pathways = new List<Pathway>()
+            {
+                /*Ac1*/ new Pathway(partial) { Type = AssimilationType.Ac1 },
+                /*Ac2*/ this is ParametersC3 ? null : new Pathway(partial) { Type = AssimilationType.Ac2 },
+                /*Aj */ new Pathway(partial) { Type = AssimilationType.Aj }
+            };
         }
         
         public void UpdateAssimilation(ITemperature temperature, WaterParameters water)
         {
-            UpdatePathway(temperature, water, Ac1);
-            UpdatePathway(temperature, water, Ac2);
-            UpdatePathway(temperature, water, Aj);
+            pathways.ForEach(p => UpdatePathway(temperature, water, p));
         }
 
-        public double GetCO2Rate()
-        {
-            if (Ac2 == null)
-            {
-                if (Ac1.CO2Rate < Aj.CO2Rate) return Ac1.CO2Rate;
-                else return Aj.CO2Rate;
-            }
-            else
-            {
-                if (Ac1.CO2Rate < Ac2.CO2Rate && Ac1.CO2Rate < Aj.CO2Rate) return Ac1.CO2Rate;
-                else if (Ac2.CO2Rate < Aj.CO2Rate) return Ac2.CO2Rate;
-                else return Aj.CO2Rate;
-            }            
-        }
+        public double GetCO2Rate() => pathways.Min(p => p.CO2Rate);
 
-        public double GetWaterUse()
-        {
-            if (Ac2 == null)
-            {
-                if (Ac1.WaterUse < Aj.WaterUse) return Ac1.WaterUse;
-                else return Aj.WaterUse;
-            }
-            else
-            {
-                if (Ac1.WaterUse < Ac2.WaterUse && Ac1.WaterUse < Aj.WaterUse) return Ac1.WaterUse;
-                else if (Ac2.WaterUse < Aj.WaterUse) return Ac2.WaterUse;
-                else return Aj.WaterUse;
-            }
-        }
+        public double GetWaterUse() => pathways.Min(p => p.WaterUse);
 
         /// <summary>
         /// Updates the state of the assimilation
