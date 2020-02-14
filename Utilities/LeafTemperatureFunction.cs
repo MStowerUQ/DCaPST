@@ -31,7 +31,7 @@ namespace DCAPST
             path = canopy.Pathway;
         }
 
-        public double Temperature { get; set; }
+        public double Temperature { get; set; } = 0;
 
         /// <summary>
         /// Maximum rate of rubisco carboxylation at the current leaf temperature (micro mol CO2 m^-2 ground s^-1)

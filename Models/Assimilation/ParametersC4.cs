@@ -5,7 +5,7 @@ namespace DCAPST
 {
     public class ParametersC4 : Assimilation
     {
-        public ParametersC4(AssimilationType type, IPartialCanopy partial) : base(type, partial)
+        public ParametersC4(IPartialCanopy partial) : base(partial)
         { }
 
         public override void UpdateMesophyllCO2(Pathway path)
