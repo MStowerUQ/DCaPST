@@ -28,9 +28,7 @@ namespace DCAPST
             canopy = partial.Canopy;
             pway = partial.Canopy.Pathway;
 
-            Path = new Pathway(canopy.AirCO2, pway.IntercellularToAirCO2Ratio);
-
-            Path.Current = new LeafTemperatureFunction(partial);
+            Path = new Pathway(partial);
         }
         
         /// <summary>

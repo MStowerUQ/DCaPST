@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using DCAPST.Interfaces;
 
 namespace DCAPST
 {
@@ -29,11 +26,13 @@ namespace DCAPST
         public double ChloroplasticCO2 { get; set; }
         public double ChloroplasticO2 { get; set; }
 
-        public Pathway(double Ca, double CiCaRatio)
+        public Pathway(IPartialCanopy partial)
         {
-            MesophyllCO2 = Ca * CiCaRatio;
+            MesophyllCO2 = partial.Canopy.AirCO2 * partial.Canopy.Pathway.IntercellularToAirCO2Ratio;
             ChloroplasticCO2 = MesophyllCO2 + 20;
             ChloroplasticO2 = 210000;
+
+            Current = new LeafTemperatureFunction(partial);
         }
     }
 }
