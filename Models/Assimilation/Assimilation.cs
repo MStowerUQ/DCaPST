@@ -1,4 +1,5 @@
-﻿using DCAPST.Interfaces;
+﻿using DCAPST.Environment;
+using DCAPST.Interfaces;
 
 namespace DCAPST
 {
@@ -37,8 +38,10 @@ namespace DCAPST
         /// <summary>
         /// Updates the state of the assimilation
         /// </summary>
-        public void UpdateAssimilation(ILeafWaterInteraction leafWater, WaterParameters water)
+        public void UpdateAssimilation(ITemperature temperature, WaterParameters water)
         {
+            var leafWater = new LeafWaterInteractionModel(temperature, Path.LeafTemperature, water.BoundaryHeatConductance);
+
             double resistance;
 
             Current.Temperature = Path.LeafTemperature;

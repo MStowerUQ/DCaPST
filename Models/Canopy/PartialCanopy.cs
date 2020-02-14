@@ -38,8 +38,8 @@ namespace DCAPST.Canopy
             foreach (var p in partials)
             {
                 p.Path.LeafTemperature = temperature.AirTemperature;
-                var water = new LeafWaterInteractionModel(temperature, p.Path.LeafTemperature, Params.BoundaryHeatConductance);
-                p.UpdateAssimilation(water, Params);
+                
+                p.UpdateAssimilation(temperature, Params);
                 if (p.Path.CO2Rate == 0 || p.Path.WaterUse == 0) return;                
             }
 
@@ -54,9 +54,7 @@ namespace DCAPST.Canopy
                 {
                     foreach (var p in partials)
                     {
-                        var water = new LeafWaterInteractionModel(temperature, p.Path.LeafTemperature, Params.BoundaryHeatConductance);
-
-                        p.UpdateAssimilation(water, Params);
+                        p.UpdateAssimilation(temperature, Params);
                         // If the additional updates fail, the minimum amongst the initial values is taken
                         if (p.Path.CO2Rate == 0 || p.Path.WaterUse == 0)
                         {
