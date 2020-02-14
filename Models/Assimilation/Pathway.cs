@@ -8,6 +8,8 @@ namespace DCAPST
 {
     public class Pathway
     {
+        public LeafTemperatureFunction Current { get; set; }
+
         /// <summary>
         /// The rate at which CO2 is assimilated
         /// </summary>
@@ -17,11 +19,6 @@ namespace DCAPST
         /// The water required to maintain the CO2 rate
         /// </summary>
         public double WaterUse { get; set; }
-
-        /// <summary>
-        /// The temperature of the leaf in which assimilation is occuring
-        /// </summary>
-        public double LeafTemperature { get; set; }
 
         /// <summary>
         /// 

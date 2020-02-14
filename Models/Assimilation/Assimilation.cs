@@ -16,8 +16,7 @@ namespace DCAPST
         protected AssimilationCalculator Calculator;
 
         public Pathway Path { get; }
-
-        public LeafTemperatureFunction Current { get; }
+        
 
         public double Gbs => pway.BundleSheathCO2ConductancePerLeaf * partial.LAI;
         public double Vpr => pway.PEPRegenerationPerLeaf * partial.LAI;
@@ -32,7 +31,7 @@ namespace DCAPST
 
             Path = new Pathway(canopy.AirCO2, pway.IntercellularToAirCO2Ratio);
 
-            Current = new LeafTemperatureFunction(partial);
+            Path.Current = new LeafTemperatureFunction(partial);
         }
         
         /// <summary>
@@ -40,11 +39,10 @@ namespace DCAPST
         /// </summary>
         public void UpdateAssimilation(ITemperature temperature, WaterParameters water)
         {
-            var leafWater = new LeafWaterInteractionModel(temperature, Path.LeafTemperature, water.BoundaryHeatConductance);
+            var leafWater = new LeafWaterInteractionModel(temperature, Path.Current.Temperature, water.BoundaryHeatConductance);
 
             double resistance;
 
-            Current.Temperature = Path.LeafTemperature;
             PrepareCalculator();
             // If there is no limit on the water supply
             if (!water.limited)
@@ -52,7 +50,7 @@ namespace DCAPST
                 Path.IntercellularCO2 = pway.IntercellularToAirCO2Ratio * canopy.AirCO2;
 
                 Calculator.p = Path.IntercellularCO2;
-                Calculator.q = 1 / Current.GmT;
+                Calculator.q = 1 / Path.Current.GmT;
 
                 Path.CO2Rate = Calculator.CalculateAssimilation();
 
@@ -69,7 +67,7 @@ namespace DCAPST
                 var Gt = leafWater.TotalLeafCO2Conductance(resistance);
 
                 Calculator.p = canopy.AirCO2 - WaterUseMolsSecond * canopy.AirCO2 / (Gt + WaterUseMolsSecond / 2.0);
-                Calculator.q = 1 / (Gt + WaterUseMolsSecond / 2) + 1.0 / Current.GmT;
+                Calculator.q = 1 / (Gt + WaterUseMolsSecond / 2) + 1.0 / Path.Current.GmT;
 
                 Path.CO2Rate = Calculator.CalculateAssimilation();
 
@@ -82,7 +80,7 @@ namespace DCAPST
             UpdateChloroplasticCO2(Path.CO2Rate);
 
             // New leaf temperature
-            Path.LeafTemperature = (leafWater.LeafTemperature(resistance, partial.AbsorbedRadiation) + Path.LeafTemperature) / 2.0;
+            Path.Current.Temperature = (leafWater.LeafTemperature(resistance, partial.AbsorbedRadiation) + Path.Current.Temperature) / 2.0;
 
             // If the assimilation is not sensible
             if (double.IsNaN(Path.CO2Rate) || Path.CO2Rate <= 0.0 || double.IsNaN(Path.WaterUse) || Path.WaterUse <= 0.0)

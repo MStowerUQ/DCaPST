@@ -12,7 +12,7 @@ namespace DCAPST
 
         public override void UpdateMesophyllCO2(double intercellularCO2, double CO2Rate)
         {
-            Path.MesophyllCO2 = intercellularCO2 - CO2Rate / Current.GmT;
+            Path.MesophyllCO2 = intercellularCO2 - CO2Rate / Path.Current.GmT;
         }
 
         public override void UpdateChloroplasticO2(double CO2Rate)
@@ -30,13 +30,13 @@ namespace DCAPST
         {
             var x = new double[9];
 
-            x[0] = Current.VcMaxT;
-            x[1] = Current.Kc / Current.Ko;
-            x[2] = Current.Kc;
-            x[3] = Current.VpMaxT / (Path.MesophyllCO2 + Current.Kp);
+            x[0] = Path.Current.VcMaxT;
+            x[1] = Path.Current.Kc / Path.Current.Ko;
+            x[2] = Path.Current.Kc;
+            x[3] = Path.Current.VpMaxT / (Path.MesophyllCO2 + Path.Current.Kp);
             x[4] = 0.0;
             x[5] = 0.0;
-            x[6] = Path.ChloroplasticCO2 * Current.VcMaxT / (Path.ChloroplasticCO2 + Current.Kc * (1 + Path.ChloroplasticO2 / Current.Ko));
+            x[6] = Path.ChloroplasticCO2 * Path.Current.VcMaxT / (Path.ChloroplasticCO2 + Path.Current.Kc * (1 + Path.ChloroplasticO2 / Path.Current.Ko));
             x[7] = 1.0;
             x[8] = 1.0;
 
@@ -44,12 +44,12 @@ namespace DCAPST
             {
                 X = x,
 
-                m = Current.GmRd,
-                t = Current.Gamma,
+                m = Path.Current.GmRd,
+                t = Path.Current.Gamma,
                 sb = 0.1 / canopy.DiffusivitySolubilityRatio,
                 j = Gbs,
                 e = canopy.OxygenPartialPressure,
-                R = Current.RdT
+                R = Path.Current.RdT
             };
 
             return param;
@@ -59,13 +59,13 @@ namespace DCAPST
         {
             var x = new double[9];
 
-            x[0] = Current.VcMaxT;
-            x[1] = Current.Kc / Current.Ko;
-            x[2] = Current.Kc;
+            x[0] = Path.Current.VcMaxT;
+            x[1] = Path.Current.Kc / Path.Current.Ko;
+            x[2] = Path.Current.Kc;
             x[3] = 0.0;
             x[4] = Vpr;
             x[5] = 0.0;
-            x[6] = Path.ChloroplasticCO2 * Current.VcMaxT / (Path.ChloroplasticCO2 + Current.Kc * (1 + Path.ChloroplasticO2 / Current.Ko));
+            x[6] = Path.ChloroplasticCO2 * Path.Current.VcMaxT / (Path.ChloroplasticCO2 + Path.Current.Kc * (1 + Path.ChloroplasticO2 / Path.Current.Ko));
             x[7] = 1.0;
             x[8] = 1.0;
 
@@ -73,12 +73,12 @@ namespace DCAPST
             {
                 X = x,
 
-                m = Current.GmRd,
-                t = Current.Gamma,
+                m = Path.Current.GmRd,
+                t = Path.Current.Gamma,
                 sb = 0.1 / canopy.DiffusivitySolubilityRatio,
                 j = Gbs,
                 e = canopy.OxygenPartialPressure,
-                R = Current.RdT
+                R = Path.Current.RdT
             };
 
             return param;
@@ -88,13 +88,13 @@ namespace DCAPST
         {
             var x = new double[9];
 
-            x[0] = (1 - pway.MesophyllElectronTransportFraction) * pway.ATPProductionElectronTransportFactor * Current.J / 3.0;
-            x[1] = 7.0 / 3.0 * Current.Gamma;
+            x[0] = (1 - pway.MesophyllElectronTransportFraction) * pway.ATPProductionElectronTransportFactor * Path.Current.J / 3.0;
+            x[1] = 7.0 / 3.0 * Path.Current.Gamma;
             x[2] = 0.0;
             x[3] = 0.0;
-            x[4] = pway.MesophyllElectronTransportFraction * pway.ATPProductionElectronTransportFactor * Current.J / base.pway.ExtraATPCost;
+            x[4] = pway.MesophyllElectronTransportFraction * pway.ATPProductionElectronTransportFactor * Path.Current.J / base.pway.ExtraATPCost;
             x[5] = 0.0;
-            x[6] = Path.ChloroplasticCO2 * (1 - pway.MesophyllElectronTransportFraction) * pway.ATPProductionElectronTransportFactor * Current.J / (3 * Path.ChloroplasticCO2 + 7 * Current.Gamma * Path.ChloroplasticO2);
+            x[6] = Path.ChloroplasticCO2 * (1 - pway.MesophyllElectronTransportFraction) * pway.ATPProductionElectronTransportFactor * Path.Current.J / (3 * Path.ChloroplasticCO2 + 7 * Path.Current.Gamma * Path.ChloroplasticO2);
             x[7] = 1.0;
             x[8] = 1.0;
 
@@ -102,12 +102,12 @@ namespace DCAPST
             {
                 X = x,
 
-                m = Current.GmRd,
-                t = Current.Gamma,
+                m = Path.Current.GmRd,
+                t = Path.Current.Gamma,
                 sb = 0.1 / canopy.DiffusivitySolubilityRatio,
                 j = Gbs,
                 e = canopy.OxygenPartialPressure,
-                R = Current.RdT
+                R = Path.Current.RdT
             };
 
             return param;

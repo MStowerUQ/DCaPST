@@ -37,7 +37,7 @@ namespace DCAPST.Canopy
             // Determine initial results            
             foreach (var p in partials)
             {
-                p.Path.LeafTemperature = temperature.AirTemperature;
+                p.Path.Current.Temperature = temperature.AirTemperature;
                 
                 p.UpdateAssimilation(temperature, Params);
                 if (p.Path.CO2Rate == 0 || p.Path.WaterUse == 0) return;                
