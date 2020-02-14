@@ -4,8 +4,6 @@
 
     public interface IAssimilation
     {
-        AssimilationType Type { get; set; }
-
         Pathway Path { get; }
 
         /// <summary>

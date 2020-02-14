@@ -5,6 +5,8 @@ namespace DCAPST
 {
     public class Pathway
     {
+        public AssimilationType Type { get; set; }
+
         public LeafTemperatureFunction Current { get; set; }
 
         /// <summary>

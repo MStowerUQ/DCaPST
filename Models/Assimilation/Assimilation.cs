@@ -7,9 +7,7 @@ namespace DCAPST
     /// Tracks the state of an assimilation type
     /// </summary>
     public abstract class Assimilation : IAssimilation
-    {
-        public AssimilationType Type { get; set; }
-
+    {       
         protected IPartialCanopy partial;
         protected ICanopyParameters canopy;
         protected IPathwayParameters pway;
@@ -22,13 +20,11 @@ namespace DCAPST
 
         public Assimilation(AssimilationType type, IPartialCanopy partial)
         {
-            Type = type;
-
             this.partial = partial;
             canopy = partial.Canopy;
             pway = partial.Canopy.Pathway;
 
-            Path = new Pathway(partial);
+            Path = new Pathway(partial) { Type = type };
         }
         
         /// <summary>
@@ -40,7 +36,7 @@ namespace DCAPST
 
             double resistance;
 
-            PrepareCalculator();
+            PrepareCalculator(Path);
             // If there is no limit on the water supply
             if (!water.limited)
             {
@@ -87,11 +83,11 @@ namespace DCAPST
             }
         }
 
-        private void PrepareCalculator()
+        private void PrepareCalculator(Pathway path)
         {
-            if (Type == AssimilationType.Ac1) Calculator = GetAc1Calculator(Path);
-            else if (Type == AssimilationType.Ac2) Calculator = GetAc2Calculator(Path);
-            else Calculator = GetAjCalculator(Path);
+            if (path.Type == AssimilationType.Ac1) Calculator = GetAc1Calculator(path);
+            else if (path.Type == AssimilationType.Ac2) Calculator = GetAc2Calculator(path);
+            else Calculator = GetAjCalculator(path);
         }
 
         public virtual void UpdateMesophyllCO2(Pathway path) { /*C4 & CCM overwrite this.*/ }
