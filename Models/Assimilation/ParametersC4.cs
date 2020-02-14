@@ -8,19 +8,19 @@ namespace DCAPST
         public ParametersC4(AssimilationType type, IPartialCanopy partial) : base(type, partial)
         { }
 
-        public override void UpdateMesophyllCO2(double intercellularCO2, double CO2Rate)
+        public override void UpdateMesophyllCO2(Pathway path)
         {
-            Path.MesophyllCO2 = intercellularCO2 - CO2Rate / Path.Current.GmT;
+            path.MesophyllCO2 = path.IntercellularCO2 - path.CO2Rate / path.Current.GmT;
         }
 
-        protected override AssimilationCalculator GetAc1Calculator()
+        protected override AssimilationCalculator GetAc1Calculator(Pathway path)
         {
             var x = new double[9];
 
-            x[0] = Path.Current.VcMaxT;
-            x[1] = Path.Current.Kc / Path.Current.Ko;
-            x[2] = Path.Current.Kc;
-            x[3] = Path.Current.VpMaxT / (Path.MesophyllCO2 + Path.Current.Kp);
+            x[0] = path.Current.VcMaxT;
+            x[1] = path.Current.Kc / path.Current.Ko;
+            x[2] = path.Current.Kc;
+            x[3] = path.Current.VpMaxT / (path.MesophyllCO2 + path.Current.Kp);
             x[4] = 0.0;
             x[5] = 1.0;
             x[6] = 0.0;
@@ -31,24 +31,24 @@ namespace DCAPST
             {
                 X = x,
 
-                m = Path.Current.GmRd,
-                t = Path.Current.Gamma,
+                m = path.Current.GmRd,
+                t = path.Current.Gamma,
                 sb = 0.1 / canopy.DiffusivitySolubilityRatio,
                 j = Gbs,
                 e = canopy.OxygenPartialPressure,
-                R = Path.Current.RdT
+                R = path.Current.RdT
             };
 
             return param;
         }
 
-        protected override AssimilationCalculator GetAc2Calculator()
+        protected override AssimilationCalculator GetAc2Calculator(Pathway path)
         {
             var x = new double[9];
 
-            x[0] = Path.Current.VcMaxT;
-            x[1] = Path.Current.Kc / Path.Current.Ko;
-            x[2] = Path.Current.Kc;
+            x[0] = path.Current.VcMaxT;
+            x[1] = path.Current.Kc / path.Current.Ko;
+            x[2] = path.Current.Kc;
             x[3] = 0.0;
             x[4] = Vpr;
             x[5] = 1.0;
@@ -60,26 +60,26 @@ namespace DCAPST
             {
                 X = x,
 
-                m = Path.Current.GmRd,
-                t = Path.Current.Gamma,
+                m = path.Current.GmRd,
+                t = path.Current.Gamma,
                 sb = 0.1 / canopy.DiffusivitySolubilityRatio,
                 j = Gbs,
                 e = canopy.OxygenPartialPressure,
-                R = Path.Current.RdT
+                R = path.Current.RdT
             };
 
             return param;
         }
 
-        protected override AssimilationCalculator GetAjCalculator()
+        protected override AssimilationCalculator GetAjCalculator(Pathway path)
         {
             var x = new double[9];
 
-            x[0] = (1.0 - pway.MesophyllElectronTransportFraction) * Path.Current.J / 3.0;
-            x[1] = 7.0 / 3.0 * Path.Current.Gamma;
+            x[0] = (1.0 - pway.MesophyllElectronTransportFraction) * path.Current.J / 3.0;
+            x[1] = 7.0 / 3.0 * path.Current.Gamma;
             x[2] = 0.0;
             x[3] = 0.0;
-            x[4] = pway.MesophyllElectronTransportFraction * Path.Current.J / pway.ExtraATPCost;
+            x[4] = pway.MesophyllElectronTransportFraction * path.Current.J / pway.ExtraATPCost;
             x[5] = 1.0;
             x[6] = 0.0;
             x[7] = 1.0;
@@ -89,12 +89,12 @@ namespace DCAPST
             {
                 X = x,
 
-                m = Path.Current.GmRd,
-                t = Path.Current.Gamma,
+                m = path.Current.GmRd,
+                t = path.Current.Gamma,
                 sb = 0.1 / canopy.DiffusivitySolubilityRatio,
                 j = Gbs,
                 e = canopy.OxygenPartialPressure,
-                R = Path.Current.RdT
+                R = path.Current.RdT
             };
 
             return param;

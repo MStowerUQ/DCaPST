@@ -15,8 +15,7 @@ namespace DCAPST
         protected IPathwayParameters pway;
         protected AssimilationCalculator Calculator;
 
-        public Pathway Path { get; }
-        
+        public Pathway Path { get; }        
 
         public double Gbs => pway.BundleSheathCO2ConductancePerLeaf * partial.LAI;
         public double Vpr => pway.PEPRegenerationPerLeaf * partial.LAI;
@@ -75,9 +74,9 @@ namespace DCAPST
                     Path.IntercellularCO2 = ((Gt - WaterUseMolsSecond / 2.0) * canopy.AirCO2 - Path.CO2Rate) / (Gt + WaterUseMolsSecond / 2.0);
             }
 
-            UpdateMesophyllCO2(Path.IntercellularCO2, Path.CO2Rate);
-            UpdateChloroplasticO2(Path.CO2Rate);
-            UpdateChloroplasticCO2(Path.CO2Rate);
+            UpdateMesophyllCO2(Path);
+            UpdateChloroplasticO2(Path);
+            UpdateChloroplasticCO2(Path);
 
             // New leaf temperature
             Path.Current.Temperature = (leafWater.LeafTemperature(resistance, partial.AbsorbedRadiation) + Path.Current.Temperature) / 2.0;
@@ -92,17 +91,17 @@ namespace DCAPST
 
         private void PrepareCalculator()
         {
-            if (Type == AssimilationType.Ac1) Calculator = GetAc1Calculator();
-            else if (Type == AssimilationType.Ac2) Calculator = GetAc2Calculator();
-            else Calculator = GetAjCalculator();
+            if (Type == AssimilationType.Ac1) Calculator = GetAc1Calculator(Path);
+            else if (Type == AssimilationType.Ac2) Calculator = GetAc2Calculator(Path);
+            else Calculator = GetAjCalculator(Path);
         }
 
-        public virtual void UpdateMesophyllCO2(double intercellularCO2, double CO2Rate) { /*C4 & CCM overwrite this.*/ }
-        public virtual void UpdateChloroplasticO2(double CO2Rate) { /*CCM overwrites this.*/ }
-        public virtual void UpdateChloroplasticCO2(double CO2Rate) { /*CCM overwrites this.*/ }
+        public virtual void UpdateMesophyllCO2(Pathway path) { /*C4 & CCM overwrite this.*/ }
+        public virtual void UpdateChloroplasticO2(Pathway path) { /*CCM overwrites this.*/ }
+        public virtual void UpdateChloroplasticCO2(Pathway path) { /*CCM overwrites this.*/ }
 
-        protected abstract AssimilationCalculator GetAc1Calculator();
-        protected abstract AssimilationCalculator GetAc2Calculator();
-        protected abstract AssimilationCalculator GetAjCalculator();
+        protected abstract AssimilationCalculator GetAc1Calculator(Pathway path);
+        protected abstract AssimilationCalculator GetAc2Calculator(Pathway path);
+        protected abstract AssimilationCalculator GetAjCalculator(Pathway path);
     }
 }
