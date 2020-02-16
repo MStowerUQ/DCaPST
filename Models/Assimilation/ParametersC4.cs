@@ -8,7 +8,12 @@ namespace DCAPST
         public ParametersC4(IPartialCanopy partial) : base(partial)
         { }
 
-        public override void UpdateMesophyllCO2(Pathway path)
+        protected override void UpdateIntercellularCO2(Pathway path, double gt, double waterUseMolsSecond)
+        {
+            path.IntercellularCO2 = ((gt - waterUseMolsSecond / 2.0) * canopy.AirCO2 - path.CO2Rate) / (gt + waterUseMolsSecond / 2.0);
+        }
+
+        protected override void UpdateMesophyllCO2(Pathway path)
         {
             path.MesophyllCO2 = path.IntercellularCO2 - path.CO2Rate / path.Current.GmT;
         }

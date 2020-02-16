@@ -10,17 +10,22 @@ namespace DCAPST
         public ParametersCCM(IPartialCanopy partial) : base(partial)
         { }
 
-        public override void UpdateMesophyllCO2(Pathway path)
+        protected override void UpdateIntercellularCO2(Pathway path, double gt, double waterUseMolsSecond)
+        {
+            path.IntercellularCO2 = ((gt - waterUseMolsSecond / 2.0) * canopy.AirCO2 - path.CO2Rate) / (gt + waterUseMolsSecond / 2.0);
+        }
+
+        protected override void UpdateMesophyllCO2(Pathway path)
         {
             path.MesophyllCO2 = path.IntercellularCO2 - path.CO2Rate / path.Current.GmT;
         }
 
-        public override void UpdateChloroplasticO2(Pathway path)
+        protected override void UpdateChloroplasticO2(Pathway path)
         {
             path.ChloroplasticO2 = pway.PS2ActivityInBundleSheathFraction * path.CO2Rate / (canopy.DiffusivitySolubilityRatio * Gbs) + canopy.OxygenPartialPressure;
         }
 
-        public override void UpdateChloroplasticCO2(Pathway path)
+        protected override void UpdateChloroplasticCO2(Pathway path)
         {
             var a = (path.MesophyllCO2 * Calculator.X[3] + Calculator.X[4] - Calculator.X[5] * path.CO2Rate - Calculator.m - Calculator.X[6]);
             path.ChloroplasticCO2 = path.MesophyllCO2 + a * Calculator.X[7] / Gbs;

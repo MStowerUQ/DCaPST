@@ -85,8 +85,7 @@ namespace DCAPST
 
                 path.CO2Rate = Calculator.CalculateAssimilation();
 
-                if (!(this is ParametersC3))
-                    path.IntercellularCO2 = ((Gt - WaterUseMolsSecond / 2.0) * canopy.AirCO2 - path.CO2Rate) / (Gt + WaterUseMolsSecond / 2.0);
+                UpdateIntercellularCO2(path, Gt, WaterUseMolsSecond);
             }
 
             UpdateMesophyllCO2(path);
@@ -111,9 +110,10 @@ namespace DCAPST
             else Calculator = GetAjCalculator(path);
         }
 
-        public virtual void UpdateMesophyllCO2(Pathway path) { /*C4 & CCM overwrite this.*/ }
-        public virtual void UpdateChloroplasticO2(Pathway path) { /*CCM overwrites this.*/ }
-        public virtual void UpdateChloroplasticCO2(Pathway path) { /*CCM overwrites this.*/ }
+        protected virtual void UpdateIntercellularCO2(Pathway path, double gt, double waterUseMolsSecond) { /*C4 & CCM overwrite this.*/ }
+        protected virtual void UpdateMesophyllCO2(Pathway path) { /*C4 & CCM overwrite this.*/ }
+        protected virtual void UpdateChloroplasticO2(Pathway path) { /*CCM overwrites this.*/ }
+        protected virtual void UpdateChloroplasticCO2(Pathway path) { /*CCM overwrites this.*/ }
 
         protected abstract AssimilationCalculator GetAc1Calculator(Pathway path);
         protected abstract AssimilationCalculator GetAc2Calculator(Pathway path);
