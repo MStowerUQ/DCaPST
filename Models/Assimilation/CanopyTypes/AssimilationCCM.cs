@@ -25,10 +25,10 @@ namespace DCAPST
             pathway.ChloroplasticO2 = pway.PS2ActivityInBundleSheathFraction * pathway.CO2Rate / (canopy.DiffusivitySolubilityRatio * Gbs) + canopy.OxygenPartialPressure;
         }
 
-        protected override void UpdateChloroplasticCO2(AssimilationPathway pathway)
+        protected override void UpdateChloroplasticCO2(AssimilationPathway pathway, AssimilationFunction func)
         {
-            var a = (pathway.MesophyllCO2 * calculator.X[3] + calculator.X[4] - calculator.X[5] * pathway.CO2Rate - calculator.m - calculator.X[6]);
-            pathway.ChloroplasticCO2 = pathway.MesophyllCO2 + a * calculator.X[7] / Gbs;
+            var a = (pathway.MesophyllCO2 * func.X[3] + func.X[4] - func.X[5] * pathway.CO2Rate - func.m - func.X[6]);
+            pathway.ChloroplasticCO2 = pathway.MesophyllCO2 + a * func.X[7] / Gbs;
         }
 
         protected override AssimilationFunction GetAc1Function(AssimilationPathway pathway)

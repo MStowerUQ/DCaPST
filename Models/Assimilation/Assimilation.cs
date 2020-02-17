@@ -14,7 +14,6 @@ namespace DCAPST
         protected IPartialCanopy partial;
         protected ICanopyParameters canopy;
         protected IPathwayParameters pway;
-        protected AssimilationFunction calculator;
 
         protected List<AssimilationPathway> pathways;
 
@@ -57,16 +56,16 @@ namespace DCAPST
 
             double resistance;
 
-            PrepareCalculator(pathway);
+            var func = GetFunction(pathway);
             // If there is no limit on the water supply
             if (!water.limited)
             {
                 pathway.IntercellularCO2 = pway.IntercellularToAirCO2Ratio * canopy.AirCO2;
 
-                calculator.Ci = pathway.IntercellularCO2;
-                calculator.Rm = 1 / pathway.Leaf.GmT;
+                func.Ci = pathway.IntercellularCO2;
+                func.Rm = 1 / pathway.Leaf.GmT;
 
-                pathway.CO2Rate = calculator.Value();
+                pathway.CO2Rate = func.Value();
 
                 resistance = leafWater.UnlimitedWaterResistance(pathway.CO2Rate, canopy.AirCO2, pathway.IntercellularCO2);
                 pathway.WaterUse = leafWater.HourlyWaterUse(resistance, partial.AbsorbedRadiation);
@@ -80,17 +79,17 @@ namespace DCAPST
                 resistance = leafWater.LimitedWaterResistance(pathway.WaterUse, partial.AbsorbedRadiation);
                 var Gt = leafWater.TotalLeafCO2Conductance(resistance);
 
-                calculator.Ci = canopy.AirCO2 - WaterUseMolsSecond * canopy.AirCO2 / (Gt + WaterUseMolsSecond / 2.0);
-                calculator.Rm = 1 / (Gt + WaterUseMolsSecond / 2) + 1.0 / pathway.Leaf.GmT;
+                func.Ci = canopy.AirCO2 - WaterUseMolsSecond * canopy.AirCO2 / (Gt + WaterUseMolsSecond / 2.0);
+                func.Rm = 1 / (Gt + WaterUseMolsSecond / 2) + 1.0 / pathway.Leaf.GmT;
 
-                pathway.CO2Rate = calculator.Value();
+                pathway.CO2Rate = func.Value();
 
                 UpdateIntercellularCO2(pathway, Gt, WaterUseMolsSecond);
             }
 
             UpdateMesophyllCO2(pathway);
             UpdateChloroplasticO2(pathway);
-            UpdateChloroplasticCO2(pathway);
+            UpdateChloroplasticCO2(pathway, func);
 
             // New leaf temperature
             pathway.Leaf.Temperature = (leafWater.LeafTemperature(resistance, partial.AbsorbedRadiation) + pathway.Leaf.Temperature) / 2.0;
@@ -103,11 +102,11 @@ namespace DCAPST
             }
         }
 
-        private void PrepareCalculator(AssimilationPathway pathway)
+        private AssimilationFunction GetFunction(AssimilationPathway pathway)
         {
-            if (pathway.Type == AssimilationType.Ac1) calculator = GetAc1Function(pathway);
-            else if (pathway.Type == AssimilationType.Ac2) calculator = GetAc2Function(pathway);
-            else calculator = GetAjFunction(pathway);
+            if (pathway.Type == AssimilationType.Ac1) return GetAc1Function(pathway);
+            else if (pathway.Type == AssimilationType.Ac2) return GetAc2Function(pathway);
+            else return GetAjFunction(pathway);
         }
 
         protected virtual void UpdateIntercellularCO2(AssimilationPathway pathway, double gt, double waterUseMolsSecond) 
@@ -119,7 +118,7 @@ namespace DCAPST
         protected virtual void UpdateChloroplasticO2(AssimilationPathway pathway) 
         { /*CCM overwrites this.*/ }
 
-        protected virtual void UpdateChloroplasticCO2(AssimilationPathway pathway) 
+        protected virtual void UpdateChloroplasticCO2(AssimilationPathway pathway, AssimilationFunction func) 
         { /*CCM overwrites this.*/ }
 
         protected abstract AssimilationFunction GetAc1Function(AssimilationPathway pathway);
