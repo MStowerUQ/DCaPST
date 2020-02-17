@@ -5,18 +5,18 @@ using DCAPST.Interfaces;
 
 namespace DCAPST
 {
-    public class ParametersC3 : Assimilation
+    public class AssimilationC3 : Assimilation
     {
-        public ParametersC3(IPartialCanopy partial) : base(partial)
+        public AssimilationC3(IPartialCanopy partial) : base(partial)
         { }
 
         protected override AssimilationFunction GetAc1Function(AssimilationPathway pathway)
         {
             var x = new double[9];
 
-            x[0] = pathway.Current.VcMaxT;
-            x[1] = pathway.Current.Kc / pathway.Current.Ko;
-            x[2] = pathway.Current.Kc;
+            x[0] = pathway.Leaf.VcMaxT;
+            x[1] = pathway.Leaf.Kc / pathway.Leaf.Ko;
+            x[2] = pathway.Leaf.Kc;
             x[3] = 0.0;
             x[4] = 0.0;
             x[5] = 0.0;
@@ -28,12 +28,12 @@ namespace DCAPST
             {
                 X = x,
 
-                m = pathway.Current.GmRd,
-                t = pathway.Current.Gamma,
+                m = pathway.Leaf.GmRd,
+                t = pathway.Leaf.Gamma,
                 sb = 0.0,
                 j = 1.0,
                 e = canopy.OxygenPartialPressure,
-                R = pathway.Current.RdT
+                R = pathway.Leaf.RdT
             };
 
             return param;
@@ -48,8 +48,8 @@ namespace DCAPST
         {
             var x = new double[9];
 
-            x[0] = pathway.Current.J / 4.0;
-            x[1] = 2.0 * pathway.Current.Gamma;
+            x[0] = pathway.Leaf.J / 4.0;
+            x[1] = 2.0 * pathway.Leaf.Gamma;
             x[2] = 0.0;
             x[3] = 0.0;
             x[4] = 0.0;
@@ -60,12 +60,12 @@ namespace DCAPST
 
             var param = new AssimilationFunction()
             {                
-                m = pathway.Current.GmRd,
-                t = pathway.Current.Gamma,
+                m = pathway.Leaf.GmRd,
+                t = pathway.Leaf.Gamma,
                 sb = 0.0,
                 j = 1.0,
                 e = canopy.OxygenPartialPressure,
-                R = pathway.Current.RdT
+                R = pathway.Leaf.RdT
             };
 
             return param;

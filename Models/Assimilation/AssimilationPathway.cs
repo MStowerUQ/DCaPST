@@ -7,7 +7,7 @@ namespace DCAPST
     {
         public AssimilationType Type { get; set; }
 
-        public LeafTemperatureFunction Current { get; set; }
+        public LeafTemperatureFunction Leaf { get; set; }
 
         /// <summary>
         /// The rate at which CO2 is assimilated
@@ -34,7 +34,7 @@ namespace DCAPST
             ChloroplasticCO2 = MesophyllCO2 + 20;
             ChloroplasticO2 = 210000;
 
-            Current = new LeafTemperatureFunction(partial);
+            Leaf = new LeafTemperatureFunction(partial);
         }
     }
 }

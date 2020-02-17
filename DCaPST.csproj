@@ -71,9 +71,9 @@
     <Compile Include="Interfaces\Models\ISolarGeometry.cs" />
     <Compile Include="Interfaces\Models\IRadiation.cs" />
     <Compile Include="Models\Assimilation\Assimilation.cs" />
-    <Compile Include="Models\Assimilation\AssimilationCCM.cs" />
-    <Compile Include="Models\Assimilation\AssimilationC4.cs" />
-    <Compile Include="Models\Assimilation\AssimilationC3.cs" />
+    <Compile Include="Models\Assimilation\CanopyTypes\AssimilationCCM.cs" />
+    <Compile Include="Models\Assimilation\CanopyTypes\AssimilationC4.cs" />
+    <Compile Include="Models\Assimilation\CanopyTypes\AssimilationC3.cs" />
     <Compile Include="Models\Assimilation\AssimilationPathway.cs" />
     <Compile Include="Models\Canopy\CanopyRadiation.cs" />
     <Compile Include="Parameters\CanopyParameters.cs" />

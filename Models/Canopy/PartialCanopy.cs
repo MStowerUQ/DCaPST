@@ -60,9 +60,9 @@ namespace DCAPST.Canopy
 
         private IAssimilation CreateAssimilation()
         {
-            if (Canopy.Type == CanopyType.C3) return new ParametersC3(this);
-            else if (Canopy.Type == CanopyType.C4) return new ParametersC4(this);
-            else return new ParametersCCM(this);
+            if (Canopy.Type == CanopyType.C3) return new AssimilationC3(this);
+            else if (Canopy.Type == CanopyType.C4) return new AssimilationC4(this);
+            else return new AssimilationCCM(this);
         }
     }
 }
