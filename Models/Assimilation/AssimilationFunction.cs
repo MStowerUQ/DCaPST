@@ -1,51 +1,91 @@
 using System;
-using DCAPST.Interfaces;
 
 namespace DCAPST
-{   
+{
+    /// <summary>
+    /// Manages the calculation of CO2 assimilation rate
+    /// </summary>
+    /// <remarks>
+    /// See the supplementary material for 
+    /// "Simulating daily field crop canopy photosynthesis: an integrated software package",
+    /// by Alex Wu, Al Doherty, Graham D. Farquhar and Graeme L. Hammer for the details behind
+    /// this function.
+    /// </remarks>
     public class AssimilationFunction
     {
-        // These are all just dummy variables
-        public double Ci;
-        public double Rm;
-
+        /// <summary>
+        /// Function terms
+        /// </summary>
         public double[] X;
 
-        public double m;
-        public double t;
-        public double sb;
-        public double j;
-        public double e;
-        public double R;
+        /// <summary>
+        /// Intercellular CO2
+        /// </summary>
+        public double Ci;
+
+        /// <summary>
+        /// Mesophyll resistance
+        /// </summary>
+        public double Rm;
+
+        /// <summary>
+        /// Mesophyll respiration
+        /// </summary>
+        public double MesophyllRespiration;
+        
+        /// <summary>
+        /// Half the rubisco specificity reciprocal
+        /// </summary>
+        public double HalfRubiscoSpecificityReciprocal;
+        
+        /// <summary>
+        /// A fraction of the diffusivity solubility ratio
+        /// </summary>
+        public double FractionOfDiffusivitySolubilityRatio;
+        
+        /// <summary>
+        ///  The bundle sheath conductance
+        /// </summary>
+        public double BundleSheathConductance;
+        
+        /// <summary>
+        /// Oxygen partial pressure
+        /// </summary>
+        public double Oxygen;
+
+        /// <summary>
+        /// Leaf respiration
+        /// </summary>
+        public double Respiration;
 
         /// <summary>
         /// Solves the assimilation function
-        /// </summary>
+        /// </summary>        
         public double Value()
         {
             if (X.Length != 9) throw new Exception("Invalid assimilation terms");
 
-            double m = this.m;
-            double t = this.t;
-            double sb = this.sb;
-            double j = this.j;
-            double e = this.e;
-            double R = this.R;
+            double m = MesophyllRespiration;
+            double h = HalfRubiscoSpecificityReciprocal;
+            double f = FractionOfDiffusivitySolubilityRatio;
+            double g = BundleSheathConductance;
+            double o = Oxygen;
+            double r = Respiration;
 
-            var n1 = R - X[0];
+            var n1 = r - X[0];
             var n2 = m - Ci * X[3];
             var n3 = X[4] - X[6];
 
-            var a1 = j * Rm - sb * X[1] * X[8];
+            var a1 = g * Rm - f * X[1] * X[8];
             var a2 = (Rm * X[3] + X[5]) * X[7];            
 
             var b0 = Rm * n1 - Ci;
-            var b1 = sb * X[8] * (R * X[1] - t * X[0]);
-            var b2 = j * (b0 - e * X[1] - X[2]);
+            var b1 = f * X[8] * (r * X[1] - h * X[0]);
+            var b2 = g * (b0 - o * X[1] - X[2]);
             var b3 = a2 * n1 + (n2 - n3) * X[7];
 
-            var c1 = X[7] * (n1 * n2 + n3 * X[0] - X[6] * R);
-            var c2 = j * (Ci * n1 + e * (t * X[0] + X[1] * R) + R * X[2]);            
+            var c1 = X[7] * (n1 * n2 + n3 * X[0] - X[6] * r);
+            var c2 = g * (Ci * n1 + o * (h * X[0] + X[1] * r) + r * X[2]);            
 
             var a = a1 + a2;
             var b = b1 + b2 + b3;
@@ -54,6 +94,9 @@ namespace DCAPST
             return SolveQuadratic(a, b, c);
         }
 
+        /// <summary>
+        /// The quadratic equation
+        /// </summary>
         private static double SolveQuadratic(double a, double b, double c)
         {
             var root = b * b - 4 * a * c;

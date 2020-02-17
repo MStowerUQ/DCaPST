@@ -125,7 +125,7 @@ namespace DCAPST
                 // Note: double arrays default value is 0.0, which is the intended case if initialisation fails
                 if (!TryInitiliase(time)) continue;
 
-                intercepted += Radiation.Total * Canopy.PropnInterceptedRadns * 3600;
+                intercepted += Radiation.Total * Canopy.InterceptedRadiation * 3600;
 
                 DoHourlyCalculation();
 

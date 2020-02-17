@@ -1,10 +1,10 @@
-﻿using System;
-
-using DCAPST.Canopy;
-using DCAPST.Interfaces;
+﻿using DCAPST.Interfaces;
 
 namespace DCAPST
 {
+    /// <summary>
+    /// Defines the pathway functions for a CCM canopy
+    /// </summary>
     public class AssimilationCCM : Assimilation
     {
         public AssimilationCCM(IPartialCanopy partial) : base(partial)
@@ -27,7 +27,7 @@ namespace DCAPST
 
         protected override void UpdateChloroplasticCO2(AssimilationPathway pathway, AssimilationFunction func)
         {
-            var a = (pathway.MesophyllCO2 * func.X[3] + func.X[4] - func.X[5] * pathway.CO2Rate - func.m - func.X[6]);
+            var a = (pathway.MesophyllCO2 * func.X[3] + func.X[4] - func.X[5] * pathway.CO2Rate - func.MesophyllRespiration - func.X[6]);
             pathway.ChloroplasticCO2 = pathway.MesophyllCO2 + a * func.X[7] / Gbs;
         }
 
@@ -49,12 +49,12 @@ namespace DCAPST
             {
                 X = x,
 
-                m = pathway.Leaf.GmRd,
-                t = pathway.Leaf.Gamma,
-                sb = 0.1 / canopy.DiffusivitySolubilityRatio,
-                j = Gbs,
-                e = canopy.OxygenPartialPressure,
-                R = pathway.Leaf.RdT
+                MesophyllRespiration = pathway.Leaf.GmRd,
+                HalfRubiscoSpecificityReciprocal = pathway.Leaf.Gamma,
+                FractionOfDiffusivitySolubilityRatio = 0.1 / canopy.DiffusivitySolubilityRatio,
+                BundleSheathConductance = Gbs,
+                Oxygen = canopy.OxygenPartialPressure,
+                Respiration = pathway.Leaf.RdT
             };
 
             return func;
@@ -78,12 +78,12 @@ namespace DCAPST
             {
                 X = x,
 
-                m = pathway.Leaf.GmRd,
-                t = pathway.Leaf.Gamma,
-                sb = 0.1 / canopy.DiffusivitySolubilityRatio,
-                j = Gbs,
-                e = canopy.OxygenPartialPressure,
-                R = pathway.Leaf.RdT
+                MesophyllRespiration = pathway.Leaf.GmRd,
+                HalfRubiscoSpecificityReciprocal = pathway.Leaf.Gamma,
+                FractionOfDiffusivitySolubilityRatio = 0.1 / canopy.DiffusivitySolubilityRatio,
+                BundleSheathConductance = Gbs,
+                Oxygen = canopy.OxygenPartialPressure,
+                Respiration = pathway.Leaf.RdT
             };
 
             return func;
@@ -103,19 +103,19 @@ namespace DCAPST
             x[7] = 1.0;
             x[8] = 1.0;
 
-            var param = new AssimilationFunction()
+            var func = new AssimilationFunction()
             {
                 X = x,
 
-                m = pathway.Leaf.GmRd,
-                t = pathway.Leaf.Gamma,
-                sb = 0.1 / canopy.DiffusivitySolubilityRatio,
-                j = Gbs,
-                e = canopy.OxygenPartialPressure,
-                R = pathway.Leaf.RdT
+                MesophyllRespiration = pathway.Leaf.GmRd,
+                HalfRubiscoSpecificityReciprocal = pathway.Leaf.Gamma,
+                FractionOfDiffusivitySolubilityRatio = 0.1 / canopy.DiffusivitySolubilityRatio,
+                BundleSheathConductance = Gbs,
+                Oxygen = canopy.OxygenPartialPressure,
+                Respiration = pathway.Leaf.RdT
             };
 
-            return param;
+            return func;
         }
     }
 }

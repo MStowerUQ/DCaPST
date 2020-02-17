@@ -1,10 +1,11 @@
 ﻿using System;
-
-using DCAPST.Canopy;
 using DCAPST.Interfaces;
 
 namespace DCAPST
 {
+    /// <summary>
+    /// Defines the pathway functions for a C3 canopy
+    /// </summary>
     public class AssimilationC3 : Assimilation
     {
         public AssimilationC3(IPartialCanopy partial) : base(partial)
@@ -28,12 +29,12 @@ namespace DCAPST
             {
                 X = x,
 
-                m = pathway.Leaf.GmRd,
-                t = pathway.Leaf.Gamma,
-                sb = 0.0,
-                j = 1.0,
-                e = canopy.OxygenPartialPressure,
-                R = pathway.Leaf.RdT
+                MesophyllRespiration = pathway.Leaf.GmRd,
+                HalfRubiscoSpecificityReciprocal = pathway.Leaf.Gamma,
+                FractionOfDiffusivitySolubilityRatio = 0.0,
+                BundleSheathConductance = 1.0,
+                Oxygen = canopy.OxygenPartialPressure,
+                Respiration = pathway.Leaf.RdT
             };
 
             return param;
@@ -58,17 +59,17 @@ namespace DCAPST
             x[7] = 0.0;
             x[8] = 0.0;
 
-            var param = new AssimilationFunction()
+            var func = new AssimilationFunction()
             {                
-                m = pathway.Leaf.GmRd,
-                t = pathway.Leaf.Gamma,
-                sb = 0.0,
-                j = 1.0,
-                e = canopy.OxygenPartialPressure,
-                R = pathway.Leaf.RdT
+                MesophyllRespiration = pathway.Leaf.GmRd,
+                HalfRubiscoSpecificityReciprocal = pathway.Leaf.Gamma,
+                FractionOfDiffusivitySolubilityRatio = 0.0,
+                BundleSheathConductance = 1.0,
+                Oxygen = canopy.OxygenPartialPressure,
+                Respiration = pathway.Leaf.RdT
             };
 
-            return param;
+            return func;
         }
     }
 }

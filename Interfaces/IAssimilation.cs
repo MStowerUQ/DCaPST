@@ -1,7 +1,6 @@
 ﻿namespace DCAPST.Interfaces
 {
-    public enum AssimilationType { Ac1, Ac2, Aj }
-
+    
     public interface IAssimilation
     {
         /// <summary>

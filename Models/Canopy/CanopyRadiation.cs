@@ -17,24 +17,29 @@ namespace DCAPST.Canopy
         public double ReflectionCoefficientHorizontal => (1 - Math.Pow(1 - LeafScatteringCoeff, 0.5)) / (1 + Math.Pow(1 - LeafScatteringCoeff, 0.5));
 
         /// <summary>
-        /// The cumulative LAI of all layers up to the Nth layer
+        /// The accumulated LAI of all layers up to the Nth layer
         /// </summary>
-        private readonly double laiAccum1;
+        private readonly double AccumLAI_1;
 
         /// <summary>
-        /// The cumulative LAI of all layers up to the (N - 1)th layer
+        /// The accumulated LAI of all layers up to the (N - 1)th layer
         /// </summary>
-        private readonly double laiAccum0;
+        private readonly double AccumLAI_0;
 
         public CanopyRadiation(int layers, double lai)
         {
             var layerLAI = lai / layers;
 
-            laiAccum1 = layers * layerLAI;
-            laiAccum0 = (layers - 1) * layerLAI;
+            AccumLAI_1 = layers * layerLAI;
+            AccumLAI_0 = (layers - 1) * layerLAI;
         }
 
-        public double CalculateTotalRadiation(double direct, double diffuse)
+        /// <summary>
+        /// Calculates the total radiation absorbed by the canopy
+        /// </summary>
+        /// <param name="direct">The direct solar radiation</param>
+        /// <param name="diffuse">The diffuse solar radiation</param>
+        public double CalcTotalRadiation(double direct, double diffuse)
         {
             var a = (1 - BeamReflectionCoeff) * direct * CalcExp(BeamScatteredBeam);
             var b = (1 - DiffuseReflectionCoeff) * diffuse * CalcExp(DiffuseScatteredDiffuse);
@@ -42,21 +47,35 @@ namespace DCAPST.Canopy
             return a + b;
         }
 
+        /// <summary>
+        /// Calculates the total radiation absorbed by the sunlit part of the canopy
+        /// </summary>
+        /// <param name="direct">The direct solar radiation</param>
+        /// <param name="diffuse">The diffuse solar radiation</param>
+        /// <returns></returns>
         public double CalcSunlitRadiation(double direct, double diffuse)
         {
-            var dir = CalculateDirectSunlit(direct);
-            var dif = CalculateDiffuseSunlit(diffuse);
-            var sct = CalculateScatteredSunlit(direct);
+            var dir = CalcSunlitDirect(direct);
+            var dif = CalcSunlitDiffuse(diffuse);
+            var sct = CalcSunlitScattered(direct);
 
             return dir + dif + sct;
         }
 
-        public double CalculateDirectSunlit(double direct)
+        /// <summary>
+        /// Calculates the direct radiation absorbed by the sunlit canopy
+        /// </summary>
+        /// <param name="direct">The direct solar radiation</param>
+        private double CalcSunlitDirect(double direct)
         {
             return (1 - LeafScatteringCoeff) * direct * CalcExp(BeamExtinctionCoeff);
         }
 
-        public double CalculateDiffuseSunlit(double diffuse)
+        /// <summary>
+        /// Calculates the diffuse radiation absorbed by the sunlit canopy
+        /// </summary>
+        /// <param name="diffuse">The diffuse solar radiation</param>
+        private double CalcSunlitDiffuse(double diffuse)
         {
             var DSD_BEC = DiffuseScatteredDiffuse + BeamExtinctionCoeff;            
             var radiation = (1 - DiffuseReflectionCoeff) * diffuse * CalcExp(DSD_BEC) * (DiffuseScatteredDiffuse / DSD_BEC);
@@ -64,33 +83,40 @@ namespace DCAPST.Canopy
             return radiation;
         }
 
-        public double CalculateScatteredSunlit(double direct)
+        /// <summary>
+        /// Calculates the scattered radiation absorbed by the sunlit canopy
+        /// </summary>
+        /// <param name="direct">The direct solar radiation</param>
+        private double CalcSunlitScattered(double direct)
         {
             var BSB_BEC = BeamScatteredBeam + BeamExtinctionCoeff;
             if (BSB_BEC == 0) return 0;
             
-            var dir = (1 - BeamReflectionCoeff) * CalcExp(BSB_BEC) * (BeamScatteredBeam / BSB_BEC); // Integral of direct     
-            var diff = (1 - LeafScatteringCoeff) * CalcExp(2 * BeamExtinctionCoeff) / 2.0;    // Integral of diffuse
+            var dir = (1.0 - BeamReflectionCoeff) * CalcExp(BSB_BEC) * (BeamScatteredBeam / BSB_BEC); // Integral of direct     
+            var dif = (1.0 - LeafScatteringCoeff) * CalcExp(2 * BeamExtinctionCoeff) / 2.0;    // Integral of diffuse
 
-            var radiation = direct * (dir - diff);
+            var radiation = direct * (dir - dif);
 
             return radiation;
         }
 
+        /// <summary>
+        /// Calculates the LAI of the sunlit canopy
+        /// </summary>
         public double CalculateSunlitLAI()
         {
             return CalcExp(BeamExtinctionCoeff) / BeamExtinctionCoeff;
         }
 
-        public double CalculateAccumInterceptedRadn()
+        public double CalcInterceptedRadiation()
         {
-            return 1 - Math.Exp(-BeamExtinctionCoeff * laiAccum1);
+            return 1.0 - Math.Exp(-BeamExtinctionCoeff * AccumLAI_1);
         }
 
         public double CalcExp(double x)
         {
-            var a = Math.Exp(-x * laiAccum0);
-            var b = Math.Exp(-x * laiAccum1);
+            var a = Math.Exp(-x * AccumLAI_0);
+            var b = Math.Exp(-x * AccumLAI_1);
 
             return a - b;
         }

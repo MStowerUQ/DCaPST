@@ -3,28 +3,54 @@ using DCAPST.Interfaces;
 
 namespace DCAPST.Canopy
 {
+    /// <summary>
+    /// Models a complete canopy
+    /// </summary>
     public class TotalCanopy : ITotalCanopy
     {
+        /// <summary>
+        /// The initial parameters of the canopy
+        /// </summary>
         public ICanopyParameters Canopy { get; set; }
-        public double LAI { get; set; }
-
+        
+        /// <summary>
+        /// The part of the canopy in sunlight
+        /// </summary>
         public IPartialCanopy Sunlit { get; private set; }
+
+        /// <summary>
+        /// The part of the canopy in shade
+        /// </summary>
         public IPartialCanopy Shaded { get; private set; }
 
-        public CanopyRadiation Absorbed { get; private set; }
+        /// <summary>
+        /// The radiation absorbed by the canopy
+        /// </summary>
+        private CanopyRadiation Absorbed { get; set; }
 
-        public double LeafAngle { get; set; } // RADIANS
-        public double LeafWidth { get; set; }
-        public double LeafNTopCanopy { get; set; }
+        /// <summary>
+        /// Leaf area index of the canopy
+        /// </summary>
+        private double LAI { get; set; }
 
-        public double WindSpeed { get; set; }
-        public double WindSpeedExtinction { get; set; }
+        /// <summary>
+        /// The leaf angle (radians)
+        /// </summary>
+        private double LeafAngle { get; set; }
+        private double LeafWidth { get; set; }
+        private double LeafNTopCanopy { get; set; }
 
-        public double NAllocationCoeff { get; set; }
+        private double WindSpeed { get; set; }
+        private double WindSpeedExtinction { get; set; }
 
-        public double PropnInterceptedRadns { get; set; }
+        private double NAllocationCoeff { get; set; }
 
-        public int Layers { get; }
+        public double InterceptedRadiation { get; set; }
+
+        /// <summary>
+        /// The number of layers in the canopy
+        /// </summary>
+        private int Layers { get; }
 
         public TotalCanopy(ICanopyParameters canopy, int layers)
         {
@@ -84,7 +110,7 @@ namespace DCAPST.Canopy
             Absorbed.DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeff;
 
             // Photon calculations (used by photosynthesis)
-            var photons = Absorbed.CalculateTotalRadiation(radiation.DirectPAR, radiation.DiffusePAR);
+            var photons = Absorbed.CalcTotalRadiation(radiation.DirectPAR, radiation.DiffusePAR);
             Sunlit.PhotonCount = Absorbed.CalcSunlitRadiation(radiation.DirectPAR, radiation.DiffusePAR);
             Shaded.PhotonCount = photons - Sunlit.PhotonCount;
 
@@ -94,7 +120,7 @@ namespace DCAPST.Canopy
             var NIRDirect = radiation.Direct * 0.5 * 1000000;
             var NIRDiffuse = radiation.Diffuse * 0.5 * 1000000;
 
-            var PARTotalIrradiance = Absorbed.CalculateTotalRadiation(PARDirect, PARDiffuse);
+            var PARTotalIrradiance = Absorbed.CalcTotalRadiation(PARDirect, PARDiffuse);
             var SunlitPARTotalIrradiance = Absorbed.CalcSunlitRadiation(PARDirect, PARDiffuse);
             var ShadedPARTotalIrradiance = PARTotalIrradiance - SunlitPARTotalIrradiance;
 
@@ -103,7 +129,7 @@ namespace DCAPST.Canopy
             Absorbed.LeafScatteringCoeff = Canopy.LeafScatteringCoeffNIR;
             Absorbed.DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeffNIR;
 
-            var NIRTotalIrradiance = Absorbed.CalculateTotalRadiation(NIRDirect, NIRDiffuse);
+            var NIRTotalIrradiance = Absorbed.CalcTotalRadiation(NIRDirect, NIRDiffuse);
             var SunlitNIRTotalIrradiance = Absorbed.CalcSunlitRadiation(NIRDirect, NIRDiffuse);
             var ShadedNIRTotalIrradiance = NIRTotalIrradiance - SunlitNIRTotalIrradiance;
 
@@ -172,11 +198,11 @@ namespace DCAPST.Canopy
                 Absorbed.BeamExtinctionCoeff = 0;
 
             // Intercepted radiation
-            PropnInterceptedRadns = Absorbed.CalculateAccumInterceptedRadn();
+            InterceptedRadiation = Absorbed.CalcInterceptedRadiation();
 
             // TODO: Make this work with multiple layers 
             // (by subtracting the accumulated intercepted radiation of the previous layers) e.g:
-            //PropnInterceptedRadns = Rad.CalculateAccumInterceptedRadn() - PropnInterceptedRadns0;
+            // InterceptedRadiation_1 = Absorbed.CalcInterceptedRadiation() - InterceptedRadiation_0;
         }
 
         private double CalcShadowProjection(double sunAngle)

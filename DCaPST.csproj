@@ -88,7 +88,7 @@
     <Compile Include="Models\PhotosynthesisModel.cs" />
     <Compile Include="Parameters\PathwayParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utilities\LeafTemperatureFunction.cs" />
+    <Compile Include="Utilities\LeafParameters.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
