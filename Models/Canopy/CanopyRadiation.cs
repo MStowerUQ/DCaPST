@@ -108,6 +108,10 @@ namespace DCAPST.Canopy
             return CalcExp(BeamExtinctionCoeff) / BeamExtinctionCoeff;
         }
 
+        /// <summary>
+        /// Calculates the total intercepted radiation
+        /// </summary>
+        /// <returns></returns>
         public double CalcInterceptedRadiation()
         {
             return 1.0 - Math.Exp(-BeamExtinctionCoeff * AccumLAI_1);

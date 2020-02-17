@@ -17,9 +17,7 @@ namespace DCAPST.Interfaces
         /// <summary>
         /// The section of canopy currently in shade
         /// </summary>
-        IPartialCanopy Shaded { get; }
-
-        double InterceptedRadiation { get; set; }
+        IPartialCanopy Shaded { get; }        
 
         /// <summary>
         /// Performs initial calculations for the canopy provided daily conditions 
@@ -29,9 +27,11 @@ namespace DCAPST.Interfaces
         /// <summary>
         /// Updates 
         /// </summary>
-        void PerformTimeAdjustment(ISolarRadiation radiation);
+        void RecalculateRadiation(ISolarRadiation radiation);
 
         void CalcCanopyStructure(double sunAngleRadians);
+
+        double GetInterceptedRadiation();
 
         double CalcBoundaryHeatConductance();
 

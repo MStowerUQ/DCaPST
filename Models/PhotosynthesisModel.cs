@@ -125,9 +125,9 @@ namespace DCAPST
                 // Note: double arrays default value is 0.0, which is the intended case if initialisation fails
                 if (!TryInitiliase(time)) continue;
 
-                intercepted += Radiation.Total * Canopy.InterceptedRadiation * 3600;
+                intercepted += Radiation.Total * Canopy.GetInterceptedRadiation() * 3600;
 
-                DoHourlyCalculation();
+                DoTimestepUpdate();
 
                 sunlitDemand[i] = Canopy.Sunlit.WaterUse;
                 shadedDemand[i] = Canopy.Shaded.WaterUse;
@@ -149,14 +149,14 @@ namespace DCAPST
                 if (!TryInitiliase(time)) continue;
 
                 double total = sunlitDemand[i] + shadedDemand[i];
-                DoHourlyCalculation(waterSupply[i], sunlitDemand[i] / total, shadedDemand[i] / total);
+                DoTimestepUpdate(waterSupply[i], sunlitDemand[i] / total, shadedDemand[i] / total);
 
                 assimilation += Canopy.Sunlit.CO2AssimilationRate + Canopy.Shaded.CO2AssimilationRate;
             }
             return assimilation;
         }
 
-        public void DoHourlyCalculation(double maxHourlyT = -1, double sunFraction = 0, double shadeFraction = 0)
+        public void DoTimestepUpdate(double maxHourlyT = -1, double sunFraction = 0, double shadeFraction = 0)
         {
             var Params = new WaterParameters
             {
@@ -165,7 +165,7 @@ namespace DCAPST
             };
             if (maxHourlyT != -1) Params.limited = true;
 
-            Canopy.PerformTimeAdjustment(Radiation);
+            Canopy.RecalculateRadiation(Radiation);
 
             var heat = Canopy.CalcBoundaryHeatConductance();
             var sunlitHeat = Canopy.CalcSunlitBoundaryHeatConductance();

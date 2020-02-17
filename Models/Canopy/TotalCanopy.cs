@@ -45,8 +45,6 @@ namespace DCAPST.Canopy
 
         private double NAllocationCoeff { get; set; }
 
-        public double InterceptedRadiation { get; set; }
-
         /// <summary>
         /// The number of layers in the canopy
         /// </summary>
@@ -81,7 +79,7 @@ namespace DCAPST.Canopy
             };         
         }
 
-        public void PerformTimeAdjustment(ISolarRadiation radiation)
+        public void RecalculateRadiation(ISolarRadiation radiation)
         {
             ResetPartials();
             CalcLAI();
@@ -195,10 +193,13 @@ namespace DCAPST.Canopy
             if (sunAngle > 0)
                 Absorbed.BeamExtinctionCoeff = CalcShadowProjection(sunAngle) / Math.Sin(sunAngle);
             else
-                Absorbed.BeamExtinctionCoeff = 0;
+                Absorbed.BeamExtinctionCoeff = 0;            
+        }
 
+        public double GetInterceptedRadiation()
+        {
             // Intercepted radiation
-            InterceptedRadiation = Absorbed.CalcInterceptedRadiation();
+            return Absorbed.CalcInterceptedRadiation();
 
             // TODO: Make this work with multiple layers 
             // (by subtracting the accumulated intercepted radiation of the previous layers) e.g:
