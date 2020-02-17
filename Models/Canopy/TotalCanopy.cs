@@ -59,6 +59,9 @@ namespace DCAPST.Canopy
             WindSpeedExtinction = canopy.WindSpeedExtinction;
             LeafAngle = canopy.LeafAngle.ToRadians();
             LeafWidth = canopy.LeafWidth;
+
+            Sunlit = new PartialCanopy(Canopy);
+            Shaded = new PartialCanopy(Canopy);
         }
 
         public void InitialiseDay(double lai, double sln)
@@ -81,17 +84,9 @@ namespace DCAPST.Canopy
 
         public void RecalculateRadiation(ISolarRadiation radiation)
         {
-            ResetPartials();
             CalcLAI();
             CalcAbsorbedRadiations(radiation);
             CalcMaximumRates();
-        }
-
-        private void ResetPartials()
-        {
-            // Reset the partial canopies
-            Sunlit = new PartialCanopy(Canopy);
-            Shaded = new PartialCanopy(Canopy);
         }
 
         public void CalcLAI()
@@ -169,6 +164,9 @@ namespace DCAPST.Canopy
             return factor * exp / coefficient;
         }
 
+        /// <summary>
+        /// Find the total heat conductance across the boundary of the canopy
+        /// </summary>
         public double CalcBoundaryHeatConductance()
         {
             var a = 0.5 * WindSpeedExtinction;
@@ -178,6 +176,9 @@ namespace DCAPST.Canopy
             return b * c / a;
         }
 
+        /// <summary>
+        /// Find the heat conductance across the boundary of the sunlit area of the canopy
+        /// </summary>
         public double CalcSunlitBoundaryHeatConductance()
         {
             var a = 0.5 * WindSpeedExtinction + Absorbed.BeamExtinctionCoeff;

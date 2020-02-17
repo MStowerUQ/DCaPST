@@ -37,6 +37,10 @@ namespace DCAPST
             iterations = (int)Math.Floor(1.0 + ((end - start) / timestep));
         }
 
+        /// <summary>
+        /// Calculates the potential and actual biomass growth of a canopy across the span of a day,
+        /// as well as the water requirements for both cases.
+        /// </summary>
         public double[] DailyRun(
             double lai,
             double SLN, 
@@ -72,6 +76,9 @@ namespace DCAPST
             return results;
         }
 
+        /// <summary>
+        /// Attempt to initialise models based on the current time, and test if they are sensible
+        /// </summary>
         private bool TryInitiliase(double time)
         {
             Temperature.UpdateAirTemperature(time);
@@ -83,7 +90,7 @@ namespace DCAPST
         }
 
         /// <summary>
-        /// Check if the basic conditions for photosynthesis to occur are met
+        /// Tests if the basic conditions for photosynthesis to occur are met
         /// </summary>
         private bool IsSensible()
         {
