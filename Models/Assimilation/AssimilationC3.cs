@@ -10,13 +10,13 @@ namespace DCAPST
         public ParametersC3(IPartialCanopy partial) : base(partial)
         { }
 
-        protected override AssimilationCalculator GetAc1Calculator(Pathway path)
+        protected override AssimilationFunction GetAc1Function(AssimilationPathway pathway)
         {
             var x = new double[9];
 
-            x[0] = path.Current.VcMaxT;
-            x[1] = path.Current.Kc / path.Current.Ko;
-            x[2] = path.Current.Kc;
+            x[0] = pathway.Current.VcMaxT;
+            x[1] = pathway.Current.Kc / pathway.Current.Ko;
+            x[2] = pathway.Current.Kc;
             x[3] = 0.0;
             x[4] = 0.0;
             x[5] = 0.0;
@@ -24,32 +24,32 @@ namespace DCAPST
             x[7] = 0.0;
             x[8] = 0.0;
 
-            var param = new AssimilationCalculator()
+            var param = new AssimilationFunction()
             {
                 X = x,
 
-                m = path.Current.GmRd,
-                t = path.Current.Gamma,
+                m = pathway.Current.GmRd,
+                t = pathway.Current.Gamma,
                 sb = 0.0,
                 j = 1.0,
                 e = canopy.OxygenPartialPressure,
-                R = path.Current.RdT
+                R = pathway.Current.RdT
             };
 
             return param;
         }
 
-        protected override AssimilationCalculator GetAc2Calculator(Pathway path)
+        protected override AssimilationFunction GetAc2Function(AssimilationPathway pathway)
         {
             throw new Exception("The C3 model does not use the Ac2 pathway");
         }
 
-        protected override AssimilationCalculator GetAjCalculator(Pathway path)
+        protected override AssimilationFunction GetAjFunction(AssimilationPathway pathway)
         {
             var x = new double[9];
 
-            x[0] =path.Current.J / 4;
-            x[1] = 2 * path.Current.Gamma;
+            x[0] = pathway.Current.J / 4.0;
+            x[1] = 2.0 * pathway.Current.Gamma;
             x[2] = 0.0;
             x[3] = 0.0;
             x[4] = 0.0;
@@ -58,14 +58,14 @@ namespace DCAPST
             x[7] = 0.0;
             x[8] = 0.0;
 
-            var param = new AssimilationCalculator()
+            var param = new AssimilationFunction()
             {                
-                m = path.Current.GmRd,
-                t = path.Current.Gamma,
+                m = pathway.Current.GmRd,
+                t = pathway.Current.Gamma,
                 sb = 0.0,
                 j = 1.0,
                 e = canopy.OxygenPartialPressure,
-                R = path.Current.RdT
+                R = pathway.Current.RdT
             };
 
             return param;

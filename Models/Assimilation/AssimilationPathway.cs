@@ -3,7 +3,7 @@ using DCAPST.Interfaces;
 
 namespace DCAPST
 {
-    public class Pathway
+    public class AssimilationPathway
     {
         public AssimilationType Type { get; set; }
 
@@ -28,7 +28,7 @@ namespace DCAPST
         public double ChloroplasticCO2 { get; set; }
         public double ChloroplasticO2 { get; set; }
 
-        public Pathway(IPartialCanopy partial)
+        public AssimilationPathway(IPartialCanopy partial)
         {
             MesophyllCO2 = partial.Canopy.AirCO2 * partial.Canopy.Pathway.IntercellularToAirCO2Ratio;
             ChloroplasticCO2 = MesophyllCO2 + 20;

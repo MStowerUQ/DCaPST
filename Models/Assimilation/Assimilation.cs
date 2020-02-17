@@ -14,9 +14,9 @@ namespace DCAPST
         protected IPartialCanopy partial;
         protected ICanopyParameters canopy;
         protected IPathwayParameters pway;
-        protected AssimilationCalculator Calculator;
+        protected AssimilationFunction Calculator;
 
-        protected List<Pathway> pathways;
+        protected List<AssimilationPathway> pathways;
 
         public double Gbs => pway.BundleSheathCO2ConductancePerLeaf * partial.LAI;
         public double Vpr => pway.PEPRegenerationPerLeaf * partial.LAI;
@@ -27,11 +27,11 @@ namespace DCAPST
             canopy = partial.Canopy;
             pway = partial.Canopy.Pathway;
 
-            pathways = new List<Pathway>()
+            pathways = new List<AssimilationPathway>()
             {
-                /*Ac1*/ new Pathway(partial) { Type = AssimilationType.Ac1 },
-                /*Ac2*/ this is ParametersC3 ? null : new Pathway(partial) { Type = AssimilationType.Ac2 },
-                /*Aj */ new Pathway(partial) { Type = AssimilationType.Aj }
+                /*Ac1*/ new AssimilationPathway(partial) { Type = AssimilationType.Ac1 },
+                /*Ac2*/ this is ParametersC3 ? null : new AssimilationPathway(partial) { Type = AssimilationType.Ac2 },
+                /*Aj */ new AssimilationPathway(partial) { Type = AssimilationType.Aj }
             };
         }
         
@@ -47,76 +47,76 @@ namespace DCAPST
         /// <summary>
         /// Updates the state of the assimilation
         /// </summary>
-        private void UpdatePathway(ITemperature temperature, WaterParameters water, Pathway path)
+        private void UpdatePathway(ITemperature temperature, WaterParameters water, AssimilationPathway pathway)
         {
-            if (path == null) return;
+            if (pathway == null) return;
 
-            if (path.Current.Temperature == 0) path.Current.Temperature = temperature.AirTemperature;
+            if (pathway.Current.Temperature == 0) pathway.Current.Temperature = temperature.AirTemperature;
 
-            var leafWater = new LeafWaterInteractionModel(temperature, path.Current.Temperature, water.BoundaryHeatConductance);
+            var leafWater = new LeafWaterInteractionModel(temperature, pathway.Current.Temperature, water.BoundaryHeatConductance);
 
             double resistance;
 
-            PrepareCalculator(path);
+            PrepareCalculator(pathway);
             // If there is no limit on the water supply
             if (!water.limited)
             {
-                path.IntercellularCO2 = pway.IntercellularToAirCO2Ratio * canopy.AirCO2;
+                pathway.IntercellularCO2 = pway.IntercellularToAirCO2Ratio * canopy.AirCO2;
 
-                Calculator.p = path.IntercellularCO2;
-                Calculator.q = 1 / path.Current.GmT;
+                Calculator.Ci = pathway.IntercellularCO2;
+                Calculator.Rm = 1 / pathway.Current.GmT;
 
-                path.CO2Rate = Calculator.CalculateAssimilation();
+                pathway.CO2Rate = Calculator.Value();
 
-                resistance = leafWater.UnlimitedWaterResistance(path.CO2Rate, canopy.AirCO2, path.IntercellularCO2);
-                path.WaterUse = leafWater.HourlyWaterUse(resistance, partial.AbsorbedRadiation);
+                resistance = leafWater.UnlimitedWaterResistance(pathway.CO2Rate, canopy.AirCO2, pathway.IntercellularCO2);
+                pathway.WaterUse = leafWater.HourlyWaterUse(resistance, partial.AbsorbedRadiation);
             }
             // If water supply is limited
             else
             {
-                path.WaterUse = water.maxHourlyT * water.fraction;
-                var WaterUseMolsSecond = path.WaterUse / 18 * 1000 / 3600;
+                pathway.WaterUse = water.maxHourlyT * water.fraction;
+                var WaterUseMolsSecond = pathway.WaterUse / 18 * 1000 / 3600;
 
-                resistance = leafWater.LimitedWaterResistance(path.WaterUse, partial.AbsorbedRadiation);
+                resistance = leafWater.LimitedWaterResistance(pathway.WaterUse, partial.AbsorbedRadiation);
                 var Gt = leafWater.TotalLeafCO2Conductance(resistance);
 
-                Calculator.p = canopy.AirCO2 - WaterUseMolsSecond * canopy.AirCO2 / (Gt + WaterUseMolsSecond / 2.0);
-                Calculator.q = 1 / (Gt + WaterUseMolsSecond / 2) + 1.0 / path.Current.GmT;
+                Calculator.Ci = canopy.AirCO2 - WaterUseMolsSecond * canopy.AirCO2 / (Gt + WaterUseMolsSecond / 2.0);
+                Calculator.Rm = 1 / (Gt + WaterUseMolsSecond / 2) + 1.0 / pathway.Current.GmT;
 
-                path.CO2Rate = Calculator.CalculateAssimilation();
+                pathway.CO2Rate = Calculator.Value();
 
-                UpdateIntercellularCO2(path, Gt, WaterUseMolsSecond);
+                UpdateIntercellularCO2(pathway, Gt, WaterUseMolsSecond);
             }
 
-            UpdateMesophyllCO2(path);
-            UpdateChloroplasticO2(path);
-            UpdateChloroplasticCO2(path);
+            UpdateMesophyllCO2(pathway);
+            UpdateChloroplasticO2(pathway);
+            UpdateChloroplasticCO2(pathway);
 
             // New leaf temperature
-            path.Current.Temperature = (leafWater.LeafTemperature(resistance, partial.AbsorbedRadiation) + path.Current.Temperature) / 2.0;
+            pathway.Current.Temperature = (leafWater.LeafTemperature(resistance, partial.AbsorbedRadiation) + pathway.Current.Temperature) / 2.0;
 
             // If the assimilation is not sensible
-            if (double.IsNaN(path.CO2Rate) || path.CO2Rate <= 0.0 || double.IsNaN(path.WaterUse) || path.WaterUse <= 0.0)
+            if (double.IsNaN(pathway.CO2Rate) || pathway.CO2Rate <= 0.0 || double.IsNaN(pathway.WaterUse) || pathway.WaterUse <= 0.0)
             {
-                path.CO2Rate = 0;
-                path.WaterUse = 0;
+                pathway.CO2Rate = 0;
+                pathway.WaterUse = 0;
             }
         }
 
-        private void PrepareCalculator(Pathway path)
+        private void PrepareCalculator(AssimilationPathway path)
         {
-            if (path.Type == AssimilationType.Ac1) Calculator = GetAc1Calculator(path);
-            else if (path.Type == AssimilationType.Ac2) Calculator = GetAc2Calculator(path);
-            else Calculator = GetAjCalculator(path);
+            if (path.Type == AssimilationType.Ac1) Calculator = GetAc1Function(path);
+            else if (path.Type == AssimilationType.Ac2) Calculator = GetAc2Function(path);
+            else Calculator = GetAjFunction(path);
         }
 
-        protected virtual void UpdateIntercellularCO2(Pathway path, double gt, double waterUseMolsSecond) { /*C4 & CCM overwrite this.*/ }
-        protected virtual void UpdateMesophyllCO2(Pathway path) { /*C4 & CCM overwrite this.*/ }
-        protected virtual void UpdateChloroplasticO2(Pathway path) { /*CCM overwrites this.*/ }
-        protected virtual void UpdateChloroplasticCO2(Pathway path) { /*CCM overwrites this.*/ }
+        protected virtual void UpdateIntercellularCO2(AssimilationPathway path, double gt, double waterUseMolsSecond) { /*C4 & CCM overwrite this.*/ }
+        protected virtual void UpdateMesophyllCO2(AssimilationPathway path) { /*C4 & CCM overwrite this.*/ }
+        protected virtual void UpdateChloroplasticO2(AssimilationPathway path) { /*CCM overwrites this.*/ }
+        protected virtual void UpdateChloroplasticCO2(AssimilationPathway path) { /*CCM overwrites this.*/ }
 
-        protected abstract AssimilationCalculator GetAc1Calculator(Pathway path);
-        protected abstract AssimilationCalculator GetAc2Calculator(Pathway path);
-        protected abstract AssimilationCalculator GetAjCalculator(Pathway path);
+        protected abstract AssimilationFunction GetAc1Function(AssimilationPathway path);
+        protected abstract AssimilationFunction GetAc2Function(AssimilationPathway path);
+        protected abstract AssimilationFunction GetAjFunction(AssimilationPathway path);
     }
 }
