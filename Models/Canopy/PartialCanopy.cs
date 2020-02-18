@@ -22,10 +22,10 @@ namespace DCAPST.Canopy
 
         public void CalculatePhotosynthesis(ITemperature temperature, WaterParameters Params)
         {
-            var assimilation = CreateAssimilation();
+            var assimilation = CreateAssimilation(temperature);
 
             // Determine initial results
-            assimilation.UpdateAssimilation(temperature, Params);
+            assimilation.UpdateAssimilation(Params);
 
             // Store the initial results in case the subsequent updates fail
             CO2AssimilationRate = assimilation.GetCO2Rate();
@@ -38,7 +38,7 @@ namespace DCAPST.Canopy
             {
                 for (int n = 0; n < 3; n++)
                 {
-                    assimilation.UpdateAssimilation(temperature, Params);
+                    assimilation.UpdateAssimilation(Params);
 
                     // If the additional updates fail, the minimum amongst the initial values is taken
                     if (assimilation.GetCO2Rate() == 0 || assimilation.GetWaterUse() == 0) return;                    
@@ -48,11 +48,11 @@ namespace DCAPST.Canopy
             WaterUse = assimilation.GetWaterUse();
         }
 
-        private IAssimilation CreateAssimilation()
+        private IAssimilation CreateAssimilation(ITemperature temperature)
         {
-            if (Canopy.Type == CanopyType.C3) return new AssimilationC3(this);
-            else if (Canopy.Type == CanopyType.C4) return new AssimilationC4(this);
-            else return new AssimilationCCM(this);
+            if (Canopy.Type == CanopyType.C3) return new AssimilationC3(this, temperature);
+            else if (Canopy.Type == CanopyType.C4) return new AssimilationC4(this, temperature);
+            else return new AssimilationCCM(this, temperature);
         }
     }
 }

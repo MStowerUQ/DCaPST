@@ -16,12 +16,16 @@ namespace DCAPST.Environment
         private double LeafTemp;   
         private double boundaryHeatConductance;
 
-        public LeafWaterInteractionModel(ITemperature temperature, double leafTemp, double gbh)
+        public LeafWaterInteractionModel(ITemperature temperature)
         {
             Temp = temperature ?? throw new Exception("The temperature model cannot be null");
+        }
+
+        public void SetConditions(double leafTemp, double gbh)
+        {
             LeafTemp = leafTemp;
             boundaryHeatConductance = (gbh != 0) ? gbh : throw new Exception("Gbh cannot be 0");
-        }        
+        }
 
         public double BoundaryH20Conductance => boundaryHeatConductance / 0.92;
         public double boundaryHeatResistance => 1 / boundaryHeatConductance;

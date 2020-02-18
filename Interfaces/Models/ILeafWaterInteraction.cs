@@ -3,6 +3,11 @@
     public interface ILeafWaterInteraction
     {
         /// <summary>
+        /// Sets the current conditions of the leaf water model
+        /// </summary>
+        void SetConditions(double temperature, double gbs);
+
+        /// <summary>
         /// Calculates the resistance to water when supply is unlimited
         /// </summary>
         double UnlimitedWaterResistance(double Assimilation, double AirCO2, double IntercellularCO2);

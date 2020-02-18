@@ -7,7 +7,7 @@ namespace DCAPST
     /// </summary>
     public class AssimilationCCM : Assimilation
     {
-        public AssimilationCCM(IPartialCanopy partial) : base(partial)
+        public AssimilationCCM(IPartialCanopy partial, ITemperature temperature) : base(partial, temperature)
         { }
 
         protected override void UpdateIntercellularCO2(AssimilationPathway pathway, double gt, double waterUseMolsSecond)
