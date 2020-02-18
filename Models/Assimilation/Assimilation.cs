@@ -18,8 +18,8 @@ namespace DCAPST
 
         protected List<AssimilationPathway> pathways;        
 
-        public double Gbs => pway.BundleSheathCO2ConductancePerLeaf * partial.LAI;
-        public double Vpr => pway.PEPRegenerationPerLeaf * partial.LAI;
+        public double Gbs => pway.BundleSheathConductance * partial.LAI;
+        public double Vpr => pway.PEPRegeneration * partial.LAI;
 
         public Assimilation(IPartialCanopy partial, ITemperature temperature)
         {
@@ -38,10 +38,7 @@ namespace DCAPST
             LeafWater = new LeafWaterInteractionModel(temperature);
         }
         
-        public void UpdateAssimilation(WaterParameters water)
-        {
-            pathways.ForEach(p => UpdatePathway(water, p));
-        }
+        public void UpdateAssimilation(WaterParameters water) => pathways.ForEach(p => UpdatePathway(water, p));        
 
         public double GetCO2Rate() => pathways.Min(p => p.CO2Rate);
 
@@ -109,20 +106,43 @@ namespace DCAPST
             else return GetAjFunction(pathway);
         }
 
+        /// <summary>
+        /// Updates the intercellular CO2 parameter
+        /// </summary>
         protected virtual void UpdateIntercellularCO2(AssimilationPathway pathway, double gt, double waterUseMolsSecond) 
         { /*C4 & CCM overwrite this.*/ }
 
+        /// <summary>
+        /// Updates the mesophyll CO2 parameter
+        /// </summary>
         protected virtual void UpdateMesophyllCO2(AssimilationPathway pathway) 
         { /*C4 & CCM overwrite this.*/ }
 
+        /// <summary>
+        /// Updates the chloroplastic O2 parameter
+        /// </summary>
         protected virtual void UpdateChloroplasticO2(AssimilationPathway pathway) 
         { /*CCM overwrites this.*/ }
 
+        /// <summary>
+        /// Updates the chloroplastic CO2 parameter
+        /// </summary>
         protected virtual void UpdateChloroplasticCO2(AssimilationPathway pathway, AssimilationFunction func) 
         { /*CCM overwrites this.*/ }
 
+        /// <summary>
+        /// Retrieves a function describing assimilation along the Ac1 pathway
+        /// </summary>
         protected abstract AssimilationFunction GetAc1Function(AssimilationPathway pathway);
+
+        /// <summary>
+        /// Retrieves a function describing assimilation along the Ac2 pathway
+        /// </summary>
         protected abstract AssimilationFunction GetAc2Function(AssimilationPathway pathway);
+
+        /// <summary>
+        /// Retrieves a function describing assimilation along the Aj pathway
+        /// </summary>
         protected abstract AssimilationFunction GetAjFunction(AssimilationPathway pathway);
     }
 }

@@ -24,7 +24,7 @@ namespace DCAPST.Canopy
         public IPartialCanopy Shaded { get; private set; }
 
         /// <summary>
-        /// The radiation absorbed by the canopy
+        /// Models radiation absorbed by the canopy
         /// </summary>
         private CanopyRadiation Absorbed { get; set; }
 
@@ -43,7 +43,10 @@ namespace DCAPST.Canopy
         private double WindSpeed { get; set; }
         private double WindSpeedExtinction { get; set; }
 
-        private double NAllocationCoeff { get; set; }
+        /// <summary>
+        /// Coefficient of nitrogen allocation through the canopy
+        /// </summary>
+        private double NAllocation { get; set; }
 
         /// <summary>
         /// The number of layers in the canopy
@@ -64,6 +67,9 @@ namespace DCAPST.Canopy
             Shaded = new PartialCanopy(Canopy);
         }
 
+        /// <summary>
+        /// Establishes the initial conditions for the daily photosynthesis calculation
+        /// </summary>
         public void InitialiseDay(double lai, double sln)
         {
             LAI = lai;
@@ -72,7 +78,7 @@ namespace DCAPST.Canopy
             LeafNTopCanopy = SLNTop * 1000 / 14;
 
             var NcAv = sln * 1000 / 14;
-            NAllocationCoeff = -1 * Math.Log((NcAv - Canopy.StructuralN) / (LeafNTopCanopy - Canopy.StructuralN)) * 2;           
+            NAllocation = -1 * Math.Log((NcAv - Canopy.MinimumN) / (LeafNTopCanopy - Canopy.MinimumN)) * 2;           
 
             Absorbed = new CanopyRadiation(Layers, LAI)
             {
@@ -82,19 +88,28 @@ namespace DCAPST.Canopy
             };         
         }
 
-        public void RecalculateRadiation(ISolarRadiation radiation)
+        /// <summary>
+        /// Recalculates canopy parameters for a new time step
+        /// </summary>
+        public void DoTimestepAdjustment(ISolarRadiation radiation)
         {
             CalcLAI();
             CalcAbsorbedRadiations(radiation);
             CalcMaximumRates();
         }
 
-        public void CalcLAI()
+        /// <summary>
+        /// Calculates the LAI for the sunlit/shaded areas of the canopy, based on the position of the sun
+        /// </summary>
+        private void CalcLAI()
         {
             Sunlit.LAI = Absorbed.CalculateSunlitLAI();
             Shaded.LAI = LAI - Sunlit.LAI;
         }
 
+        /// <summary>
+        /// Calculates the radiation absorbed by the canopy, based on the position of the sun
+        /// </summary>
         private void CalcAbsorbedRadiations(ISolarRadiation radiation)
         {
             // Set parameters
@@ -130,10 +145,13 @@ namespace DCAPST.Canopy
             Shaded.AbsorbedRadiation = ShadedPARTotalIrradiance + ShadedNIRTotalIrradiance;
         }
 
+        /// <summary>
+        /// Calculates properties of the canopy, based on how much of the canopy is currently in direct sunlight
+        /// </summary>
         private void CalcMaximumRates()
         {
-            var coefficient = NAllocationCoeff;
-            var sunlitCoefficient = NAllocationCoeff + (Absorbed.BeamExtinctionCoeff * LAI);
+            var coefficient = NAllocation;
+            var sunlitCoefficient = NAllocation + (Absorbed.BeamExtinctionCoeff * LAI);
 
             var RubiscoActivity25 = CalcMaximumRate(Canopy.Pathway.MaxRubiscoActivitySLNRatio, coefficient);
             Sunlit.At25C.VcMax = CalcMaximumRate(Canopy.Pathway.MaxRubiscoActivitySLNRatio, sunlitCoefficient);
@@ -158,7 +176,7 @@ namespace DCAPST.Canopy
 
         private double CalcMaximumRate(double psi, double coefficient)
         {
-            var factor = LAI * (LeafNTopCanopy - Canopy.StructuralN) * psi;
+            var factor = LAI * (LeafNTopCanopy - Canopy.MinimumN) * psi;
             var exp = Absorbed.CalcExp(coefficient / LAI);
 
             return factor * exp / coefficient;
@@ -188,7 +206,7 @@ namespace DCAPST.Canopy
             return b * c / a;
         }
                 
-        public void CalcCanopyStructure(double sunAngle)
+        public void DoSolarAdjustment(double sunAngle)
         {        
             // Beam Extinction Coefficient
             if (sunAngle > 0)

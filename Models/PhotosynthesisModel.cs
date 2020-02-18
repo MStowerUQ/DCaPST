@@ -84,7 +84,7 @@ namespace DCAPST
             Temperature.UpdateAirTemperature(time);
             Radiation.UpdateRadiationValues(time);
             var sunAngle = Solar.SunAngle(time);            
-            Canopy.CalcCanopyStructure(sunAngle);
+            Canopy.DoSolarAdjustment(sunAngle);
 
             return IsSensible();
         }
@@ -172,7 +172,7 @@ namespace DCAPST
             };
             if (maxHourlyT != -1) Params.limited = true;
 
-            Canopy.RecalculateRadiation(Radiation);
+            Canopy.DoTimestepAdjustment(Radiation);
 
             var heat = Canopy.CalcBoundaryHeatConductance();
             var sunlitHeat = Canopy.CalcSunlitBoundaryHeatConductance();

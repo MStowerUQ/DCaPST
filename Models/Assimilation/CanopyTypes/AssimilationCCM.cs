@@ -22,7 +22,7 @@ namespace DCAPST
 
         protected override void UpdateChloroplasticO2(AssimilationPathway pathway)
         {
-            pathway.ChloroplasticO2 = pway.PS2ActivityInBundleSheathFraction * pathway.CO2Rate / (canopy.DiffusivitySolubilityRatio * Gbs) + canopy.OxygenPartialPressure;
+            pathway.ChloroplasticO2 = pway.PS2ActivityFraction * pathway.CO2Rate / (canopy.DiffusivitySolubilityRatio * Gbs) + canopy.AirO2;
         }
 
         protected override void UpdateChloroplasticCO2(AssimilationPathway pathway, AssimilationFunction func)
@@ -53,7 +53,7 @@ namespace DCAPST
                 HalfRubiscoSpecificityReciprocal = pathway.Leaf.Gamma,
                 FractionOfDiffusivitySolubilityRatio = 0.1 / canopy.DiffusivitySolubilityRatio,
                 BundleSheathConductance = Gbs,
-                Oxygen = canopy.OxygenPartialPressure,
+                Oxygen = canopy.AirO2,
                 Respiration = pathway.Leaf.RdT
             };
 
@@ -82,7 +82,7 @@ namespace DCAPST
                 HalfRubiscoSpecificityReciprocal = pathway.Leaf.Gamma,
                 FractionOfDiffusivitySolubilityRatio = 0.1 / canopy.DiffusivitySolubilityRatio,
                 BundleSheathConductance = Gbs,
-                Oxygen = canopy.OxygenPartialPressure,
+                Oxygen = canopy.AirO2,
                 Respiration = pathway.Leaf.RdT
             };
 
@@ -111,7 +111,7 @@ namespace DCAPST
                 HalfRubiscoSpecificityReciprocal = pathway.Leaf.Gamma,
                 FractionOfDiffusivitySolubilityRatio = 0.1 / canopy.DiffusivitySolubilityRatio,
                 BundleSheathConductance = Gbs,
-                Oxygen = canopy.OxygenPartialPressure,
+                Oxygen = canopy.AirO2,
                 Respiration = pathway.Leaf.RdT
             };
 

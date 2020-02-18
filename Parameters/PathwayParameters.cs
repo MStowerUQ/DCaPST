@@ -27,14 +27,14 @@ namespace DCAPST
         public TemperatureResponse PEPcActivity { get; set; }
         public TemperatureResponse Respiration { get; set; }
 
-        public ValParameters ElectronTransportRateParams { get; set; }
-        public ValParameters MesophyllCO2ConductanceParams { get; set; }
+        public LeafTemperatureParameters ElectronTransportRateParams { get; set; }
+        public LeafTemperatureParameters MesophyllCO2ConductanceParams { get; set; }
 
         public double SpectralCorrectionFactor { get; set; }
         // PS2: Photosystem 2
-        public double PS2ActivityInBundleSheathFraction { get; set; }
-        public double PEPRegenerationPerLeaf { get; set; }
-        public double BundleSheathCO2ConductancePerLeaf { get; set; }       
+        public double PS2ActivityFraction { get; set; }
+        public double PEPRegeneration { get; set; }
+        public double BundleSheathConductance { get; set; }       
     }
 
     public struct TemperatureResponse

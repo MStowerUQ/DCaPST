@@ -33,7 +33,7 @@ namespace DCAPST
                 HalfRubiscoSpecificityReciprocal = pathway.Leaf.Gamma,
                 FractionOfDiffusivitySolubilityRatio = 0.0,
                 BundleSheathConductance = 1.0,
-                Oxygen = canopy.OxygenPartialPressure,
+                Oxygen = canopy.AirO2,
                 Respiration = pathway.Leaf.RdT
             };
 
@@ -65,7 +65,7 @@ namespace DCAPST
                 HalfRubiscoSpecificityReciprocal = pathway.Leaf.Gamma,
                 FractionOfDiffusivitySolubilityRatio = 0.0,
                 BundleSheathConductance = 1.0,
-                Oxygen = canopy.OxygenPartialPressure,
+                Oxygen = canopy.AirO2,
                 Respiration = pathway.Leaf.RdT
             };
 

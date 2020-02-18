@@ -103,7 +103,7 @@ namespace DCAPST
         /// </summary>
         public double GmRd => RdT * 0.5;
 
-        private double Val(double temp, double P25, ValParameters p)
+        private double Val(double temp, double P25, LeafTemperatureParameters p)
         {
             double alpha = Math.Log(2) / (Math.Log((p.TMax - p.TMin) / (p.TOpt - p.TMin)));
             double numerator = 2 * Math.Pow((temp - p.TMin), alpha) * Math.Pow((p.TOpt - p.TMin), alpha) - Math.Pow((temp - p.TMin), 2 * alpha);
@@ -121,12 +121,12 @@ namespace DCAPST
         private double CalcElectronTransportRate()
         {
             var factor = partial.PhotonCount * (1.0 - pathway.SpectralCorrectionFactor) / 2.0;
-            return (factor + JMaxT - Math.Pow(Math.Pow(factor + JMaxT, 2) - 4 * canopy.ConvexityFactor * JMaxT * factor, 0.5))
-            / (2 * canopy.ConvexityFactor);
+            return (factor + JMaxT - Math.Pow(Math.Pow(factor + JMaxT, 2) - 4 * canopy.CurvatureFactor * JMaxT * factor, 0.5))
+            / (2 * canopy.CurvatureFactor);
         }
     }
 
-    public struct ValParameters
+    public struct LeafTemperatureParameters
     {
         public double C;
         public double TMax;

@@ -25,16 +25,29 @@ namespace DCAPST.Interfaces
         void InitialiseDay(double lai, double sln);
 
         /// <summary>
-        /// Updates 
+        /// Updates the total canopy on a new timestep
         /// </summary>
-        void RecalculateRadiation(ISolarRadiation radiation);
+        void DoTimestepAdjustment(ISolarRadiation radiation);
 
-        void CalcCanopyStructure(double sunAngleRadians);
+        /// <summary>
+        /// Adjusts the properties of the canopy to account for the suns movement across the sky
+        /// </summary>
+        void DoSolarAdjustment(double sunAngleRadians);
 
+        /// <summary>
+        /// Gets the amount of radiation intercepted by the canopy
+        /// </summary>
+        /// <returns></returns>
         double GetInterceptedRadiation();
 
+        /// <summary>
+        /// Calculates the total boundary heat conductance of the canopy
+        /// </summary>
         double CalcBoundaryHeatConductance();
 
+        /// <summary>
+        /// Calculates the boundary heat conductance of the sunlit area of the canopy
+        /// </summary>
         double CalcSunlitBoundaryHeatConductance();
     }
 }

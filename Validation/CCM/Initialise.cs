@@ -10,7 +10,7 @@ namespace Validation.CCM
         {
             double PsiFactor = 1.0;
 
-            var j = new ValParameters()
+            var j = new LeafTemperatureParameters()
             {
                 TMin = 0.0,
                 TOpt = 30.0,
@@ -19,7 +19,7 @@ namespace Validation.CCM
                 Beta = 1.0
             };
 
-            var g = new ValParameters()
+            var g = new LeafTemperatureParameters()
             {
                 TMin = 0.0,
                 TOpt = 29.2338417788683,
@@ -69,10 +69,10 @@ namespace Validation.CCM
 
             var CPath = new PathwayParameters()
             {
-                PEPRegenerationPerLeaf = 400,
+                PEPRegeneration = 400,
                 SpectralCorrectionFactor = 0.15,
-                PS2ActivityInBundleSheathFraction = 0.1,
-                BundleSheathCO2ConductancePerLeaf = 0.5,
+                PS2ActivityFraction = 0.1,
+                BundleSheathConductance = 0.5,
 
                 MaxRubiscoActivitySLNRatio = 1.1 * PsiFactor,
                 MaxElectronTransportSLNRatio = 1.9484 * PsiFactor,
@@ -105,9 +105,9 @@ namespace Validation.CCM
                 Pathway = CPath,
 
                 AirCO2 = 370,
-                ConvexityFactor = 0.7,
+                CurvatureFactor = 0.7,
                 DiffusivitySolubilityRatio = 0.047,
-                OxygenPartialPressure = 210000,
+                AirO2 = 210000,
 
                 DiffuseExtCoeff = 0.78,
                 DiffuseExtCoeffNIR = 0.8,
@@ -120,7 +120,7 @@ namespace Validation.CCM
                 LeafWidth = 0.05,
 
                 SLNRatioTop = 1.3,
-                StructuralN = 14,
+                MinimumN = 14,
 
                 Windspeed = 1.5,
                 WindSpeedExtinction = 1.5
