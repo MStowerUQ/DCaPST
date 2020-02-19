@@ -10,7 +10,7 @@ namespace Validation.C4
         {
             double PsiFactor = 0.4;
             
-            var j = new ValParameters()
+            var j = new LeafTemperatureParameters()
             {
                 TMin = 0,
                 TOpt = 37.8649150880407,
@@ -19,7 +19,7 @@ namespace Validation.C4
                 Beta = 1
             };
 
-            var g = new ValParameters()
+            var g = new LeafTemperatureParameters()
             {
                 TMin = 0,
                 TOpt = 42,
@@ -28,51 +28,51 @@ namespace Validation.C4
                 Beta = 1,
             };
 
-            var rubiscoCarboxylation = new TemperatureResponse()
+            var rubiscoCarboxylation = new TemperatureResponseValues()
             {
                 At25 = 1210,
                 Factor = 64200
             };
 
-            var rubiscoOxygenation = new TemperatureResponse()
+            var rubiscoOxygenation = new TemperatureResponseValues()
             {
                 At25 = 292000,
                 Factor = 10500
             };
 
-            var rubiscoCarboxylationToOxygenation = new TemperatureResponse()
+            var rubiscoCarboxylationToOxygenation = new TemperatureResponseValues()
             {
                 At25 = 5.51328906454566,
                 Factor = 21265.4029552906
             };
 
-            var pepc = new TemperatureResponse()
+            var pepc = new TemperatureResponseValues()
             {
                 At25 = 75,
                 Factor = 36300
             };
 
-            var rubiscoActivity = new TemperatureResponse()
+            var rubiscoActivity = new TemperatureResponseValues()
             {
                 Factor = 78000
             };
 
-            var respiration = new TemperatureResponse()
+            var respiration = new TemperatureResponseValues()
             {
                 Factor = 46390
             };
 
-            var pepcActivity = new TemperatureResponse()
+            var pepcActivity = new TemperatureResponseValues()
             {
                 Factor = 57043.2677590512
             };
 
             var CPath = new PathwayParameters()
             {
-                PEPRegenerationPerLeaf = 120,
+                PEPRegeneration = 120,
                 SpectralCorrectionFactor = 0.15,
-                PS2ActivityInBundleSheathFraction = 0.1,
-                BundleSheathCO2ConductancePerLeaf = 0.003,
+                PS2ActivityFraction = 0.1,
+                BundleSheathConductance = 0.003,
                 
                 MaxRubiscoActivitySLNRatio = 0.465 * PsiFactor,
                 MaxElectronTransportSLNRatio = 2.7 * PsiFactor,
@@ -103,9 +103,9 @@ namespace Validation.C4
                 Pathway = CPath,
 
                 AirCO2 = 363,
-                ConvexityFactor = 0.7,
+                CurvatureFactor = 0.7,
                 DiffusivitySolubilityRatio = 0.047,
-                OxygenPartialPressure = 210000,
+                AirO2 = 210000,
 
                 DiffuseExtCoeff = 0.78,
                 DiffuseExtCoeffNIR = 0.8,
@@ -118,7 +118,7 @@ namespace Validation.C4
                 LeafWidth = 0.15,
 
                 SLNRatioTop = 1.3,
-                StructuralN = 14,
+                MinimumN = 14,
 
                 Windspeed = 1.5,
                 WindSpeedExtinction = 1.5

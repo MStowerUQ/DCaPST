@@ -1,20 +1,26 @@
 ﻿namespace DCAPST.Interfaces
 {
-    public enum AssimilationType { Ac1, Ac2, Aj }
-
+    
     public interface IAssimilation
     {
-        AssimilationType Type { get; set; }
-
-        double CO2Rate { get; set; }
-        double WaterUse { get; set; }
-        double LeafTemperature { get; set; }
-        double IntercellularCO2 { get; set; }
+        /// <summary>
+        /// A leaf water interaction model
+        /// </summary>
+        ILeafWaterInteraction LeafWater { get; }
 
         /// <summary>
-        /// Attempt to calculate possible changes to the assimilation value under current conditions.
-        /// Returns false if the updated assimilation value is not sensible, otherwise it returns true.
+        /// Attempts to calculate possible changes to the assimilation value under current conditions.
         /// </summary>
-        void UpdateAssimilation(ILeafWaterInteraction Water, WaterParameters Params);
+        void UpdateAssimilation(WaterParameters Params);        
+
+        /// <summary>
+        /// Gets the rate of CO2 assimilation
+        /// </summary>
+        double GetCO2Rate();
+
+        /// <summary>
+        /// Gets the water used by the CO2 assimilation
+        /// </summary>
+        double GetWaterUse();
     }
 }

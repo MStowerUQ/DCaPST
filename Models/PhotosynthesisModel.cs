@@ -8,9 +8,24 @@ namespace DCAPST
 {
     public class PhotosynthesisModel
     {
+        /// <summary>
+        /// The solar geometry
+        /// </summary>
         public ISolarGeometry Solar { get; set; }
+        
+        /// <summary>
+        /// The solar radiation
+        /// </summary>
         public ISolarRadiation Radiation { get; set; }
+        
+        /// <summary>
+        /// The environmental temperature
+        /// </summary>
         public ITemperature Temperature { get; set; }
+        
+        /// <summary>
+        /// The canopy undergoing photosynthesis
+        /// </summary>
         public ITotalCanopy Canopy { get; set; }
 
         /// <summary>
@@ -37,6 +52,10 @@ namespace DCAPST
             iterations = (int)Math.Floor(1.0 + ((end - start) / timestep));
         }
 
+        /// <summary>
+        /// Calculates the potential and actual biomass growth of a canopy across the span of a day,
+        /// as well as the water requirements for both cases.
+        /// </summary>
         public double[] DailyRun(
             double lai,
             double SLN, 
@@ -63,27 +82,30 @@ namespace DCAPST
             var actual = (soilWater > totalDemand) ? potential : CalculateActual(limitedSupply, sunlitDemand, shadedDemand);
 
             double[] results = new double[5];
-            results[0] = actual * 3600 / 1000000 * 44 * B * 100 / ((1 + RootShootRatio) * 100);
+            results[0] = actual * 3600 / 1000000 * 44 * B / (1 + RootShootRatio);
             results[1] = totalDemand;
             results[2] = (soilWater < totalDemand) ? limitedSupply.Sum() : waterSupply.Sum();
             results[3] = intercepted;
-            results[4] = potential * 3600 / 1000000 * 44 * B * 100 / ((1 + RootShootRatio) * 100);
+            results[4] = potential * 3600 / 1000000 * 44 * B / (1 + RootShootRatio);
 
             return results;
         }
 
+        /// <summary>
+        /// Attempt to initialise models based on the current time, and test if they are sensible
+        /// </summary>
         private bool TryInitiliase(double time)
         {
             Temperature.UpdateAirTemperature(time);
             Radiation.UpdateRadiationValues(time);
             var sunAngle = Solar.SunAngle(time);            
-            Canopy.CalcCanopyStructure(sunAngle);
+            Canopy.DoSolarAdjustment(sunAngle);
 
             return IsSensible();
         }
 
         /// <summary>
-        /// Check if the basic conditions for photosynthesis to occur are met
+        /// Tests if the basic conditions for photosynthesis to occur are met
         /// </summary>
         private bool IsSensible()
         {
@@ -125,9 +147,9 @@ namespace DCAPST
                 // Note: double arrays default value is 0.0, which is the intended case if initialisation fails
                 if (!TryInitiliase(time)) continue;
 
-                intercepted += Radiation.Total * Canopy.PropnInterceptedRadns * 3600;
+                intercepted += Radiation.Total * Canopy.GetInterceptedRadiation() * 3600;
 
-                DoHourlyCalculation();
+                DoTimestepUpdate();
 
                 sunlitDemand[i] = Canopy.Sunlit.WaterUse;
                 shadedDemand[i] = Canopy.Shaded.WaterUse;
@@ -149,14 +171,17 @@ namespace DCAPST
                 if (!TryInitiliase(time)) continue;
 
                 double total = sunlitDemand[i] + shadedDemand[i];
-                DoHourlyCalculation(waterSupply[i], sunlitDemand[i] / total, shadedDemand[i] / total);
+                DoTimestepUpdate(waterSupply[i], sunlitDemand[i] / total, shadedDemand[i] / total);
 
                 assimilation += Canopy.Sunlit.CO2AssimilationRate + Canopy.Shaded.CO2AssimilationRate;
             }
             return assimilation;
         }
 
-        public void DoHourlyCalculation(double maxHourlyT = -1, double sunFraction = 0, double shadeFraction = 0)
+        /// <summary>
+        /// Updates the model to a new timestep
+        /// </summary>
+        public void DoTimestepUpdate(double maxHourlyT = -1, double sunFraction = 0, double shadeFraction = 0)
         {
             var Params = new WaterParameters
             {
@@ -165,18 +190,18 @@ namespace DCAPST
             };
             if (maxHourlyT != -1) Params.limited = true;
 
-            Canopy.PerformTimeAdjustment(Radiation);
+            Canopy.DoTimestepAdjustment(Radiation);
 
             var heat = Canopy.CalcBoundaryHeatConductance();
             var sunlitHeat = Canopy.CalcSunlitBoundaryHeatConductance();
 
             Params.BoundaryHeatConductance = sunlitHeat;
             Params.fraction = sunFraction;
-            Canopy.Sunlit.CalculatePhotosynthesis(Temperature, Params);
+            Canopy.Sunlit.DoPhotosynthesis(Temperature, Params);
 
             Params.BoundaryHeatConductance = heat - sunlitHeat;
             Params.fraction = shadeFraction;
-            Canopy.Shaded.CalculatePhotosynthesis(Temperature, Params);
+            Canopy.Shaded.DoPhotosynthesis(Temperature, Params);
         }
 
         /// <summary>

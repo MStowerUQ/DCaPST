@@ -18,26 +18,26 @@ namespace DCAPST
 
         // MM: Michaelis Menten
         // PEPc: Phosphoenolpyruvate carboxylase
-        public TemperatureResponse RubiscoCarboxylation { get; set; }
-        public TemperatureResponse RubiscoOxygenation { get; set; }
-        public TemperatureResponse RubiscoCarboxylationToOxygenation { get; set; }
-        public TemperatureResponse RubiscoActivity { get; set; }
+        public TemperatureResponseValues RubiscoCarboxylation { get; set; }
+        public TemperatureResponseValues RubiscoOxygenation { get; set; }
+        public TemperatureResponseValues RubiscoCarboxylationToOxygenation { get; set; }
+        public TemperatureResponseValues RubiscoActivity { get; set; }
 
-        public TemperatureResponse PEPc { get; set; }
-        public TemperatureResponse PEPcActivity { get; set; }
-        public TemperatureResponse Respiration { get; set; }
+        public TemperatureResponseValues PEPc { get; set; }
+        public TemperatureResponseValues PEPcActivity { get; set; }
+        public TemperatureResponseValues Respiration { get; set; }
 
-        public ValParameters ElectronTransportRateParams { get; set; }
-        public ValParameters MesophyllCO2ConductanceParams { get; set; }
+        public LeafTemperatureParameters ElectronTransportRateParams { get; set; }
+        public LeafTemperatureParameters MesophyllCO2ConductanceParams { get; set; }
 
         public double SpectralCorrectionFactor { get; set; }
         // PS2: Photosystem 2
-        public double PS2ActivityInBundleSheathFraction { get; set; }
-        public double PEPRegenerationPerLeaf { get; set; }
-        public double BundleSheathCO2ConductancePerLeaf { get; set; }       
+        public double PS2ActivityFraction { get; set; }
+        public double PEPRegeneration { get; set; }
+        public double BundleSheathConductance { get; set; }       
     }
 
-    public struct TemperatureResponse
+    public struct TemperatureResponseValues
     {
         /// <summary>
         /// The value of the temperature response factor for a given parameter

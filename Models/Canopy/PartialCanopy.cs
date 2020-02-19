@@ -1,78 +1,95 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using DCAPST.Environment;
-using DCAPST.Interfaces;
+﻿using DCAPST.Interfaces;
 
 namespace DCAPST.Canopy
 {
+    /// <summary>
+    /// Models a subsection of the canopy (used for distinguishing between sunlit and shaded)
+    /// </summary>
     public class PartialCanopy : IPartialCanopy
     {
-        public ICanopyParameters Canopy { get; set; }
-        public List<IAssimilation> partials;
+        /// <summary>
+        /// Parameters describing the canopy
+        /// </summary>
+        public ICanopyParameters Canopy { get; set; }       
 
+        /// <summary>
+        /// A group of parameters valued at the reference temperature of 25 Celsius
+        /// </summary>
+        public ParameterRates At25C { get; private set; }
+
+        /// <summary>
+        /// The leaf area index of this part of the canopy
+        /// </summary>
         public double LAI { get; set; }
 
-        public double RubiscoActivity25 { get; set; }
-        public double Rd25 { get; set; }
-        public double JMax25 { get; set; }
-        public double PEPcActivity25 { get; set; }
-        public double MesophyllCO2Conductance25 { get; set; }
-
+        /// <summary>
+        /// The sunlight absorbed by the canopy over a period of time
+        /// </summary>
         public double AbsorbedRadiation { get; set; }
+
+        /// <summary>
+        /// The number of photons which reached the canopy over a period of time
+        /// </summary>
         public double PhotonCount { get; set; }
+        
+        /// <summary>
+        /// CO2 assimilation rate over a period of time
+        /// </summary>
         public double CO2AssimilationRate { get; set; }
+        
+        /// <summary>
+        /// Water used during photosynthesis
+        /// </summary>
         public double WaterUse { get; set; }
 
         public PartialCanopy(ICanopyParameters canopy)
         {
-            Canopy = canopy;            
+            Canopy = canopy;
+            At25C = new ParameterRates();
         }
 
-        public void CalculatePhotosynthesis(ITemperature temperature, WaterParameters Params)
+        /// <summary>
+        /// Calculates the CO2 assimilated by the partial canopy during photosynthesis,
+        /// and the water used by the process
+        /// </summary>
+        public void DoPhotosynthesis(ITemperature temperature, WaterParameters Params)
         {
-            partials = new List<IAssimilation>
-            {
-                new Assimilation(AssimilationType.Ac1, this),
-                (Canopy.Type != CanopyType.C3) ? new Assimilation(AssimilationType.Ac2, this) : null,
-                new Assimilation(AssimilationType.Aj, this)
-            };
+            var assimilation = CreateAssimilation(temperature);
 
-            // Determine initial results            
-            foreach (var p in partials)
-            {
-                p.LeafTemperature = temperature.AirTemperature;
-                var water = new LeafWaterInteractionModel(temperature, p.LeafTemperature, Params.BoundaryHeatConductance);
-                p.UpdateAssimilation(water, Params);
-                if (p.CO2Rate == 0 || p.WaterUse == 0) return;                
-            }
+            // Determine initial results
+            assimilation.UpdateAssimilation(Params);
 
             // Store the initial results in case the subsequent updates fail
-            var initialA = partials.Select(s => s.CO2Rate).ToArray();
-            var initialWater = partials.Select(s => s.WaterUse).ToArray();
+            CO2AssimilationRate = assimilation.GetCO2Rate();
+            WaterUse = assimilation.GetWaterUse();
+            
+            if (CO2AssimilationRate == 0 || WaterUse == 0) return;
 
-            // Do not try to update assimilation if the initial value is too low
-            if (!partials.Any(s => s.CO2Rate < 0.5))
+            // Only update assimilation if the initial value is large enough
+            if (CO2AssimilationRate >= 0.5)
             {
                 for (int n = 0; n < 3; n++)
                 {
-                    foreach (var p in partials)
-                    {
-                        var water = new LeafWaterInteractionModel(temperature, p.LeafTemperature, Params.BoundaryHeatConductance);
+                    assimilation.UpdateAssimilation(Params);
 
-                        p.UpdateAssimilation(water, Params);
-                        // If the additional updates fail, the minimum amongst the initial values is taken
-                        if (p.CO2Rate == 0 || p.WaterUse == 0)
-                        {
-                            CO2AssimilationRate = initialA.Min();
-                            WaterUse = initialWater.Min();
-                            return;
-                        }
-                    }
+                    // If the additional updates fail, the minimum amongst the initial values is taken
+                    if (assimilation.GetCO2Rate() == 0 || assimilation.GetWaterUse() == 0) return;                    
                 }
             }
 
-            CO2AssimilationRate = partials.Min(p => p.CO2Rate);
-            WaterUse = partials.Min(p => p.WaterUse);
-        }        
+            // If three iterations pass without failing, update the values to the final result
+            CO2AssimilationRate = assimilation.GetCO2Rate();
+            WaterUse = assimilation.GetWaterUse();
+        }
+
+        /// <summary>
+        /// Factory method for creating an assimilation based on the canopy type
+        /// </summary>
+        private IAssimilation CreateAssimilation(ITemperature temperature)
+        {
+            if (Canopy.Type == CanopyType.C3) return new AssimilationC3(this, temperature);
+            else if (Canopy.Type == CanopyType.C4) return new AssimilationC4(this, temperature);
+            else return new AssimilationCCM(this, temperature);
+        }
     }
 }
