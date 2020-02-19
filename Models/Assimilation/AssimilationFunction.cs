@@ -6,10 +6,12 @@ namespace DCAPST
     /// Manages the calculation of CO2 assimilation rate
     /// </summary>
     /// <remarks>
-    /// See the supplementary material for 
+    /// See the supplementary material from the paper
     /// "Simulating daily field crop canopy photosynthesis: an integrated software package",
-    /// by Alex Wu, Al Doherty, Graham D. Farquhar and Graeme L. Hammer for the details behind
-    /// this function.
+    /// by A. Wu et al (2018) for the theory behind this function.
+    /// 
+    /// Note that some adjustments have been made to account for the CCM model, 
+    /// which as of Feb 2020 has not been published.
     /// </remarks>
     public class AssimilationFunction
     {

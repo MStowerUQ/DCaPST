@@ -1,7 +1,13 @@
 ﻿namespace DCAPST.Interfaces
 {
+    /// <summary>
+    /// Possible canopy types
+    /// </summary>
     public enum CanopyType { C3, C4, CCM }
 
+    /// <summary>
+    /// Describes parameters used by a crop canopy to calculate photosynthesis
+    /// </summary>
     public interface ICanopyParameters
     {
         /// <summary>

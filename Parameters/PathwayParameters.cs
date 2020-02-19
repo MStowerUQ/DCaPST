@@ -18,14 +18,14 @@ namespace DCAPST
 
         // MM: Michaelis Menten
         // PEPc: Phosphoenolpyruvate carboxylase
-        public TemperatureResponse RubiscoCarboxylation { get; set; }
-        public TemperatureResponse RubiscoOxygenation { get; set; }
-        public TemperatureResponse RubiscoCarboxylationToOxygenation { get; set; }
-        public TemperatureResponse RubiscoActivity { get; set; }
+        public TemperatureResponseValues RubiscoCarboxylation { get; set; }
+        public TemperatureResponseValues RubiscoOxygenation { get; set; }
+        public TemperatureResponseValues RubiscoCarboxylationToOxygenation { get; set; }
+        public TemperatureResponseValues RubiscoActivity { get; set; }
 
-        public TemperatureResponse PEPc { get; set; }
-        public TemperatureResponse PEPcActivity { get; set; }
-        public TemperatureResponse Respiration { get; set; }
+        public TemperatureResponseValues PEPc { get; set; }
+        public TemperatureResponseValues PEPcActivity { get; set; }
+        public TemperatureResponseValues Respiration { get; set; }
 
         public LeafTemperatureParameters ElectronTransportRateParams { get; set; }
         public LeafTemperatureParameters MesophyllCO2ConductanceParams { get; set; }
@@ -37,7 +37,7 @@ namespace DCAPST
         public double BundleSheathConductance { get; set; }       
     }
 
-    public struct TemperatureResponse
+    public struct TemperatureResponseValues
     {
         /// <summary>
         /// The value of the temperature response factor for a given parameter

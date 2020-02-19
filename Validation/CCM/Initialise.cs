@@ -28,41 +28,41 @@ namespace Validation.CCM
                 Beta = 1.0
             };
 
-            var rubiscoCarboxylation = new TemperatureResponse()
+            var rubiscoCarboxylation = new TemperatureResponseValues()
             {
                 At25 = 273.422964228666,
                 Factor = 93720.0
             };
 
-            var rubiscoOxygenation = new TemperatureResponse()
+            var rubiscoOxygenation = new TemperatureResponseValues()
             {
                 At25 = 165824.064155384,
                 Factor = 33600.0
             };
 
-            var rubiscoCarboxylationToOxygenation = new TemperatureResponse()
+            var rubiscoCarboxylationToOxygenation = new TemperatureResponseValues()
             {
                 At25 = 4.59217066521612,
                 Factor = 35713.1987127717
             };
 
-            var pepc = new TemperatureResponse()
+            var pepc = new TemperatureResponseValues()
             {
                 At25 = 75,
                 Factor = 36300
             };
 
-            var rubiscoActivity = new TemperatureResponse()
+            var rubiscoActivity = new TemperatureResponseValues()
             {
                 Factor = 65330.0
             };
 
-            var respiration = new TemperatureResponse()
+            var respiration = new TemperatureResponseValues()
             {
                 Factor = 46390
             };
 
-            var pepcActivity = new TemperatureResponse()
+            var pepcActivity = new TemperatureResponseValues()
             {
                 Factor = 57043.2677590512
             };

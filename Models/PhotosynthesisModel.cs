@@ -8,9 +8,24 @@ namespace DCAPST
 {
     public class PhotosynthesisModel
     {
+        /// <summary>
+        /// The solar geometry
+        /// </summary>
         public ISolarGeometry Solar { get; set; }
+        
+        /// <summary>
+        /// The solar radiation
+        /// </summary>
         public ISolarRadiation Radiation { get; set; }
+        
+        /// <summary>
+        /// The environmental temperature
+        /// </summary>
         public ITemperature Temperature { get; set; }
+        
+        /// <summary>
+        /// The canopy undergoing photosynthesis
+        /// </summary>
         public ITotalCanopy Canopy { get; set; }
 
         /// <summary>
@@ -163,6 +178,9 @@ namespace DCAPST
             return assimilation;
         }
 
+        /// <summary>
+        /// Updates the model to a new timestep
+        /// </summary>
         public void DoTimestepUpdate(double maxHourlyT = -1, double sunFraction = 0, double shadeFraction = 0)
         {
             var Params = new WaterParameters
@@ -179,11 +197,11 @@ namespace DCAPST
 
             Params.BoundaryHeatConductance = sunlitHeat;
             Params.fraction = sunFraction;
-            Canopy.Sunlit.CalculatePhotosynthesis(Temperature, Params);
+            Canopy.Sunlit.DoPhotosynthesis(Temperature, Params);
 
             Params.BoundaryHeatConductance = heat - sunlitHeat;
             Params.fraction = shadeFraction;
-            Canopy.Shaded.CalculatePhotosynthesis(Temperature, Params);
+            Canopy.Shaded.DoPhotosynthesis(Temperature, Params);
         }
 
         /// <summary>

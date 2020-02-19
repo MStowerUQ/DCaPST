@@ -115,7 +115,7 @@ namespace ModelsTests.Environment.UnitTests
             // Act
             var water = new LeafWaterInteractionModel(temperature.Object);
             water.SetConditions(leafTemp, gbh);
-            var actual = water.TotalLeafCO2Conductance(rtw);
+            var actual = water.TotalCO2Conductance(rtw);
 
             // Assert
             Assert.AreEqual(expected, actual);

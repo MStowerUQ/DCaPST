@@ -28,41 +28,41 @@ namespace Validation.C4
                 Beta = 1,
             };
 
-            var rubiscoCarboxylation = new TemperatureResponse()
+            var rubiscoCarboxylation = new TemperatureResponseValues()
             {
                 At25 = 1210,
                 Factor = 64200
             };
 
-            var rubiscoOxygenation = new TemperatureResponse()
+            var rubiscoOxygenation = new TemperatureResponseValues()
             {
                 At25 = 292000,
                 Factor = 10500
             };
 
-            var rubiscoCarboxylationToOxygenation = new TemperatureResponse()
+            var rubiscoCarboxylationToOxygenation = new TemperatureResponseValues()
             {
                 At25 = 5.51328906454566,
                 Factor = 21265.4029552906
             };
 
-            var pepc = new TemperatureResponse()
+            var pepc = new TemperatureResponseValues()
             {
                 At25 = 75,
                 Factor = 36300
             };
 
-            var rubiscoActivity = new TemperatureResponse()
+            var rubiscoActivity = new TemperatureResponseValues()
             {
                 Factor = 78000
             };
 
-            var respiration = new TemperatureResponse()
+            var respiration = new TemperatureResponseValues()
             {
                 Factor = 46390
             };
 
-            var pepcActivity = new TemperatureResponse()
+            var pepcActivity = new TemperatureResponseValues()
             {
                 Factor = 57043.2677590512
             };

@@ -55,37 +55,37 @@
         /// <summary>
         /// Describes how Rubisco carboxylation changes with temperature
         /// </summary>
-        TemperatureResponse RubiscoCarboxylation { get; set; }
+        TemperatureResponseValues RubiscoCarboxylation { get; set; }
 
         /// <summary>
         /// Describes how Rubisco oxygenation changes with temperature
         /// </summary>
-        TemperatureResponse RubiscoOxygenation { get; set; }
+        TemperatureResponseValues RubiscoOxygenation { get; set; }
 
         /// <summary>
         /// Describes how Rubisco carboxylation to oxygenation changes with temperature
         /// </summary>
-        TemperatureResponse RubiscoCarboxylationToOxygenation { get; set; }
+        TemperatureResponseValues RubiscoCarboxylationToOxygenation { get; set; }
 
         /// <summary>
         /// Describes how Rubisco activity changes with temperature
         /// </summary>
-        TemperatureResponse RubiscoActivity { get; set; }
+        TemperatureResponseValues RubiscoActivity { get; set; }
 
         /// <summary>
         /// Describes how PEPc changes with temperature
         /// </summary>
-        TemperatureResponse PEPc { get; set; }
+        TemperatureResponseValues PEPc { get; set; }
 
         /// <summary>
         /// Describes how PEPc activity changes with temperature
         /// </summary>
-        TemperatureResponse PEPcActivity { get; set; }
+        TemperatureResponseValues PEPcActivity { get; set; }
 
         /// <summary>
         /// Describes how Respiration changes with temperature
         /// </summary>
-        TemperatureResponse Respiration { get; set; }
+        TemperatureResponseValues Respiration { get; set; }
 
         /// <summary>
         /// Describes how electron transport rate changes with temperature

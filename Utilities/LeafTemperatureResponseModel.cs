@@ -6,13 +6,16 @@ namespace DCAPST
     /// <summary>
     /// Models the parameters of the leaf necessary to calculate photosynthesis
     /// </summary>
-    public class LeafParameters
+    public class LeafTemperatureResponseModel
     {
         /// <summary>
         /// The canopy which is calculating leaf temperature properties
         /// </summary>
         private IPartialCanopy partial;
 
+        /// <summary>
+        /// A collection of parameters as valued at 25 degrees Celsius
+        /// </summary>
         private ParameterRates rateAt25;
 
         /// <summary>
@@ -25,7 +28,7 @@ namespace DCAPST
         /// </summary>
         private IPathwayParameters pathway;
 
-        public LeafParameters(IPartialCanopy partial)
+        public LeafTemperatureResponseModel(IPartialCanopy partial)
         {
             this.partial = partial;
             rateAt25 = partial.At25C;
@@ -51,7 +54,7 @@ namespace DCAPST
         /// <summary>
         /// Maximum rate of electron transport at the current leaf temperature (micro mol CO2 m^-2 ground s^-1)
         /// </summary>
-        public double JMaxT => Val(Temperature, rateAt25.JMax, pathway.ElectronTransportRateParams);
+        public double JMaxT => ValueOptimum(Temperature, rateAt25.JMax, pathway.ElectronTransportRateParams);
 
         /// <summary>
         /// Maximum PEP carboxylase activity at the current leaf temperature (micro mol CO2 m^-2 ground s^-1)
@@ -61,7 +64,7 @@ namespace DCAPST
         /// <summary>
         /// Mesophyll conductance at the current leaf temperature (mol CO2 m^-2 ground s^-1 bar^-1)
         /// </summary>
-        public double GmT => Val(Temperature, rateAt25.Gm, pathway.MesophyllCO2ConductanceParams);
+        public double GmT => ValueOptimum(Temperature, rateAt25.Gm, pathway.MesophyllCO2ConductanceParams);
 
         /// <summary>
         /// Michaelis-Menten constant of Rubsico for CO2 (microbar)
@@ -101,9 +104,26 @@ namespace DCAPST
         /// <summary>
         /// Mesophyll respiration
         /// </summary>
-        public double GmRd => RdT * 0.5;
+        public double GmRd => RdT * 0.5;        
 
-        private double Val(double temp, double P25, LeafTemperatureParameters p)
+        /// <summary>
+        /// Uses an exponential function to model temperature response parameters
+        /// </summary>
+        /// <remarks>
+        /// See equation (1), A. Wu et al (2018) for details
+        /// </remarks>
+        private double Value(double temp, double P25, double tMin)
+        {
+            return P25 * Math.Exp(tMin * (temp + 273 - 298.15) / (298.15 * 8.314 * (temp + 273)));
+        }
+
+        /// <summary>
+        /// Uses a normal distribution to model parameters with an apparent optimum in temperature response
+        /// </summary>
+        /// /// <remarks>
+        /// See equation (2), A. Wu et al (2018) for details
+        /// </remarks>
+        private double ValueOptimum(double temp, double P25, LeafTemperatureParameters p)
         {
             double alpha = Math.Log(2) / (Math.Log((p.TMax - p.TMin) / (p.TOpt - p.TMin)));
             double numerator = 2 * Math.Pow((temp - p.TMin), alpha) * Math.Pow((p.TOpt - p.TMin), alpha) - Math.Pow((temp - p.TMin), 2 * alpha);
@@ -113,11 +133,9 @@ namespace DCAPST
             return funcT;
         }
 
-        private double Value(double temp, double P25, double tMin)
-        {
-            return P25 * Math.Exp(tMin * (temp + 273 - 298.15) / (298.15 * 8.314 * (temp + 273)));
-        }
-
+        /// <summary>
+        /// Calculates the electron transport rate of the leaf
+        /// </summary>
         private double CalcElectronTransportRate()
         {
             var factor = partial.PhotonCount * (1.0 - pathway.SpectralCorrectionFactor) / 2.0;
@@ -126,12 +144,34 @@ namespace DCAPST
         }
     }
 
+    /// <summary>
+    /// Describes parameters used in leaf temperature calculations
+    /// </summary>
     public struct LeafTemperatureParameters
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public double C;
+
+        /// <summary>
+        /// The maximum temperature
+        /// </summary>
         public double TMax;
+        
+        /// <summary>
+        /// The minimum temperature
+        /// </summary>
         public double TMin;
+        
+        /// <summary>
+        /// The optimum temperature
+        /// </summary>
         public double TOpt;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public double Beta;
     }
 }

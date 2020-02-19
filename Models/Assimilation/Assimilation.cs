@@ -10,15 +10,40 @@ namespace DCAPST
     /// Tracks the state of an assimilation type
     /// </summary>
     public abstract class Assimilation : IAssimilation
-    {       
+    {
+        /// <summary>
+        /// The part of the canopy undergoing CO2 assimilation
+        /// </summary>
         protected IPartialCanopy partial;
+
+        /// <summary>
+        /// The parameters describing the canopy
+        /// </summary>
         protected ICanopyParameters canopy;
+
+        /// <summary>
+        /// The parameters describing the pathways
+        /// </summary>
         protected IPathwayParameters pway;
+
+        /// <summary>
+        /// Models the leaf water interaction
+        /// </summary>
         public ILeafWaterInteraction LeafWater { get; }
 
+        /// <summary>
+        /// The possible assimilation pathways
+        /// </summary>
         protected List<AssimilationPathway> pathways;        
 
+        /// <summary>
+        /// Bundle sheath conductance
+        /// </summary>
         public double Gbs => pway.BundleSheathConductance * partial.LAI;
+        
+        /// <summary>
+        /// PEP regeneration
+        /// </summary>
         public double Vpr => pway.PEPRegeneration * partial.LAI;
 
         public Assimilation(IPartialCanopy partial, ITemperature temperature)
@@ -29,23 +54,32 @@ namespace DCAPST
 
             pathways = new List<AssimilationPathway>()
             {
-                /*Ac1*/ new AssimilationPathway(partial) { Type = AssimilationType.Ac1 },
-                /*Ac2*/ this is AssimilationC3 ? null : new AssimilationPathway(partial) { Type = AssimilationType.Ac2 },
-                /*Aj */ new AssimilationPathway(partial) { Type = AssimilationType.Aj }
+                /*Ac1*/ new AssimilationPathway(partial) { Type = PathwayType.Ac1 },
+                /*Ac2*/ this is AssimilationC3 ? null : new AssimilationPathway(partial) { Type = PathwayType.Ac2 },
+                /*Aj */ new AssimilationPathway(partial) { Type = PathwayType.Aj }
             };
             pathways.ForEach(p => p.Leaf.Temperature = temperature.AirTemperature);
 
             LeafWater = new LeafWaterInteractionModel(temperature);
         }
         
+        /// <summary>
+        /// Recalculates the assimilation values for each pathway
+        /// </summary>
         public void UpdateAssimilation(WaterParameters water) => pathways.ForEach(p => UpdatePathway(water, p));        
 
+        /// <summary>
+        /// Finds the CO2 assimilation rate
+        /// </summary>
         public double GetCO2Rate() => pathways.Min(p => p.CO2Rate);
 
+        /// <summary>
+        /// Finds the water used during CO2 assimilation
+        /// </summary>
         public double GetWaterUse() => pathways.Min(p => p.WaterUse);
 
         /// <summary>
-        /// Updates the state of the assimilation
+        /// Updates the state of an assimilation pathway
         /// </summary>
         private void UpdatePathway(WaterParameters water, AssimilationPathway pathway)
         {
@@ -74,7 +108,7 @@ namespace DCAPST
                 var WaterUseMolsSecond = pathway.WaterUse / 18 * 1000 / 3600;
 
                 resistance = LeafWater.LimitedWaterResistance(pathway.WaterUse, partial.AbsorbedRadiation);
-                var Gt = LeafWater.TotalLeafCO2Conductance(resistance);
+                var Gt = LeafWater.TotalCO2Conductance(resistance);
 
                 func.Ci = canopy.AirCO2 - WaterUseMolsSecond * canopy.AirCO2 / (Gt + WaterUseMolsSecond / 2.0);
                 func.Rm = 1 / (Gt + WaterUseMolsSecond / 2) + 1.0 / pathway.Leaf.GmT;
@@ -98,11 +132,14 @@ namespace DCAPST
                 pathway.WaterUse = 0;
             }
         }
-
+        
+        /// <summary>
+        /// Factory method for accessing the different possible terms for assimilation
+        /// </summary>
         private AssimilationFunction GetFunction(AssimilationPathway pathway)
         {
-            if (pathway.Type == AssimilationType.Ac1) return GetAc1Function(pathway);
-            else if (pathway.Type == AssimilationType.Ac2) return GetAc2Function(pathway);
+            if (pathway.Type == PathwayType.Ac1) return GetAc1Function(pathway);
+            else if (pathway.Type == PathwayType.Ac2) return GetAc2Function(pathway);
             else return GetAjFunction(pathway);
         }
 

@@ -2,16 +2,44 @@
 
 namespace DCAPST.Canopy
 {
+    /// <summary>
+    /// Models a subsection of the canopy (used for distinguishing between sunlit and shaded)
+    /// </summary>
     public class PartialCanopy : IPartialCanopy
     {
+        /// <summary>
+        /// Parameters describing the canopy
+        /// </summary>
         public ICanopyParameters Canopy { get; set; }       
 
+        /// <summary>
+        /// A group of parameters valued at the reference temperature of 25 Celsius
+        /// </summary>
         public ParameterRates At25C { get; private set; }
 
+        /// <summary>
+        /// The leaf area index of this part of the canopy
+        /// </summary>
         public double LAI { get; set; }
+
+        /// <summary>
+        /// The sunlight absorbed by the canopy over a period of time
+        /// </summary>
         public double AbsorbedRadiation { get; set; }
+
+        /// <summary>
+        /// The number of photons which reached the canopy over a period of time
+        /// </summary>
         public double PhotonCount { get; set; }
+        
+        /// <summary>
+        /// CO2 assimilation rate over a period of time
+        /// </summary>
         public double CO2AssimilationRate { get; set; }
+        
+        /// <summary>
+        /// Water used during photosynthesis
+        /// </summary>
         public double WaterUse { get; set; }
 
         public PartialCanopy(ICanopyParameters canopy)
@@ -20,7 +48,11 @@ namespace DCAPST.Canopy
             At25C = new ParameterRates();
         }
 
-        public void CalculatePhotosynthesis(ITemperature temperature, WaterParameters Params)
+        /// <summary>
+        /// Calculates the CO2 assimilated by the partial canopy during photosynthesis,
+        /// and the water used by the process
+        /// </summary>
+        public void DoPhotosynthesis(ITemperature temperature, WaterParameters Params)
         {
             var assimilation = CreateAssimilation(temperature);
 
@@ -44,10 +76,15 @@ namespace DCAPST.Canopy
                     if (assimilation.GetCO2Rate() == 0 || assimilation.GetWaterUse() == 0) return;                    
                 }
             }
+
+            // If three iterations pass without failing, update the values to the final result
             CO2AssimilationRate = assimilation.GetCO2Rate();
             WaterUse = assimilation.GetWaterUse();
         }
 
+        /// <summary>
+        /// Factory method for creating an assimilation based on the canopy type
+        /// </summary>
         private IAssimilation CreateAssimilation(ITemperature temperature)
         {
             if (Canopy.Type == CanopyType.C3) return new AssimilationC3(this, temperature);

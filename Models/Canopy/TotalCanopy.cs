@@ -37,10 +37,25 @@ namespace DCAPST.Canopy
         /// The leaf angle (radians)
         /// </summary>
         private double LeafAngle { get; set; }
+
+        /// <summary>
+        /// The width of the leaf
+        /// </summary>
         private double LeafWidth { get; set; }
+        
+        /// <summary>
+        /// Nitrogen at the top of the canopy
+        /// </summary>
         private double LeafNTopCanopy { get; set; }
 
+        /// <summary>
+        /// Wind speed
+        /// </summary>
         private double WindSpeed { get; set; }
+        
+        /// <summary>
+        /// Wind speed extinction
+        /// </summary>
         private double WindSpeedExtinction { get; set; }
 
         /// <summary>
@@ -82,9 +97,9 @@ namespace DCAPST.Canopy
 
             Absorbed = new CanopyRadiation(Layers, LAI)
             {
-                DiffuseExtCoeff = Canopy.DiffuseExtCoeff,
-                LeafScatteringCoeff = Canopy.LeafScatteringCoeff,
-                DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeff
+                DiffuseExtinction = Canopy.DiffuseExtCoeff,
+                LeafScattering = Canopy.LeafScatteringCoeff,
+                DiffuseReflection = Canopy.DiffuseReflectionCoeff
             };         
         }
 
@@ -113,9 +128,9 @@ namespace DCAPST.Canopy
         private void CalcAbsorbedRadiations(ISolarRadiation radiation)
         {
             // Set parameters
-            Absorbed.DiffuseExtCoeff = Canopy.DiffuseExtCoeff;
-            Absorbed.LeafScatteringCoeff = Canopy.LeafScatteringCoeff;
-            Absorbed.DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeff;
+            Absorbed.DiffuseExtinction = Canopy.DiffuseExtCoeff;
+            Absorbed.LeafScattering = Canopy.LeafScatteringCoeff;
+            Absorbed.DiffuseReflection = Canopy.DiffuseReflectionCoeff;
 
             // Photon calculations (used by photosynthesis)
             var photons = Absorbed.CalcTotalRadiation(radiation.DirectPAR, radiation.DiffusePAR);
@@ -133,9 +148,9 @@ namespace DCAPST.Canopy
             var ShadedPARTotalIrradiance = PARTotalIrradiance - SunlitPARTotalIrradiance;
 
             // Adjust parameters for NIR calculations
-            Absorbed.DiffuseExtCoeff = Canopy.DiffuseExtCoeffNIR;
-            Absorbed.LeafScatteringCoeff = Canopy.LeafScatteringCoeffNIR;
-            Absorbed.DiffuseReflectionCoeff = Canopy.DiffuseReflectionCoeffNIR;
+            Absorbed.DiffuseExtinction = Canopy.DiffuseExtCoeffNIR;
+            Absorbed.LeafScattering = Canopy.LeafScatteringCoeffNIR;
+            Absorbed.DiffuseReflection = Canopy.DiffuseReflectionCoeffNIR;
 
             var NIRTotalIrradiance = Absorbed.CalcTotalRadiation(NIRDirect, NIRDiffuse);
             var SunlitNIRTotalIrradiance = Absorbed.CalcSunlitRadiation(NIRDirect, NIRDiffuse);
@@ -151,7 +166,7 @@ namespace DCAPST.Canopy
         private void CalcMaximumRates()
         {
             var coefficient = NAllocation;
-            var sunlitCoefficient = NAllocation + (Absorbed.BeamExtinctionCoeff * LAI);
+            var sunlitCoefficient = NAllocation + (Absorbed.DirectExtinction * LAI);
 
             var RubiscoActivity25 = CalcMaximumRate(Canopy.Pathway.MaxRubiscoActivitySLNRatio, coefficient);
             Sunlit.At25C.VcMax = CalcMaximumRate(Canopy.Pathway.MaxRubiscoActivitySLNRatio, sunlitCoefficient);
@@ -174,6 +189,9 @@ namespace DCAPST.Canopy
             Shaded.At25C.Gm = MesophyllCO2Conductance25 - Sunlit.At25C.Gm;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private double CalcMaximumRate(double psi, double coefficient)
         {
             var factor = LAI * (LeafNTopCanopy - Canopy.MinimumN) * psi;
@@ -199,22 +217,28 @@ namespace DCAPST.Canopy
         /// </summary>
         public double CalcSunlitBoundaryHeatConductance()
         {
-            var a = 0.5 * WindSpeedExtinction + Absorbed.BeamExtinctionCoeff;
+            var a = 0.5 * WindSpeedExtinction + Absorbed.DirectExtinction;
             var b = 0.01 * Math.Pow(WindSpeed / LeafWidth, 0.5);
             var c = 1 - Math.Exp(-a * LAI);            
 
             return b * c / a;
         }
                 
+        /// <summary>
+        /// Calculates how the movement of the sun affects the absorbed radiation
+        /// </summary>
         public void DoSolarAdjustment(double sunAngle)
         {        
             // Beam Extinction Coefficient
             if (sunAngle > 0)
-                Absorbed.BeamExtinctionCoeff = CalcShadowProjection(sunAngle) / Math.Sin(sunAngle);
+                Absorbed.DirectExtinction = CalcShadowProjection(sunAngle) / Math.Sin(sunAngle);
             else
-                Absorbed.BeamExtinctionCoeff = 0;            
+                Absorbed.DirectExtinction = 0;            
         }
 
+        /// <summary>
+        /// Calculates the radiation intercepted by the current layer of the canopy
+        /// </summary>
         public double GetInterceptedRadiation()
         {
             // Intercepted radiation
@@ -225,6 +249,9 @@ namespace DCAPST.Canopy
             // InterceptedRadiation_1 = Absorbed.CalcInterceptedRadiation() - InterceptedRadiation_0;
         }
 
+        /// <summary>
+        /// Calculates the geometry of the shadows across the canopy
+        /// </summary>
         private double CalcShadowProjection(double sunAngle)
         {
             if (LeafAngle <= sunAngle)

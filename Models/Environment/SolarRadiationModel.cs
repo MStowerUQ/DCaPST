@@ -3,22 +3,20 @@ using DCAPST.Interfaces;
 
 namespace DCAPST.Environment
 {
+    /// <summary>
+    /// Models the different forms of environmental radiation
+    /// </summary>
     public class SolarRadiationModel : ISolarRadiation
     {
-        public ISolarGeometry Solar;
-
-        public double FracDiffuseATM { get; } = 0.1725;
-        
         /// <summary>
-        /// PAR energy fraction
+        /// Models the solar geometry
         /// </summary>
-        public double RPAR { get; set; }
+        private readonly ISolarGeometry solar;
 
-        public double Total { get; private set; }
-        public double Direct { get; private set; }
-        public double Diffuse { get; private set; }
-        public double DirectPAR { get; private set; }
-        public double DiffusePAR { get; private set; }
+        /// <summary>
+        /// Fraction of incoming radiation that is diffuse
+        /// </summary>
+        private readonly double diffuseFraction = 0.1725;       
 
         /// <summary>
         /// The radiation measured across a day
@@ -27,10 +25,43 @@ namespace DCAPST.Environment
 
         public SolarRadiationModel(ISolarGeometry solar, double dailyRadiation)
         {
-            Solar = solar ?? throw new Exception();
+            this.solar = solar ?? throw new Exception();
             daily = (dailyRadiation >= 0) ? dailyRadiation : throw new Exception();
         }
 
+        /// <summary>
+        /// PAR energy fraction
+        /// </summary>
+        public double RPAR { get; set; }
+
+        /// <summary>
+        /// The total incoming solar radiation over a time period
+        /// </summary>
+        public double Total { get; private set; }
+
+        /// <summary>
+        /// The amount of incoming direct solar radiation over a time period
+        /// </summary>
+        public double Direct { get; private set; }
+
+        /// <summary>
+        /// The amount of incoming diffuse solar radiation over a time period
+        /// </summary>
+        public double Diffuse { get; private set; }
+
+        /// <summary>
+        /// The amount of incoming direct photosynthetic active radiation over a time period
+        /// </summary>
+        public double DirectPAR { get; private set; }
+
+        /// <summary>
+        /// The amount of incoming diffuse photosynthetic active radiation over a time period
+        /// </summary>
+        public double DiffusePAR { get; private set; }
+
+        /// <summary>
+        /// Updates the incoming radiation values to a new time period 
+        /// </summary>
         public void UpdateRadiationValues(double time)
         {
             if (time < 0 || 24 < time) throw new Exception("Time must be between 0 and 24");
@@ -51,14 +82,16 @@ namespace DCAPST.Environment
         /// </summary>
         private double CurrentTotal(double time)
         {
-            double dawn = Math.Floor(Solar.Sunrise);
-            double dusk = Math.Ceiling(Solar.Sunset);
+            double dawn = Math.Floor(solar.Sunrise);
+            double dusk = Math.Ceiling(solar.Sunset);
 
             if (time < dawn || dusk < time) return 0;
 
-            var theta = Math.PI * (time - Solar.Sunrise) / Solar.DayLength;
+            var theta = Math.PI * (time - solar.Sunrise) / solar.DayLength;
             var factor = Math.Sin(theta) * Math.PI / 2;
-            var radiation = daily / (Solar.DayLength * 3600);
+
+            // TODO: Adapt this to use the timestep model
+            var radiation = daily / (solar.DayLength * 3600);
             var incident = radiation * factor;
 
             if (incident < 0) return 0;
@@ -71,7 +104,7 @@ namespace DCAPST.Environment
         /// </summary>
         private double CurrentDiffuse(double time)
         {
-            var diffuse = Math.Max(FracDiffuseATM * Solar.SolarConstant * Math.Sin(Solar.SunAngle(time)) / 1000000, 0);
+            var diffuse = Math.Max(diffuseFraction * solar.SolarConstant * Math.Sin(solar.SunAngle(time)) / 1000000, 0);
 
             if (diffuse > Total)
                 return Total;

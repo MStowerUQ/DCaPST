@@ -20,7 +20,7 @@
         /// <summary>
         /// Finds the total leaf CO2 conductance at a given resistance to water
         /// </summary>
-        double TotalLeafCO2Conductance(double resistance);
+        double TotalCO2Conductance(double resistance);
 
         /// <summary>
         /// Finds the leaf temperature as a result of the water interaction
