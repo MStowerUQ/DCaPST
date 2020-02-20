@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DCAPST</RootNamespace>
     <AssemblyName>DCaPST</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -64,12 +64,15 @@
     <Compile Include="Interfaces\Canopy\IPartialCanopy.cs" />
     <Compile Include="Interfaces\Canopy\ITotalCanopy.cs" />
     <Compile Include="Interfaces\IAssimilation.cs" />
+    <Compile Include="Interfaces\IClock.cs" />
+    <Compile Include="Interfaces\IPhotosynthesisModel.cs" />
+    <Compile Include="Interfaces\IWeather.cs" />
     <Compile Include="Interfaces\Parameters\ICanopyParameters.cs" />
     <Compile Include="Interfaces\Parameters\IPathwayParameters.cs" />
     <Compile Include="Interfaces\Models\ILeafWaterInteraction.cs" />
     <Compile Include="Interfaces\Models\ITemperature.cs" />
     <Compile Include="Interfaces\Models\ISolarGeometry.cs" />
-    <Compile Include="Interfaces\Models\IRadiation.cs" />
+    <Compile Include="Interfaces\Models\ISolarRadiation.cs" />
     <Compile Include="Models\Assimilation\Assimilation.cs" />
     <Compile Include="Models\Assimilation\CanopyTypes\AssimilationCCM.cs" />
     <Compile Include="Models\Assimilation\CanopyTypes\AssimilationC4.cs" />
@@ -90,7 +93,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\LeafTemperatureResponseModel.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
