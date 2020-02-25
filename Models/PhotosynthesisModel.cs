@@ -61,7 +61,7 @@ namespace DCAPST
             Canopy = canopy;
         }
 
-        public void Initialise(ICanopyParameters canopy)
+        public void Initialise()
         {
             Solar.Initialise();
 

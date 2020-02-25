@@ -9,15 +9,6 @@ namespace ModelsTests.Environment.UnitTests
 {
     public class WaterInteractionTests
     {
-        [TestCaseSource(typeof(WaterInteractionTestData), "ConstructorTestCases")]
-        public void Constructor_IfInvalidArguments_ThrowsException(ITemperature temperature,double leafTemp, double gbh)
-        {
-            Assert.Throws<Exception>(() => { 
-                var water = new LeafWaterInteractionModel(temperature);
-                water.SetConditions(leafTemp, gbh);
-            });
-        }
-
         [Test]
         public void UnlimitedRtw_WhenCalculated_ReturnsExpectedValue()
         {

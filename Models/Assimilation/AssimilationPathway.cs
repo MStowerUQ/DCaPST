@@ -50,8 +50,21 @@ namespace DCAPST
         /// </summary>
         public double ChloroplasticO2 { get; set; }
 
-        public AssimilationPathway(IPartialCanopy partial)
+        /// <summary>
+        /// Bundle sheath conductance
+        /// </summary>
+        public double Gbs { get; set; }
+
+        /// <summary>
+        /// PEP regeneration
+        /// </summary>
+        public double Vpr { get; set; }
+
+        public AssimilationPathway(IPartialCanopy partial, IPathwayParameters pathway)
         {
+            Gbs = pathway.BundleSheathConductance * partial.LAI;
+            Vpr = pathway.PEPRegeneration * partial.LAI;
+
             MesophyllCO2 = partial.Canopy.AirCO2 * partial.Pathway.IntercellularToAirCO2Ratio;
             ChloroplasticCO2 = MesophyllCO2 + 20;
             ChloroplasticO2 = 210000;

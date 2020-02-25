@@ -74,7 +74,8 @@ namespace DCAPST.Canopy
             ICanopyParameters canopy,
             IPathwayParameters pathway,
             IPartialCanopy sunlit,
-            IPartialCanopy shaded)
+            IPartialCanopy shaded
+        )
         {
             Canopy = canopy;
             this.pathway = pathway;

@@ -68,7 +68,7 @@ namespace DCAPST.Environment
 
         public LeafWaterInteractionModel(ITemperature temperature)
         {
-            temp = temperature ?? throw new Exception("The temperature model cannot be null");
+            temp = temperature;
         }
 
         /// <summary>

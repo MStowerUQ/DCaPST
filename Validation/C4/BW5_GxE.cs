@@ -84,7 +84,7 @@ namespace Validation.C4
             canopy.UseSorghumValues();
 
             var PM = provider.GetService<IPhotosynthesisModel>() as PhotosynthesisModel;
-            PM.Initialise(canopy);
+            PM.Initialise();
             //Model.B = 0.409;     //BiomassConversionCoefficient - CO2-to-biomass conversion efficiency
             //Model.Radiation.RPAR = 0.5;     //RPAR - Fraction of PAR energy to that of the total solar
             //Model.Temperature.AtmosphericPressure = 1.01325;   

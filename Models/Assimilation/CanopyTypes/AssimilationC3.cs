@@ -8,7 +8,7 @@ namespace DCAPST
     /// </summary>
     public class AssimilationC3 : Assimilation
     {
-        public AssimilationC3(IPartialCanopy partial, ITemperature temperature) : base(partial, temperature)
+        public AssimilationC3(ICanopyParameters canopy, IPathwayParameters parameters) : base(canopy, parameters)
         { }
 
         protected override AssimilationFunction GetAc1Function(AssimilationPathway pathway)

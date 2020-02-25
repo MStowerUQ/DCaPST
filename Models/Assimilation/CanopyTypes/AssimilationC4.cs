@@ -7,10 +7,10 @@ namespace DCAPST
     /// </summary>
     public class AssimilationC4 : Assimilation
     {
-        public AssimilationC4(IPartialCanopy partial, ITemperature temperature) : base(partial, temperature)
+        public AssimilationC4(ICanopyParameters canopy, IPathwayParameters parameters) : base(canopy, parameters)
         { }
 
-        protected override void UpdateIntercellularCO2(AssimilationPathway pathway, double gt, double waterUseMolsSecond)
+        public override void UpdateIntercellularCO2(AssimilationPathway pathway, double gt, double waterUseMolsSecond)
         {
             pathway.IntercellularCO2 = ((gt - waterUseMolsSecond / 2.0) * canopy.AirCO2 - pathway.CO2Rate) / (gt + waterUseMolsSecond / 2.0);
         }
@@ -41,7 +41,7 @@ namespace DCAPST
                 MesophyllRespiration = pathway.Leaf.GmRd,
                 HalfRubiscoSpecificityReciprocal = pathway.Leaf.Gamma,
                 FractionOfDiffusivitySolubilityRatio = 0.1 / canopy.DiffusivitySolubilityRatio,
-                BundleSheathConductance = Gbs,
+                BundleSheathConductance = pathway.Gbs,
                 Oxygen = canopy.AirO2,
                 Respiration = pathway.Leaf.RdT
             };
@@ -57,7 +57,7 @@ namespace DCAPST
             x[1] = pathway.Leaf.Kc / pathway.Leaf.Ko;
             x[2] = pathway.Leaf.Kc;
             x[3] = 0.0;
-            x[4] = Vpr;
+            x[4] = pathway.Vpr;
             x[5] = 1.0;
             x[6] = 0.0;
             x[7] = 1.0;
@@ -70,7 +70,7 @@ namespace DCAPST
                 MesophyllRespiration = pathway.Leaf.GmRd,
                 HalfRubiscoSpecificityReciprocal = pathway.Leaf.Gamma,
                 FractionOfDiffusivitySolubilityRatio = 0.1 / canopy.DiffusivitySolubilityRatio,
-                BundleSheathConductance = Gbs,
+                BundleSheathConductance = pathway.Gbs,
                 Oxygen = canopy.AirO2,
                 Respiration = pathway.Leaf.RdT
             };
@@ -82,11 +82,11 @@ namespace DCAPST
         {
             var x = new double[9];
 
-            x[0] = (1.0 - pway.MesophyllElectronTransportFraction) * pathway.Leaf.J / 3.0;
+            x[0] = (1.0 - parameters.MesophyllElectronTransportFraction) * pathway.Leaf.J / 3.0;
             x[1] = 7.0 / 3.0 * pathway.Leaf.Gamma;
             x[2] = 0.0;
             x[3] = 0.0;
-            x[4] = pway.MesophyllElectronTransportFraction * pathway.Leaf.J / pway.ExtraATPCost;
+            x[4] = parameters.MesophyllElectronTransportFraction * pathway.Leaf.J / parameters.ExtraATPCost;
             x[5] = 1.0;
             x[6] = 0.0;
             x[7] = 1.0;
@@ -99,7 +99,7 @@ namespace DCAPST
                 MesophyllRespiration = pathway.Leaf.GmRd,
                 HalfRubiscoSpecificityReciprocal = pathway.Leaf.Gamma,
                 FractionOfDiffusivitySolubilityRatio = 0.1 / canopy.DiffusivitySolubilityRatio,
-                BundleSheathConductance = Gbs,
+                BundleSheathConductance = pathway.Gbs,
                 Oxygen = canopy.AirO2,
                 Respiration = pathway.Leaf.RdT
             };
