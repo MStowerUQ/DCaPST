@@ -20,7 +20,7 @@ namespace Validation
             collection.AddSingleton<IPathwayParameters, PathwayParameters>();
             collection.AddSingleton<ITotalCanopy, TotalCanopy>();
             collection.AddSingleton<ILeafWaterInteraction, LeafWaterInteractionModel>();
-            
+            collection.AddSingleton(typeof(LeafTemperatureResponseModel));
             collection.AddSingleton(typeof(IAssimilation), sp => AssimilationFactory(sp));
 
             collection.AddTransient<IPartialCanopy, PartialCanopy>();
