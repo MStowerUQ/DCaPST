@@ -80,18 +80,18 @@
     <Compile Include="Models\Assimilation\AssimilationPathway.cs" />
     <Compile Include="Models\Canopy\CanopyRadiation.cs" />
     <Compile Include="Parameters\CanopyParameters.cs" />
-    <Compile Include="Models\Canopy\PartialCanopy.cs" />
-    <Compile Include="Models\Canopy\TotalCanopy.cs" />
+    <Compile Include="Models\Assimilation\AssimilationArea.cs" />
+    <Compile Include="Models\Canopy\CanopyStructure.cs" />
     <Compile Include="Models\Assimilation\AssimilationFunction.cs" />
     <Compile Include="Utilities\Extensions.cs" />
-    <Compile Include="Models\Environment\TemperatureModel.cs" />
-    <Compile Include="Models\Environment\SolarRadiationModel.cs" />
-    <Compile Include="Models\Environment\SolarGeometryModel.cs" />
-    <Compile Include="Models\Environment\LeafWaterInteractionModel.cs" />
-    <Compile Include="Models\PhotosynthesisModel.cs" />
+    <Compile Include="Models\Environment\Temperature.cs" />
+    <Compile Include="Models\Environment\SolarRadiation.cs" />
+    <Compile Include="Models\Environment\SolarGeometry.cs" />
+    <Compile Include="Models\Environment\WaterInteraction.cs" />
+    <Compile Include="Models\DCAPSTModel.cs" />
     <Compile Include="Parameters\PathwayParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utilities\LeafTemperatureResponseModel.cs" />
+    <Compile Include="Utilities\TemperatureResponse.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

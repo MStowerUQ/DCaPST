@@ -7,7 +7,7 @@ using DCAPST.Interfaces;
 
 namespace DCAPST
 {
-    public class PhotosynthesisModel : IPhotosynthesisModel
+    public class DCAPSTModel : IPhotosynthesisModel
     {
         /// <summary>
         /// The solar geometry
@@ -47,7 +47,7 @@ namespace DCAPST
         private readonly double timestep = 1.0;
         private int iterations;
 
-        public PhotosynthesisModel(
+        public DCAPSTModel(
             ISolarGeometry solar, 
             ISolarRadiation radiation, 
             ITemperature temperature, 

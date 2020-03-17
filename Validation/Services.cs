@@ -12,7 +12,7 @@ namespace Validation
         public static IServiceProvider Register()
         {
             var collection = new ServiceCollection();
-            collection.AddSingleton<IPhotosynthesisModel, PhotosynthesisModel>();
+            collection.AddSingleton<IPhotosynthesisModel, DCAPSTModel>();
             collection.AddSingleton<ISolarGeometry, SolarGeometry>();
             collection.AddSingleton<ISolarRadiation, SolarRadiation>();
             collection.AddSingleton<ITemperature, Temperature>();
