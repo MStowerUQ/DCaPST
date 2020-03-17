@@ -1,6 +1,6 @@
 ﻿namespace DCAPST.Interfaces
 {
-    public interface ILeafWaterInteraction
+    public interface IWaterInteraction
     {
         /// <summary>
         /// Sets the current conditions of the leaf water model

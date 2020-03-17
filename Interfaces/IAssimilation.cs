@@ -3,10 +3,10 @@
     
     public interface IAssimilation
     {
-        AssimilationFunction GetFunction(AssimilationPathway pathway, LeafTemperatureResponseModel leaf);
+        AssimilationFunction GetFunction(AssimilationPathway pathway, TemperatureResponse leaf);
 
         void UpdateIntercellularCO2(AssimilationPathway pathway, double gt, double waterUseMolsSecond);
 
-        void UpdatePartialPressures(AssimilationPathway pathway, LeafTemperatureResponseModel leaf, AssimilationFunction function);
+        void UpdatePartialPressures(AssimilationPathway pathway, TemperatureResponse leaf, AssimilationFunction function);
     }
 }

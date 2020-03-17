@@ -15,7 +15,7 @@ namespace DCAPST
             pathway.IntercellularCO2 = ((gt - waterUseMolsSecond / 2.0) * canopy.AirCO2 - pathway.CO2Rate) / (gt + waterUseMolsSecond / 2.0);
         }
 
-        protected override void UpdateMesophyllCO2(AssimilationPathway pathway, LeafTemperatureResponseModel leaf)
+        protected override void UpdateMesophyllCO2(AssimilationPathway pathway, TemperatureResponse leaf)
         {
             pathway.MesophyllCO2 = pathway.IntercellularCO2 - pathway.CO2Rate / leaf.GmT;
         }
@@ -31,7 +31,7 @@ namespace DCAPST
             pathway.ChloroplasticCO2 = pathway.MesophyllCO2 + a * func.X[7] / pathway.Gbs;
         }
 
-        protected override AssimilationFunction GetAc1Function(AssimilationPathway pathway, LeafTemperatureResponseModel leaf)
+        protected override AssimilationFunction GetAc1Function(AssimilationPathway pathway, TemperatureResponse leaf)
         {
             var x = new double[9];
 
@@ -60,7 +60,7 @@ namespace DCAPST
             return func;
         }
 
-        protected override AssimilationFunction GetAc2Function(AssimilationPathway pathway, LeafTemperatureResponseModel leaf)
+        protected override AssimilationFunction GetAc2Function(AssimilationPathway pathway, TemperatureResponse leaf)
         {
             var x = new double[9];
 
@@ -89,7 +89,7 @@ namespace DCAPST
             return func;
         }
 
-        protected override AssimilationFunction GetAjFunction(AssimilationPathway pathway, LeafTemperatureResponseModel leaf)
+        protected override AssimilationFunction GetAjFunction(AssimilationPathway pathway, TemperatureResponse leaf)
         {
             var x = new double[9];
 

@@ -6,7 +6,7 @@ namespace DCAPST.Environment
     /// <summary>
     /// Models how temperature impacts the water used by the leaf during photosynthesis
     /// </summary>
-    public class LeafWaterInteractionModel : ILeafWaterInteraction
+    public class WaterInteraction : IWaterInteraction
     {
         #region Constants
         /// <summary>
@@ -25,6 +25,16 @@ namespace DCAPST.Environment
         private double g = 0.066;
 
         private double latentHeatOfVapourisation = 2447000;
+
+        /// <summary>Boundary water diffusion factor</summary>
+        private double m = 1.37;
+
+        /// <summary>Stomata water diffusion factor</summary>
+        private double n = 1.6;
+
+        /// <summary>Hours to seconds unit conversion</summary>
+        private double hrs_to_seconds = 3600;
+
         #endregion
 
         /// <summary> Environment temperature model </summary>
@@ -36,6 +46,8 @@ namespace DCAPST.Environment
         /// <summary> Canopy boundary heat conductance</summary>
         private double gbh;
 
+        
+
         /// <summary> Boundary H20 conductance </summary>
         private double Gbw => gbh / 0.92;
 
@@ -43,7 +55,7 @@ namespace DCAPST.Environment
         private double Rbh => 1 / gbh;
 
         /// <summary> Boundary CO2 conductance </summary>
-        private double GbCO2 => temp.AtmosphericPressure * temp.AirMolarDensity * Gbw / 1.37;
+        private double GbCO2 => temp.AtmosphericPressure * temp.AirMolarDensity * Gbw / m;
 
         /// <summary> Outgoing thermal radiation</summary>
         private double ThermalRadiation => 8 * kb * Math.Pow(temp.AirTemperature + 273, 3) * (leafTemp - temp.AirTemperature);
@@ -66,7 +78,7 @@ namespace DCAPST.Environment
         /// <summary> Leaf to air vapour pressure deficit </summary>
         private double vpd => VpLeaf - VptMin;
 
-        public LeafWaterInteractionModel(ITemperature temperature)
+        public WaterInteraction(ITemperature temperature)
         {
             temp = temperature;
         }
@@ -90,35 +102,36 @@ namespace DCAPST.Environment
         /// <param name="Ci">Intercellular CO2 partial pressure</param>
         public double UnlimitedWaterResistance(double A, double Ca, double Ci)
         {
+            // Unit conversion
+            var atm_to_kPa = 100;
+
             // Leaf water mol fraction
-            double Wl = VpLeaf / (temp.AtmosphericPressure * 100) * 1000;
+            double Wl = VpLeaf / (temp.AtmosphericPressure * atm_to_kPa);
+
             // Air water mol fraction
-            double Wa = VptMin / (temp.AtmosphericPressure * 100) * 1000;
-
-            // Boundary CO2 Resistance
-            double a = 1 / GbCO2;
-
-            // dummy variables
-            double b = (Wl - Wa) / (1000 - (Wl + Wa) / 2) * (Ca + Ci) / 2;
-            double c = A;
-            double d = Ca - Ci;
-
-            // Boundary water diffusion factor
-            double m = 1.37;
-            // Stomata water diffusion factor
-            double n = 1.6;
-
-            // dummy variables
-            double e = c * a * m + c * a * n + b * m * n - d * m;
-            double g = c * m * (c * Math.Pow(a, 2) * n + a * b * m * n - a * d * n);
-            double h = m * A;
+            double Wa = VptMin / (temp.AtmosphericPressure * atm_to_kPa);
+            
+            // temporary variables
+            double b = (Wl - Wa) * (Ca + Ci) / (2 - (Wl + Wa));
+            double c = Ca - Ci;
+            double d = A / GbCO2;
+            double e = d * (m + n) + m * (b * n - c);
+            double f = d * m * n * (d + b * m - c);
             
             // Stomatal CO2 conductance
-            double gsCO2 = 2 * h / (Math.Pow((Math.Pow(e, 2) - 4 * g), 0.5) - e);
-            // Total leaf water conductance
-            double Gtw = 1 / (1 / (m * GbCO2) + 1 / (n * gsCO2));
+            double gsCO2 = 2 * A * m / (Math.Sqrt(e * e - 4 * f) - e);
             
-            double rtw = temp.AirMolarDensity / Gtw * temp.AtmosphericPressure;
+            // Resistances
+            double rsCO2 = 1 / (n * gsCO2); // Stomatal
+            double rbCO2 = 1 / (m * GbCO2); // Boundary
+            double total = rsCO2 + rbCO2;
+
+            // Total leaf water conductance
+            double gtw = 1 / total;
+            
+            // Total resistance to water
+            double rtw = temp.AirMolarDensity / gtw * temp.AtmosphericPressure;
+
             return rtw;
         }
 
@@ -126,9 +139,9 @@ namespace DCAPST.Environment
         /// Calculates the leaf resistance to water when supply is limited
         /// </summary>
         public double LimitedWaterResistance(double availableWater, double Rn)
-        {
+        {        
             // Transpiration in kilos of water per second
-            double ekg = latentHeatOfVapourisation * availableWater / 3600;
+            double ekg = latentHeatOfVapourisation * availableWater / hrs_to_seconds;
             double rtw = (DeltaAirVP * Rbh * (Rn - ThermalRadiation - ekg) + vpd * sAir) / (ekg * g);
             return rtw;
         }
@@ -147,7 +160,7 @@ namespace DCAPST.Environment
             double b_lump = DeltaAirVP + g * rtw / Rbh;
             double latentHeatLoss = a_lump / b_lump;
 
-            return (latentHeatLoss / latentHeatOfVapourisation) * 3600;
+            return (latentHeatLoss / latentHeatOfVapourisation) * hrs_to_seconds;
         }
 
         /// <summary>
@@ -157,7 +170,7 @@ namespace DCAPST.Environment
         public double TotalCO2Conductance(double rtw)
         {
             // Limited water gsCO2
-            var gsCO2 = temp.AirMolarDensity * (temp.AtmosphericPressure / (rtw - (1 / Gbw))) / 1.6;
+            var gsCO2 = temp.AirMolarDensity * (temp.AtmosphericPressure / (rtw - (1 / Gbw))) / n;
             var boundaryCO2Resistance = 1 / GbCO2;
             var stomatalCO2Resistance = 1 / gsCO2;
             return 1 / (boundaryCO2Resistance + stomatalCO2Resistance);

@@ -8,7 +8,7 @@ namespace DCAPST.Canopy
     /// <summary>
     /// Models a subsection of the canopy (used for distinguishing between sunlit and shaded)
     /// </summary>
-    public class PartialCanopy : IPartialCanopy
+    public class AssimilationArea : IAssimilationArea
     {
         /// <summary>
         /// Parameters describing the canopy
@@ -20,7 +20,7 @@ namespace DCAPST.Canopy
         /// <summary>
         /// Models the leaf water interaction
         /// </summary>
-        public ILeafWaterInteraction LeafWater { get; }
+        public IWaterInteraction LeafWater { get; }
 
         IAssimilation assimilation;
 
@@ -32,7 +32,7 @@ namespace DCAPST.Canopy
         /// <summary>
         /// Models how the leaf responds to different temperatures
         /// </summary>
-        public LeafTemperatureResponseModel Leaf { get; set; }
+        public TemperatureResponse Leaf { get; set; }
 
         /// <summary>
         /// The leaf area index of this part of the canopy
@@ -64,12 +64,12 @@ namespace DCAPST.Canopy
         /// </summary>
         protected List<AssimilationPathway> pathways;
 
-        public PartialCanopy(
+        public AssimilationArea(
             ICanopyParameters canopy,
             IPathwayParameters pathway,
-            ILeafWaterInteraction leafWater,
+            IWaterInteraction leafWater,
             IAssimilation assimilation,
-            LeafTemperatureResponseModel leaf
+            TemperatureResponse leaf
         )
         {
             Canopy = canopy;
@@ -99,22 +99,20 @@ namespace DCAPST.Canopy
             // Store the initial results in case the subsequent updates fail
             CO2AssimilationRate = GetCO2Rate();
             WaterUse = GetWaterUse();
-            
-            if (CO2AssimilationRate == 0 || WaterUse == 0) return;
 
-            // Only update assimilation if the initial value is large enough
-            if (CO2AssimilationRate >= 0.5)
+            // Only attempt to converge result if there is sufficient assimilation
+            if (CO2AssimilationRate < 0.5 || WaterUse == 0) return;
+
+            // Repeat calculation 3 times to let solution converge
+            for (int n = 0; n < 3; n++)
             {
-                for (int n = 0; n < 3; n++)
-                {
-                    UpdateAssimilation(Params);
+                UpdateAssimilation(Params);
 
-                    // If the additional updates fail, the minimum amongst the initial values is taken
-                    if (GetCO2Rate() == 0 || GetWaterUse() == 0) return;                    
-                }
+                // If the additional updates fail, stop the process (meaning the initial results used)
+                if (GetCO2Rate() == 0 || GetWaterUse() == 0) return;
             }
 
-            // If three iterations pass without failing, update the values to the final result
+            // Update results only if convergence succeeds
             CO2AssimilationRate = GetCO2Rate();
             WaterUse = GetWaterUse();
         }
@@ -161,8 +159,12 @@ namespace DCAPST.Canopy
             }
             else /* Limited water calculation */
             {
+                var molarMassWater = 18;
+                var g_to_kg = 1000;
+                var hrs_to_seconds = 3600;
+
                 pathway.WaterUse = water.maxHourlyT * water.fraction;
-                var WaterUseMolsSecond = pathway.WaterUse / 18 * 1000 / 3600;
+                var WaterUseMolsSecond = pathway.WaterUse / molarMassWater * g_to_kg / hrs_to_seconds;
 
                 resistance = LeafWater.LimitedWaterResistance(pathway.WaterUse, AbsorbedRadiation);
                 var Gt = LeafWater.TotalCO2Conductance(resistance);

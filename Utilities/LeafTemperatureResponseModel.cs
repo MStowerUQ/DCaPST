@@ -7,7 +7,7 @@ namespace DCAPST
     /// <summary>
     /// Models the parameters of the leaf necessary to calculate photosynthesis
     /// </summary>
-    public class LeafTemperatureResponseModel
+    public class TemperatureResponse
     {
         /// <summary>
         /// A collection of parameters as valued at 25 degrees Celsius
@@ -24,7 +24,7 @@ namespace DCAPST
         /// </summary>
         private IPathwayParameters pathway;
 
-        public LeafTemperatureResponseModel(ICanopyParameters canopy, IPathwayParameters pathway)
+        public TemperatureResponse(ICanopyParameters canopy, IPathwayParameters pathway)
         {
             this.canopy = canopy;
             this.pathway = pathway;
@@ -117,7 +117,14 @@ namespace DCAPST
         /// </remarks>
         private double Value(double temp, double P25, double tMin)
         {
-            return P25 * Math.Exp(tMin * (temp + 273 - 298.15) / (298.15 * 8.314 * (temp + 273)));
+            var absolute0C = 273;
+            var absolute25C = 298.15;
+            var universalGasConstant = 8.314;
+
+            var numerator = tMin * (temp + absolute0C - absolute25C);
+            var denominator = (absolute25C * universalGasConstant * (temp + absolute0C));
+
+            return P25 * Math.Exp(numerator / denominator);
         }
 
         /// <summary>

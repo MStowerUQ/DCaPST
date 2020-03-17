@@ -28,7 +28,7 @@ namespace ModelsTests.Environment.UnitTests
             var expected = 1262.0178666386046;
 
             // Act
-            var water = new LeafWaterInteractionModel(temperature.Object);
+            var water = new WaterInteraction(temperature.Object);
             water.SetConditions(leafTemp, gbh);
             var actual = water.UnlimitedWaterResistance(A, Ca, Ci);
 
@@ -54,7 +54,7 @@ namespace ModelsTests.Environment.UnitTests
             var expected = 340.83946167121144;
 
             // Act
-            var water = new LeafWaterInteractionModel(temperature.Object);
+            var water = new WaterInteraction(temperature.Object);
             water.SetConditions(leafTemp, gbh);
             var actual = water.LimitedWaterResistance(available, rn);
 
@@ -80,7 +80,7 @@ namespace ModelsTests.Environment.UnitTests
             var expected = 0.080424818708166368;
 
             // Act
-            var water = new LeafWaterInteractionModel(temperature.Object);
+            var water = new WaterInteraction(temperature.Object);
             water.SetConditions(leafTemp, gbh);
             var actual = water.HourlyWaterUse(rtw, rn);
 
@@ -104,7 +104,7 @@ namespace ModelsTests.Environment.UnitTests
             var expected = 0.1437732786549164;
 
             // Act
-            var water = new LeafWaterInteractionModel(temperature.Object);
+            var water = new WaterInteraction(temperature.Object);
             water.SetConditions(leafTemp, gbh);
             var actual = water.TotalCO2Conductance(rtw);
 
@@ -130,7 +130,7 @@ namespace ModelsTests.Environment.UnitTests
             var expected = 28.732384941224293;
 
             // Act
-            var water = new LeafWaterInteractionModel(temperature.Object);
+            var water = new WaterInteraction(temperature.Object);
             water.SetConditions(leafTemp, gbh);
             var actual = water.LeafTemperature(rtw, rn);
 

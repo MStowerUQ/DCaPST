@@ -27,7 +27,7 @@ namespace DCAPST
         /// <summary>
         /// The canopy undergoing photosynthesis
         /// </summary>
-        private ITotalCanopy Canopy { get; set; }
+        private ICanopyStructure Canopy { get; set; }
 
         private IPathwayParameters pathway;
 
@@ -52,7 +52,7 @@ namespace DCAPST
             ISolarRadiation radiation, 
             ITemperature temperature, 
             IPathwayParameters pathway,
-            ITotalCanopy canopy)
+            ICanopyStructure canopy)
         {
             Solar = solar;
             Radiation = radiation;
@@ -97,8 +97,10 @@ namespace DCAPST
 
             var actual = (soilWater > totalDemand) ? potential : CalculateActual(limitedSupply, sunlitDemand, shadedDemand);
 
-            ActualBiomass = actual * 3600 / 1000000 * 44 * B / (1 + RootShootRatio);
-            PotentialBiomass = potential * 3600 / 1000000 * 44 * B / (1 + RootShootRatio);
+            var hrs_to_seconds = 3600;
+
+            ActualBiomass = actual * hrs_to_seconds / 1000000 * 44 * B / (1 + RootShootRatio);
+            PotentialBiomass = potential * hrs_to_seconds / 1000000 * 44 * B / (1 + RootShootRatio);
             WaterDemanded = totalDemand;
             WaterSupplied = (soilWater < totalDemand) ? limitedSupply.Sum() : waterDemands.Sum();
             InterceptedRadiation = intercepted;            

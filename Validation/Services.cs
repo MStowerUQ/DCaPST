@@ -13,17 +13,17 @@ namespace Validation
         {
             var collection = new ServiceCollection();
             collection.AddSingleton<IPhotosynthesisModel, PhotosynthesisModel>();
-            collection.AddSingleton<ISolarGeometry, SolarGeometryModel>();
-            collection.AddSingleton<ISolarRadiation, SolarRadiationModel>();
-            collection.AddSingleton<ITemperature, TemperatureModel>();
+            collection.AddSingleton<ISolarGeometry, SolarGeometry>();
+            collection.AddSingleton<ISolarRadiation, SolarRadiation>();
+            collection.AddSingleton<ITemperature, Temperature>();
             collection.AddSingleton<ICanopyParameters, CanopyParameters>();
             collection.AddSingleton<IPathwayParameters, PathwayParameters>();
-            collection.AddSingleton<ITotalCanopy, TotalCanopy>();
-            collection.AddSingleton<ILeafWaterInteraction, LeafWaterInteractionModel>();
-            collection.AddSingleton(typeof(LeafTemperatureResponseModel));
+            collection.AddSingleton<ICanopyStructure, CanopyStructure>();
+            collection.AddSingleton<IWaterInteraction, WaterInteraction>();
+            collection.AddSingleton(typeof(TemperatureResponse));
             collection.AddSingleton(typeof(IAssimilation), sp => AssimilationFactory(sp));
 
-            collection.AddTransient<IPartialCanopy, PartialCanopy>();
+            collection.AddTransient<IAssimilationArea, AssimilationArea>();
 
             return collection.BuildServiceProvider();
         }

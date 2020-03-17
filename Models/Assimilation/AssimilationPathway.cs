@@ -57,7 +57,7 @@ namespace DCAPST
         /// </summary>
         public double Vpr { get; set; }
 
-        public AssimilationPathway(IPartialCanopy partial, IPathwayParameters pathway)
+        public AssimilationPathway(IAssimilationArea partial, IPathwayParameters pathway)
         {
             Gbs = pathway.BundleSheathConductance * partial.LAI;
             Vpr = pathway.PEPRegeneration * partial.LAI;

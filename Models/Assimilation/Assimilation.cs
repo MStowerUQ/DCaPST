@@ -30,14 +30,14 @@ namespace DCAPST
         /// <summary>
         /// Factory method for accessing the different possible terms for assimilation
         /// </summary>
-        public AssimilationFunction GetFunction(AssimilationPathway pathway, LeafTemperatureResponseModel leaf)
+        public AssimilationFunction GetFunction(AssimilationPathway pathway, TemperatureResponse leaf)
         {
             if (pathway.Type == PathwayType.Ac1) return GetAc1Function(pathway, leaf);
             else if (pathway.Type == PathwayType.Ac2) return GetAc2Function(pathway, leaf);
             else return GetAjFunction(pathway, leaf);
         }
 
-        public void UpdatePartialPressures(AssimilationPathway pathway, LeafTemperatureResponseModel leaf, AssimilationFunction function)
+        public void UpdatePartialPressures(AssimilationPathway pathway, TemperatureResponse leaf, AssimilationFunction function)
         {
             UpdateMesophyllCO2(pathway, leaf);
             UpdateChloroplasticO2(pathway);
@@ -53,7 +53,7 @@ namespace DCAPST
         /// <summary>
         /// Updates the mesophyll CO2 parameter
         /// </summary>
-        protected virtual void UpdateMesophyllCO2(AssimilationPathway pathway, LeafTemperatureResponseModel leaf) 
+        protected virtual void UpdateMesophyllCO2(AssimilationPathway pathway, TemperatureResponse leaf) 
         { /*C4 & CCM overwrite this.*/ }
 
         /// <summary>
@@ -71,16 +71,16 @@ namespace DCAPST
         /// <summary>
         /// Retrieves a function describing assimilation along the Ac1 pathway
         /// </summary>
-        protected abstract AssimilationFunction GetAc1Function(AssimilationPathway pathway, LeafTemperatureResponseModel leaf);
+        protected abstract AssimilationFunction GetAc1Function(AssimilationPathway pathway, TemperatureResponse leaf);
 
         /// <summary>
         /// Retrieves a function describing assimilation along the Ac2 pathway
         /// </summary>
-        protected abstract AssimilationFunction GetAc2Function(AssimilationPathway pathway, LeafTemperatureResponseModel leaf);
+        protected abstract AssimilationFunction GetAc2Function(AssimilationPathway pathway, TemperatureResponse leaf);
 
         /// <summary>
         /// Retrieves a function describing assimilation along the Aj pathway
         /// </summary>
-        protected abstract AssimilationFunction GetAjFunction(AssimilationPathway pathway, LeafTemperatureResponseModel leaf);
+        protected abstract AssimilationFunction GetAjFunction(AssimilationPathway pathway, TemperatureResponse leaf);
     }
 }

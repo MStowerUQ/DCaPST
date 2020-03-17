@@ -64,15 +64,15 @@ namespace Validation.C4
             double expectedBIOshootDAYPot
         )
         {
-            var geometry = provider.GetService<ISolarGeometry>() as SolarGeometryModel;
+            var geometry = provider.GetService<ISolarGeometry>() as SolarGeometry;
             geometry.Latitude = latitude.ToRadians();
             geometry.DayOfYear = DOY;
 
-            var radiation = provider.GetService<ISolarRadiation>() as SolarRadiationModel;
+            var radiation = provider.GetService<ISolarRadiation>() as SolarRadiation;
             radiation.Daily = radn;
             radiation.RPAR = 0.5;
 
-            var temperature = provider.GetService<ITemperature>() as TemperatureModel;
+            var temperature = provider.GetService<ITemperature>() as Temperature;
             temperature.MaxTemperature = maxT;
             temperature.MinTemperature = minT;
             temperature.AtmosphericPressure = 1.01325;

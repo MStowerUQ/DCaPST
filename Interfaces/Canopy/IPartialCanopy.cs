@@ -1,6 +1,6 @@
 ﻿namespace DCAPST.Interfaces
 {
-    public interface IPartialCanopy
+    public interface IAssimilationArea
     {
         /// <summary>
         /// A collection of predefined parameters used by the canopy

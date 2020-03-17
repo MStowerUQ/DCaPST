@@ -11,7 +11,7 @@ namespace DCAPST
         public AssimilationC3(ICanopyParameters canopy, IPathwayParameters parameters) : base(canopy, parameters)
         { }
 
-        protected override AssimilationFunction GetAc1Function(AssimilationPathway pathway, LeafTemperatureResponseModel leaf)
+        protected override AssimilationFunction GetAc1Function(AssimilationPathway pathway, TemperatureResponse leaf)
         {
             var x = new double[9];
 
@@ -40,12 +40,12 @@ namespace DCAPST
             return param;
         }
 
-        protected override AssimilationFunction GetAc2Function(AssimilationPathway pathway, LeafTemperatureResponseModel leaf)
+        protected override AssimilationFunction GetAc2Function(AssimilationPathway pathway, TemperatureResponse leaf)
         {
             throw new Exception("The C3 model does not use the Ac2 pathway");
         }
 
-        protected override AssimilationFunction GetAjFunction(AssimilationPathway pathway, LeafTemperatureResponseModel leaf)
+        protected override AssimilationFunction GetAjFunction(AssimilationPathway pathway, TemperatureResponse leaf)
         {
             var x = new double[9];
 
