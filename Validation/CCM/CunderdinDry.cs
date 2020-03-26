@@ -75,10 +75,6 @@ namespace Validation.CCM
             pathway.UseWheatValues();
 
             var PM = provider.GetService<IPhotosynthesisModel>() as DCAPSTModel;
-            PM.Initialise();
-            //Model.B = 0.409;     //BiomassConversionCoefficient - CO2-to-biomass conversion efficiency
-            //Model.Radiation.RPAR = 0.5;     //RPAR - Fraction of PAR energy to that of the total solar
-            //Model.Temperature.AtmosphericPressure = 1.01325;   
 
             PM.DailyRun(lai, SLN, SWAvailable, RootShootRatio);
 

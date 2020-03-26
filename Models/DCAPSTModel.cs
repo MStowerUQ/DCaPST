@@ -61,13 +61,6 @@ namespace DCAPST
             Canopy = canopy;
         }
 
-        public void Initialise()
-        {
-            Solar.Initialise();
-
-            iterations = (int)Math.Floor(1.0 + ((end - start) / timestep));
-        }
-
         /// <summary>
         /// Calculates the potential and actual biomass growth of a canopy across the span of a day,
         /// as well as the water requirements for both cases.
@@ -78,7 +71,10 @@ namespace DCAPST
             double soilWater, 
             double RootShootRatio, 
             double MaxHourlyTRate = 100)
-        {            
+        {
+            iterations = (int)Math.Floor(1.0 + ((end - start) / timestep));
+
+            Solar.Initialise();
             Canopy.InitialiseDay(lai, SLN);
 
             // POTENTIAL CALCULATIONS

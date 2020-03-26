@@ -51,7 +51,26 @@ namespace DCAPST.Environment
         /// <summary>
         /// Air density in mols
         /// </summary>
-        public double AirMolarDensity => ((AtmosphericPressure * 100000) / (287 * (AirTemperature + 273))) * (1000 / 28.966);
+        public double AirMolarDensity
+        {
+            get
+            {
+                var atm_to_Pa = 100000;
+                var pressure = AtmosphericPressure * atm_to_Pa;
+
+                var molarMassAir = 28.966;
+
+                var kg_to_g = 1000;
+
+                var specificHeat = 287;
+                var absolute0C = 273;
+
+                var numerator = pressure * kg_to_g / molarMassAir;
+                var denominator = specificHeat * (AirTemperature + absolute0C);
+
+                return numerator / denominator;
+            }
+        }
 
         public Temperature(ISolarGeometry solar)
         {

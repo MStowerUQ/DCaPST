@@ -98,6 +98,7 @@
     <Compile Include="Models\Assimilation\AssimilationArea.cs" />
     <Compile Include="Models\Canopy\CanopyStructure.cs" />
     <Compile Include="Models\Assimilation\AssimilationFunction.cs" />
+    <Compile Include="Utilities\Classic.cs" />
     <Compile Include="Utilities\Extensions.cs" />
     <Compile Include="Models\Environment\Temperature.cs" />
     <Compile Include="Models\Environment\SolarRadiation.cs" />
