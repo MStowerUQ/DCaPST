@@ -27,7 +27,7 @@ namespace DCAPST
         /// <summary>
         /// The canopy undergoing photosynthesis
         /// </summary>
-        private ICanopyStructure Canopy { get; set; }
+        private ICanopyAttributes Canopy { get; set; }
 
         private IPathwayParameters pathway;
 
@@ -52,7 +52,7 @@ namespace DCAPST
             ISolarRadiation radiation, 
             ITemperature temperature, 
             IPathwayParameters pathway,
-            ICanopyStructure canopy)
+            ICanopyAttributes canopy)
         {
             Solar = solar;
             Radiation = radiation;
@@ -194,7 +194,7 @@ namespace DCAPST
         /// </summary>
         public void DoTimestepUpdate(double maxHourlyT = -1, double sunFraction = 0, double shadeFraction = 0)
         {
-            var Params = new WaterParameters
+            var Params = new Transpiration(iterations)
             {
                 maxHourlyT = maxHourlyT,
                 limited = false
@@ -253,13 +253,5 @@ namespace DCAPST
             }
             return demand.Select(d => d > averageDemandRate ? averageDemandRate : d).ToArray();
         }
-    }
-
-    public struct WaterParameters
-    {
-        public bool limited;
-        public double BoundaryHeatConductance;
-        public double maxHourlyT;
-        public double fraction;
     }
 }

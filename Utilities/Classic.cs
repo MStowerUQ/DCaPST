@@ -226,7 +226,7 @@ namespace DCAPST.Utilities
             var shaded = new AssimilationArea(CP, PP, water, C4, response);
 
             // Model the canopy
-            var CS = new CanopyStructure(CP, PP, sunlit, shaded);
+            var CS = new CanopyAttributes(CP, PP, sunlit, shaded);
 
             // Model the photosynthesis
             var DM = new DCAPSTModel(SG, SR, TM, PP, CS)

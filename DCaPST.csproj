@@ -76,8 +76,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interfaces\Canopy\IPartialCanopy.cs" />
-    <Compile Include="Interfaces\Canopy\ITotalCanopy.cs" />
+    <Compile Include="Interfaces\Canopy\IAssimilationArea.cs" />
+    <Compile Include="Interfaces\Canopy\ICanopyAttributes.cs" />
     <Compile Include="Interfaces\IAssimilation.cs" />
     <Compile Include="Interfaces\IClock.cs" />
     <Compile Include="Interfaces\IPhotosynthesisModel.cs" />
@@ -94,9 +94,10 @@
     <Compile Include="Models\Assimilation\CanopyTypes\AssimilationC3.cs" />
     <Compile Include="Models\Assimilation\AssimilationPathway.cs" />
     <Compile Include="Models\Canopy\CanopyRadiation.cs" />
+    <Compile Include="Models\Canopy\Transpiration.cs" />
     <Compile Include="Parameters\CanopyParameters.cs" />
     <Compile Include="Models\Assimilation\AssimilationArea.cs" />
-    <Compile Include="Models\Canopy\CanopyStructure.cs" />
+    <Compile Include="Models\Canopy\CanopyAttributes.cs" />
     <Compile Include="Models\Assimilation\AssimilationFunction.cs" />
     <Compile Include="Utilities\Classic.cs" />
     <Compile Include="Utilities\Extensions.cs" />

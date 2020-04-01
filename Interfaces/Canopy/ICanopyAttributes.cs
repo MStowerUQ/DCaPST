@@ -2,7 +2,7 @@
 
 namespace DCAPST.Interfaces
 {
-    public interface ICanopyStructure
+    public interface ICanopyAttributes
     {
         /// <summary>
         /// A collection of predefined parameters used by the canopy

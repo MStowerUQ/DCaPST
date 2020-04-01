@@ -83,7 +83,7 @@ namespace DCAPST.Canopy
         /// Calculates the CO2 assimilated by the partial canopy during photosynthesis,
         /// and the water used by the process
         /// </summary>
-        public void DoPhotosynthesis(ITemperature temperature, WaterParameters Params)
+        public void DoPhotosynthesis(ITemperature temperature, Transpiration transpiration)
         {
             pathways = new List<AssimilationPathway>();
             /*Ac1*/ pathways.Add(new AssimilationPathway(this, Pathway) { Type = PathwayType.Ac1 });
@@ -93,7 +93,7 @@ namespace DCAPST.Canopy
             pathways.ForEach(p => p.Temperature = temperature.AirTemperature);
 
             // Determine initial results
-            UpdateAssimilation(Params);
+            UpdateAssimilation(transpiration);
 
             // Store the initial results in case the subsequent updates fail
             CO2AssimilationRate = GetCO2Rate();
@@ -105,7 +105,7 @@ namespace DCAPST.Canopy
             // Repeat calculation 3 times to let solution converge
             for (int n = 0; n < 3; n++)
             {
-                UpdateAssimilation(Params);
+                UpdateAssimilation(transpiration);
 
                 // If the additional updates fail, stop the process (meaning the initial results used)
                 if (GetCO2Rate() == 0 || GetWaterUse() == 0) return;
@@ -129,22 +129,22 @@ namespace DCAPST.Canopy
         /// <summary>
         /// Recalculates the assimilation values for each pathway
         /// </summary>
-        public void UpdateAssimilation(WaterParameters water) => pathways.ForEach(p => UpdatePathway(water, p));
+        public void UpdateAssimilation(Transpiration transpiration) => pathways.ForEach(p => UpdatePathway(transpiration, p));
 
         /// <summary>
         /// Updates the state of an assimilation pathway
         /// </summary>
-        private void UpdatePathway(WaterParameters water, AssimilationPathway pathway)
+        private void UpdatePathway(Transpiration transpiration, AssimilationPathway pathway)
         {
             if (pathway == null) return;
 
             Leaf.SetConditions(At25C, pathway.Temperature, PhotonCount);
-            LeafWater.SetConditions(pathway.Temperature, water.BoundaryHeatConductance);
+            LeafWater.SetConditions(pathway.Temperature, transpiration.BoundaryHeatConductance);
 
             double resistance;
 
             var func = assimilation.GetFunction(pathway, Leaf);
-            if (!water.limited) /* Unlimited water calculation */
+            if (!transpiration.limited) /* Unlimited water calculation */
             {
                 pathway.IntercellularCO2 = Pathway.IntercellularToAirCO2Ratio * Canopy.AirCO2;
 
@@ -162,7 +162,7 @@ namespace DCAPST.Canopy
                 var g_to_kg = 1000;
                 var hrs_to_seconds = 3600;
 
-                pathway.WaterUse = water.maxHourlyT * water.fraction;
+                pathway.WaterUse = transpiration.maxHourlyT * transpiration.fraction;
                 var WaterUseMolsSecond = pathway.WaterUse / molarMassWater * g_to_kg / hrs_to_seconds;
 
                 resistance = LeafWater.LimitedWaterResistance(pathway.WaterUse, AbsorbedRadiation);

@@ -6,7 +6,7 @@ namespace DCAPST.Canopy
     /// <summary>
     /// Models a complete canopy
     /// </summary>
-    public class CanopyStructure : ICanopyStructure
+    public class CanopyAttributes : ICanopyAttributes
     {
         /// <summary>
         /// The initial parameters of the canopy
@@ -70,7 +70,7 @@ namespace DCAPST.Canopy
         /// </summary>
         public int Layers { get; set; } = 1;
 
-        public CanopyStructure(
+        public CanopyAttributes(
             ICanopyParameters canopy,
             IPathwayParameters pathway,
             IAssimilationArea sunlit,

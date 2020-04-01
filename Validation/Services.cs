@@ -18,7 +18,7 @@ namespace Validation
             collection.AddSingleton<ITemperature, Temperature>();
             collection.AddSingleton<ICanopyParameters, CanopyParameters>();
             collection.AddSingleton<IPathwayParameters, PathwayParameters>();
-            collection.AddSingleton<ICanopyStructure, CanopyStructure>();
+            collection.AddSingleton<ICanopyAttributes, CanopyAttributes>();
             collection.AddSingleton<IWaterInteraction, WaterInteraction>();
             collection.AddSingleton(typeof(TemperatureResponse));
             collection.AddSingleton(typeof(IAssimilation), sp => AssimilationFactory(sp));

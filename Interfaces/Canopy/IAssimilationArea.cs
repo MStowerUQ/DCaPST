@@ -1,4 +1,6 @@
-﻿namespace DCAPST.Interfaces
+﻿using DCAPST.Canopy;
+
+namespace DCAPST.Interfaces
 {
     public interface IAssimilationArea
     {
@@ -42,7 +44,7 @@
         /// <summary>
         /// Runs the photosynthesis calculations for the canopy
         /// </summary>
-        void DoPhotosynthesis(ITemperature temperature, WaterParameters Params);
+        void DoPhotosynthesis(ITemperature temperature, Transpiration transpiration);
     }
 
     public class ParameterRates
