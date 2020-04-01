@@ -60,7 +60,9 @@ namespace DCAPST
             x[8] = 0.0;
 
             var func = new AssimilationFunction()
-            {                
+            {        
+                X = x,
+
                 MesophyllRespiration = leaf.GmRd,
                 HalfRubiscoSpecificityReciprocal = leaf.Gamma,
                 FractionOfDiffusivitySolubilityRatio = 0.0,

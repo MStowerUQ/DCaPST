@@ -85,12 +85,11 @@ namespace DCAPST.Canopy
         /// </summary>
         public void DoPhotosynthesis(ITemperature temperature, WaterParameters Params)
         {
-            pathways = new List<AssimilationPathway>()
-            {
-                /*Ac1*/ new AssimilationPathway(this, Pathway) { Type = PathwayType.Ac1 },
-                /*Ac2*/ assimilation is AssimilationC3 ? null : new AssimilationPathway(this, Pathway) { Type = PathwayType.Ac2 },
-                /*Aj */ new AssimilationPathway(this, Pathway) { Type = PathwayType.Aj }
-            };
+            pathways = new List<AssimilationPathway>();
+            /*Ac1*/ pathways.Add(new AssimilationPathway(this, Pathway) { Type = PathwayType.Ac1 });
+            /*Ac2*/ if (!(assimilation is AssimilationC3)) pathways.Add(new AssimilationPathway(this, Pathway) { Type = PathwayType.Ac2 });
+            /*Aj */ pathways.Add(new AssimilationPathway(this, Pathway) { Type = PathwayType.Aj });
+            
             pathways.ForEach(p => p.Temperature = temperature.AirTemperature);
 
             // Determine initial results
