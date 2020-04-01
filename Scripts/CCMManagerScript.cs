@@ -39,7 +39,7 @@ public class Script
       /* IMPORTANT - Do NOT change the order of these values */
 
       CP = Classic.SetUpCanopy(
-         CanopyType.C3, // Canopy type
+         CanopyType.CCM, // Canopy type
          370,     // CO2 partial pressure
          0.7,     // Empirical curvature factor
          0.047,   // Diffusivity-solubility ratio
@@ -80,8 +80,8 @@ public class Script
          4.59217066521612,    // VcVo25 - Rubisco carboxylation to oxygenation at 25 degrees C
          35713.19871277176,   // VcVoFactor
 
-         0.0,   // Kp25 - Michaelis Menten constant of PEPc activity at 25 degrees C (Unused in C3)
-         0.0,   // KpFactor (Unused in C3)
+         75,        // Kp25 - Michaelis Menten constant of PEPc activity at 25 degrees C
+         36300,     // KpFactor
 
          65330, // VcFactor
          46390, // RdFactor
@@ -94,7 +94,7 @@ public class Script
          1.1 * PsiFactor,        // Max Rubisco activity to SLN ratio
          1.85 * PsiFactor,       // Max electron transport to SLN ratio
          0.0 * PsiFactor,        // Respiration to SLN ratio
-         0.0 * PsiFactor,        // Max PEPc activity to SLN ratio
+         0.373684157583268 * PsiFactor,        // Max PEPc activity to SLN ratio
          0.005296 * PsiFactor,   // Mesophyll CO2 conductance to SLN ratio
          2,    // Extra ATP cost
          0.4,  // Mesophyll electron transport fraction
@@ -131,7 +131,6 @@ public class Script
       // Model the photosynthesis
       DCAPSTModel DM = Classic.SetUpModel(CP, PP, DOY, latitude, maxT, minT, radn);
       DM.DailyRun(lai, SLN, SWAvailable, RootShootRatio);
-      //DM.DailyRun(0.5, 1.0, 3.5, 1.3, 100);
       
       // Outputs
       RootShoot = RootShootRatio;
