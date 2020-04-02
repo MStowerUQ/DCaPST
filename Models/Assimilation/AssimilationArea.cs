@@ -9,14 +9,7 @@ namespace DCAPST.Canopy
     /// Models a subsection of the canopy (used for distinguishing between sunlit and shaded)
     /// </summary>
     public class AssimilationArea : IAssimilationArea
-    {
-        /// <summary>
-        /// Parameters describing the canopy
-        /// </summary>
-        public ICanopyParameters Canopy { get; private set; }       
-
-        public IPathwayParameters Pathway { get; private set; }        
-
+    {   
         IAssimilation assimilation;
 
         /// <summary>
@@ -56,13 +49,26 @@ namespace DCAPST.Canopy
         protected List<AssimilationPathway> pathways;
 
         public AssimilationArea(
-            ICanopyParameters canopy,
-            IPathwayParameters pathway,
+            AssimilationPathway Ac1,
+            AssimilationPathway Ac2,
+            AssimilationPathway Aj,
             IAssimilation assimilation
         )
         {
-            Canopy = canopy;
-            Pathway = pathway;
+            pathways = new List<AssimilationPathway>();
+
+            // Always include Ac1
+            Ac1.Type = PathwayType.Ac1;
+            pathways.Add(Ac1);
+
+            // Conditionally include Ac2
+            Ac2.Type = PathwayType.Ac2;
+            if (!(assimilation is AssimilationC3)) pathways.Add(Ac2);
+
+            // Always include Aj
+            Aj.Type = PathwayType.Aj;
+            pathways.Add(Aj);
+
             this.assimilation = assimilation;
         }
 
@@ -81,15 +87,9 @@ namespace DCAPST.Canopy
         /// and the water used by the process
         /// </summary>
         public void DoPhotosynthesis(ITemperature temperature, Transpiration transpiration)
-        {
-            // Create the pathways
-            pathways = new List<AssimilationPathway>();
-            /*Ac1*/ pathways.Add(new AssimilationPathway(this, Pathway) { Type = PathwayType.Ac1 });
-            /*Ac2*/ if (!(assimilation is AssimilationC3)) pathways.Add(new AssimilationPathway(this, Pathway) { Type = PathwayType.Ac2 });
-            /*Aj */ pathways.Add(new AssimilationPathway(this, Pathway) { Type = PathwayType.Aj });
-            
-            // Initialise the temperature
-            pathways.ForEach(p => p.Temperature = temperature.AirTemperature);
+        {            
+            // Initialise at the current temperature
+            pathways.ForEach(p => p.SetConditions(temperature.AirTemperature, LAI));
 
             // Determine initial results
             UpdateAssimilation(transpiration);

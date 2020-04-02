@@ -24,6 +24,7 @@ namespace Validation
             collection.AddSingleton(typeof(IAssimilation), sp => AssimilationFactory(sp));
 
             collection.AddTransient<IAssimilationArea, AssimilationArea>();
+            collection.AddTransient(typeof(AssimilationPathway));
 
             return collection.BuildServiceProvider();
         }

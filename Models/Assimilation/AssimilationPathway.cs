@@ -10,6 +10,10 @@ namespace DCAPST
 
     public class AssimilationPathway
     {
+        ICanopyParameters Canopy;
+
+        IPathwayParameters Pathway;        
+
         /// <summary>
         /// The current pathway type
         /// </summary>
@@ -50,19 +54,26 @@ namespace DCAPST
         /// <summary>
         /// Bundle sheath conductance
         /// </summary>
-        public double Gbs { get; set; }
+        public double Gbs { get; private set; }
 
         /// <summary>
         /// PEP regeneration
         /// </summary>
-        public double Vpr { get; set; }
+        public double Vpr { get; private set; }        
 
-        public AssimilationPathway(IAssimilationArea partial, IPathwayParameters pathway)
+        public AssimilationPathway(ICanopyParameters canopy, IPathwayParameters pathway)
         {
-            Gbs = pathway.BundleSheathConductance * partial.LAI;
-            Vpr = pathway.PEPRegeneration * partial.LAI;
+            Canopy = canopy;
+            Pathway = pathway;            
+        }
 
-            MesophyllCO2 = partial.Canopy.AirCO2 * partial.Pathway.IntercellularToAirCO2Ratio;
+        public void SetConditions(double temperature, double lai)
+        {
+            Temperature = temperature;
+            Gbs = Pathway.BundleSheathConductance * lai;
+            Vpr = Pathway.PEPRegeneration * lai;
+
+            MesophyllCO2 = Canopy.AirCO2 * Pathway.IntercellularToAirCO2Ratio;
             ChloroplasticCO2 = MesophyllCO2 + 20;
             ChloroplasticO2 = 210000;
         }

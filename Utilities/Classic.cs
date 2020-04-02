@@ -220,10 +220,19 @@ namespace DCAPST.Utilities
             var water = new WaterInteraction(TM);
             var response = new TemperatureResponse(CP, PP);
 
+            // Model the pathways
+            var SunlitAc1 = new AssimilationPathway(CP, PP);
+            var SunlitAc2 = new AssimilationPathway(CP, PP);
+            var SunlitAj = new AssimilationPathway(CP, PP);
+
+            var ShadedAc1 = new AssimilationPathway(CP, PP);
+            var ShadedAc2 = new AssimilationPathway(CP, PP);
+            var ShadedAj = new AssimilationPathway(CP, PP);
+
             // Model the assimilation
             var C4 = new AssimilationC4(CP, PP);
-            var sunlit = new AssimilationArea(CP, PP, C4);
-            var shaded = new AssimilationArea(CP, PP, C4);
+            var sunlit = new AssimilationArea(SunlitAc1, SunlitAc2, SunlitAj, C4);
+            var shaded = new AssimilationArea(ShadedAc1, ShadedAc2, ShadedAj, C4);
 
             // Model the canopy
             var CS = new CanopyAttributes(CP, PP, sunlit, shaded);
