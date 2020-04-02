@@ -43,10 +43,11 @@ namespace DCAPST.Environment
         /// <summary> Current leaf temperature </summary>
         private double leafTemp;
 
-        /// <summary> Canopy boundary heat conductance</summary>
+        /// <summary> Canopy boundary heat conductance </summary>
         private double gbh;
 
-        
+        /// <summary> Absorbed radiation </summary>
+        private double radiation;
 
         /// <summary> Boundary H20 conductance </summary>
         private double Gbw => gbh / 0.92;
@@ -88,10 +89,11 @@ namespace DCAPST.Environment
         /// </summary>
         /// <param name="leafTemp">Leaf temperature</param>
         /// <param name="gbh">Boundary heat conductance</param>
-        public void SetConditions(double leafTemp, double gbh)
+        public void SetConditions(double leafTemp, double gbh, double radiation)
         {
             this.leafTemp = leafTemp;
             this.gbh = (gbh != 0) ? gbh : throw new Exception("Gbh cannot be 0");
+            this.radiation = radiation;
         }
         
         /// <summary>
@@ -138,11 +140,11 @@ namespace DCAPST.Environment
         /// <summary>
         /// Calculates the leaf resistance to water when supply is limited
         /// </summary>
-        public double LimitedWaterResistance(double availableWater, double Rn)
+        public double LimitedWaterResistance(double availableWater)
         {        
             // Transpiration in kilos of water per second
             double ekg = latentHeatOfVapourisation * availableWater / hrs_to_seconds;
-            double rtw = (DeltaAirVP * Rbh * (Rn - ThermalRadiation - ekg) + vpd * sAir) / (ekg * g);
+            double rtw = (DeltaAirVP * Rbh * (radiation - ThermalRadiation - ekg) + vpd * sAir) / (ekg * g);
             return rtw;
         }
 
@@ -151,12 +153,12 @@ namespace DCAPST.Environment
         /// </summary>
         /// <param name="rtw">Resistance to water</param>
         /// <param name="rn">Radiation</param>
-        public double HourlyWaterUse(double rtw, double rn)
+        public double HourlyWaterUse(double rtw)
         {
             // TODO: Make this work with the timestep model
 
             // dummy variables
-            double a_lump = DeltaAirVP * (rn - ThermalRadiation) + vpd * sAir / Rbh;
+            double a_lump = DeltaAirVP * (radiation - ThermalRadiation) + vpd * sAir / Rbh;
             double b_lump = DeltaAirVP + g * rtw / Rbh;
             double latentHeatLoss = a_lump / b_lump;
 
@@ -180,10 +182,10 @@ namespace DCAPST.Environment
         /// Finds the leaf temperature after the water interaction
         /// </summary>
         /// <param name="rtw">Resistance to water</param>
-        public double LeafTemperature(double rtw, double rn)
+        public double LeafTemperature(double rtw)
         {
             // dummy variables
-            double a = g * (rn - ThermalRadiation) * rtw / sAir - vpd;
+            double a = g * (radiation - ThermalRadiation) * rtw / sAir - vpd;
             double d = DeltaAirVP + g * rtw / Rbh;
 
             double deltaT = a / d;

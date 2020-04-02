@@ -84,7 +84,7 @@
     <Compile Include="Interfaces\IWeather.cs" />
     <Compile Include="Interfaces\Parameters\ICanopyParameters.cs" />
     <Compile Include="Interfaces\Parameters\IPathwayParameters.cs" />
-    <Compile Include="Interfaces\Models\ILeafWaterInteraction.cs" />
+    <Compile Include="Interfaces\Models\IWaterInteraction.cs" />
     <Compile Include="Interfaces\Models\ITemperature.cs" />
     <Compile Include="Interfaces\Models\ISolarGeometry.cs" />
     <Compile Include="Interfaces\Models\ISolarRadiation.cs" />
