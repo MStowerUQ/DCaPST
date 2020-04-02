@@ -15,12 +15,7 @@ namespace DCAPST.Canopy
         /// </summary>
         public ICanopyParameters Canopy { get; private set; }       
 
-        public IPathwayParameters Pathway { get; private set; }
-
-        /// <summary>
-        /// Models the leaf water interaction
-        /// </summary>
-        public IWaterInteraction LeafWater { get; }
+        public IPathwayParameters Pathway { get; private set; }        
 
         IAssimilation assimilation;
 
@@ -29,10 +24,6 @@ namespace DCAPST.Canopy
         /// </summary>
         public ParameterRates At25C { get; private set; } = new ParameterRates();
 
-        /// <summary>
-        /// Models how the leaf responds to different temperatures
-        /// </summary>
-        public TemperatureResponse Leaf { get; set; }
 
         /// <summary>
         /// The leaf area index of this part of the canopy
@@ -67,17 +58,23 @@ namespace DCAPST.Canopy
         public AssimilationArea(
             ICanopyParameters canopy,
             IPathwayParameters pathway,
-            IWaterInteraction leafWater,
-            IAssimilation assimilation,
-            TemperatureResponse leaf
+            IAssimilation assimilation
         )
         {
             Canopy = canopy;
             Pathway = pathway;
-            LeafWater = leafWater;
             this.assimilation = assimilation;
-            Leaf = leaf;
         }
+
+        /// <summary>
+        /// Finds the CO2 assimilation rate
+        /// </summary>
+        public double GetCO2Rate() => pathways.Min(p => p.CO2Rate);
+
+        /// <summary>
+        /// Finds the water used during CO2 assimilation
+        /// </summary>
+        public double GetWaterUse() => pathways.Min(p => p.WaterUse);
 
         /// <summary>
         /// Calculates the CO2 assimilated by the partial canopy during photosynthesis,
@@ -85,11 +82,13 @@ namespace DCAPST.Canopy
         /// </summary>
         public void DoPhotosynthesis(ITemperature temperature, Transpiration transpiration)
         {
+            // Create the pathways
             pathways = new List<AssimilationPathway>();
             /*Ac1*/ pathways.Add(new AssimilationPathway(this, Pathway) { Type = PathwayType.Ac1 });
             /*Ac2*/ if (!(assimilation is AssimilationC3)) pathways.Add(new AssimilationPathway(this, Pathway) { Type = PathwayType.Ac2 });
             /*Aj */ pathways.Add(new AssimilationPathway(this, Pathway) { Type = PathwayType.Aj });
             
+            // Initialise the temperature
             pathways.ForEach(p => p.Temperature = temperature.AirTemperature);
 
             // Determine initial results
@@ -117,76 +116,23 @@ namespace DCAPST.Canopy
         }
 
         /// <summary>
-        /// Finds the CO2 assimilation rate
-        /// </summary>
-        public double GetCO2Rate() => pathways.Min(p => p.CO2Rate);
-
-        /// <summary>
-        /// Finds the water used during CO2 assimilation
-        /// </summary>
-        public double GetWaterUse() => pathways.Min(p => p.WaterUse);
-
-        /// <summary>
         /// Recalculates the assimilation values for each pathway
         /// </summary>
-        public void UpdateAssimilation(Transpiration transpiration) => pathways.ForEach(p => UpdatePathway(transpiration, p));
-
-        /// <summary>
-        /// Updates the state of an assimilation pathway
-        /// </summary>
-        private void UpdatePathway(Transpiration transpiration, AssimilationPathway pathway)
+        public void UpdateAssimilation(Transpiration t)
         {
-            if (pathway == null) return;
-
-            Leaf.SetConditions(At25C, pathway.Temperature, PhotonCount);
-            LeafWater.SetConditions(pathway.Temperature, transpiration.BoundaryHeatConductance);
-
-            double resistance;
-
-            var func = assimilation.GetFunction(pathway, Leaf);
-            if (!transpiration.limited) /* Unlimited water calculation */
+            foreach (var p in pathways)
             {
-                pathway.IntercellularCO2 = Pathway.IntercellularToAirCO2Ratio * Canopy.AirCO2;
+                t.SetConditions(At25C, p.Temperature, PhotonCount, AbsorbedRadiation);                
+                t.UpdatePathway(assimilation, p);
+                t.UpdateTemperature(p);
 
-                func.Ci = pathway.IntercellularCO2;
-                func.Rm = 1 / Leaf.GmT;
-
-                pathway.CO2Rate = func.Value();
-
-                resistance = LeafWater.UnlimitedWaterResistance(pathway.CO2Rate, Canopy.AirCO2, pathway.IntercellularCO2);
-                pathway.WaterUse = LeafWater.HourlyWaterUse(resistance, AbsorbedRadiation);
-            }
-            else /* Limited water calculation */
-            {
-                var molarMassWater = 18;
-                var g_to_kg = 1000;
-                var hrs_to_seconds = 3600;
-
-                pathway.WaterUse = transpiration.maxHourlyT * transpiration.fraction;
-                var WaterUseMolsSecond = pathway.WaterUse / molarMassWater * g_to_kg / hrs_to_seconds;
-
-                resistance = LeafWater.LimitedWaterResistance(pathway.WaterUse, AbsorbedRadiation);
-                var Gt = LeafWater.TotalCO2Conductance(resistance);
-
-                func.Ci = Canopy.AirCO2 - WaterUseMolsSecond * Canopy.AirCO2 / (Gt + WaterUseMolsSecond / 2.0);
-                func.Rm = 1 / (Gt + WaterUseMolsSecond / 2) + 1.0 / Leaf.GmT;
-
-                pathway.CO2Rate = func.Value();
-
-                assimilation.UpdateIntercellularCO2(pathway, Gt, WaterUseMolsSecond);
-            }
-            assimilation.UpdatePartialPressures(pathway, Leaf, func);
-
-            // New leaf temperature
-            pathway.Temperature = (LeafWater.LeafTemperature(resistance, AbsorbedRadiation) + pathway.Temperature) / 2.0;
-
-            // If the assimilation is not sensible zero the values
-            if (double.IsNaN(pathway.CO2Rate) || pathway.CO2Rate <= 0.0 || double.IsNaN(pathway.WaterUse) || pathway.WaterUse <= 0.0)
-            {
-                pathway.CO2Rate = 0;
-                pathway.WaterUse = 0;
+                // If the assimilation is not sensible zero the values
+                if (double.IsNaN(p.CO2Rate) || p.CO2Rate <= 0.0 || double.IsNaN(p.WaterUse) || p.WaterUse <= 0.0)
+                {
+                    p.CO2Rate = 0;
+                    p.WaterUse = 0;
+                }
             }
         }
-
     }
 }

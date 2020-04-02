@@ -31,6 +31,12 @@ namespace DCAPST
 
         private IPathwayParameters pathway;
 
+        private IWaterInteraction water;
+
+        TemperatureResponse leaf;
+
+        ICanopyParameters parameters;
+
         /// <summary>
         /// Biochemical Conversion & Maintenance Respiration
         /// </summary>
@@ -52,13 +58,19 @@ namespace DCAPST
             ISolarRadiation radiation, 
             ITemperature temperature, 
             IPathwayParameters pathway,
-            ICanopyAttributes canopy)
+            ICanopyParameters parameters,
+            ICanopyAttributes canopy,
+            IWaterInteraction water,
+            TemperatureResponse leaf)
         {
             Solar = solar;
             Radiation = radiation;
             Temperature = temperature;
             this.pathway = pathway;
             Canopy = canopy;
+            this.water = water;
+            this.leaf = leaf;
+            this.parameters = parameters;
         }
 
         /// <summary>
@@ -194,7 +206,7 @@ namespace DCAPST
         /// </summary>
         public void DoTimestepUpdate(double maxHourlyT = -1, double sunFraction = 0, double shadeFraction = 0)
         {
-            var Params = new Transpiration(iterations)
+            var Params = new Transpiration(parameters, pathway, water, leaf, iterations)
             {
                 maxHourlyT = maxHourlyT,
                 limited = false
