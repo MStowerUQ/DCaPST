@@ -22,6 +22,7 @@ namespace Validation
             collection.AddSingleton<IWaterInteraction, WaterInteraction>();
             collection.AddSingleton(typeof(TemperatureResponse));
             collection.AddSingleton(typeof(IAssimilation), sp => AssimilationFactory(sp));
+            collection.AddSingleton(typeof(Transpiration));
 
             collection.AddTransient<IAssimilationArea, AssimilationArea>();
             collection.AddTransient(typeof(AssimilationPathway));

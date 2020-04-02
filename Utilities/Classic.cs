@@ -214,11 +214,7 @@ namespace DCAPST.Utilities
                 MaxTemperature = maxT,
                 MinTemperature = minT,
                 AtmosphericPressure = 1.01325
-            };
-
-            // Model the leaf water interaction and temperature response
-            var water = new WaterInteraction(TM);
-            var response = new TemperatureResponse(CP, PP);
+            };            
 
             // Model the pathways
             var SunlitAc1 = new AssimilationPathway(CP, PP);
@@ -229,16 +225,19 @@ namespace DCAPST.Utilities
             var ShadedAc2 = new AssimilationPathway(CP, PP);
             var ShadedAj = new AssimilationPathway(CP, PP);
 
-            // Model the assimilation
+            // Model the canopy
             var C4 = new AssimilationC4(CP, PP);
             var sunlit = new AssimilationArea(SunlitAc1, SunlitAc2, SunlitAj, C4);
             var shaded = new AssimilationArea(ShadedAc1, ShadedAc2, ShadedAj, C4);
+            var CA = new CanopyAttributes(CP, PP, sunlit, shaded);
 
-            // Model the canopy
-            var CS = new CanopyAttributes(CP, PP, sunlit, shaded);
+            // Model the transpiration
+            var WI = new WaterInteraction(TM);
+            var TR = new TemperatureResponse(CP, PP);
+            var TS = new Transpiration(CP, PP, WI, TR);
 
             // Model the photosynthesis
-            var DM = new DCAPSTModel(SG, SR, TM, PP, CP, CS, water, response)
+            var DM = new DCAPSTModel(SG, SR, TM, PP, CA, TS)
             {
                 B = 0.409
             };

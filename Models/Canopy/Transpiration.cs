@@ -27,14 +27,17 @@ namespace DCAPST.Canopy
         /// </summary>
         public TemperatureResponse Leaf { get; set; }
 
-        public bool limited;
-        public double BoundaryHeatConductance;
-        public double maxHourlyT;
-        public double fraction;
+        public bool Limited { get; set; }
 
-        public double[] SunlitDemand { get; }
+        public double BoundaryHeatConductance { get; set; }
 
-        public double[] ShadedDemand { get; }
+        public double MaxHourlyT { get; set; }
+
+        public double Fraction { get; set; }
+
+        public double[] SunlitDemand { get; private set; }
+
+        public double[] ShadedDemand { get; private set; }
 
         /// <summary>
         /// Resistance to water
@@ -45,15 +48,17 @@ namespace DCAPST.Canopy
             ICanopyParameters canopy,
             IPathwayParameters pathway,
             IWaterInteraction water,
-            TemperatureResponse leaf,
-            int iterations
+            TemperatureResponse leaf
         )
         {
             Canopy = canopy;
             Pathway = pathway;
             Water = water;
-            Leaf = leaf;
+            Leaf = leaf;            
+        }
 
+        public void Initialise(int iterations)
+        {
             SunlitDemand = new double[iterations];
             ShadedDemand = new double[iterations];
         }
@@ -68,13 +73,13 @@ namespace DCAPST.Canopy
         {
             var func = assimilation.GetFunction(pathway, Leaf);
 
-            if (limited)
+            if (Limited)
             {
                 var molarMassWater = 18;
                 var g_to_kg = 1000;
                 var hrs_to_seconds = 3600;
 
-                pathway.WaterUse = maxHourlyT * fraction;
+                pathway.WaterUse = MaxHourlyT * Fraction;
                 var WaterUseMolsSecond = pathway.WaterUse / molarMassWater * g_to_kg / hrs_to_seconds;
 
                 Resistance = Water.LimitedWaterResistance(pathway.WaterUse);

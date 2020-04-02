@@ -31,11 +31,7 @@ namespace DCAPST
 
         private IPathwayParameters pathway;
 
-        private IWaterInteraction water;
-
-        TemperatureResponse leaf;
-
-        ICanopyParameters parameters;
+        Transpiration Params;
 
         /// <summary>
         /// Biochemical Conversion & Maintenance Respiration
@@ -51,6 +47,7 @@ namespace DCAPST
         private readonly double start = 6.0;
         private readonly double end = 18.0;
         private readonly double timestep = 1.0;
+
         private int iterations;
 
         public DCAPSTModel(
@@ -58,19 +55,16 @@ namespace DCAPST
             ISolarRadiation radiation, 
             ITemperature temperature, 
             IPathwayParameters pathway,
-            ICanopyParameters parameters,
             ICanopyAttributes canopy,
-            IWaterInteraction water,
-            TemperatureResponse leaf)
+            Transpiration trans
+        )
         {
             Solar = solar;
             Radiation = radiation;
             Temperature = temperature;
             this.pathway = pathway;
             Canopy = canopy;
-            this.water = water;
-            this.leaf = leaf;
-            this.parameters = parameters;
+            Params = trans;
         }
 
         /// <summary>
@@ -88,6 +82,7 @@ namespace DCAPST
 
             Solar.Initialise();
             Canopy.InitialiseDay(lai, SLN);
+            Params.Initialise(iterations);
 
             // POTENTIAL CALCULATIONS
             // Note: In the potential case, we assume unlimited water and therefore supply = demand
@@ -206,24 +201,24 @@ namespace DCAPST
         /// </summary>
         public void DoTimestepUpdate(double maxHourlyT = -1, double sunFraction = 0, double shadeFraction = 0)
         {
-            var Params = new Transpiration(parameters, pathway, water, leaf, iterations)
-            {
-                maxHourlyT = maxHourlyT,
-                limited = false
-            };
-            if (maxHourlyT != -1) Params.limited = true;
+            Params.MaxHourlyT = maxHourlyT;            
+            
+            if (maxHourlyT != -1) 
+                Params.Limited = true;
+            else
+                Params.Limited = false;
 
             Canopy.DoTimestepAdjustment(Radiation);
 
-            var heat = Canopy.CalcBoundaryHeatConductance();
+            var totalHeat= Canopy.CalcBoundaryHeatConductance();
             var sunlitHeat = Canopy.CalcSunlitBoundaryHeatConductance();
 
             Params.BoundaryHeatConductance = sunlitHeat;
-            Params.fraction = sunFraction;
+            Params.Fraction = sunFraction;
             Canopy.Sunlit.DoPhotosynthesis(Temperature, Params);
 
-            Params.BoundaryHeatConductance = heat - sunlitHeat;
-            Params.fraction = shadeFraction;
+            Params.BoundaryHeatConductance = totalHeat - sunlitHeat;
+            Params.Fraction = shadeFraction;
             Canopy.Shaded.DoPhotosynthesis(Temperature, Params);
         }
 
