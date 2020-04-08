@@ -91,7 +91,6 @@ namespace DCAPST.Utilities
             double maxPEPcActivitySLNRatio,
             double mesophyllCO2ConductanceSLNRatio,
             double extraATPCost,
-            double mesophyllElectronTransportFraction,
             double intercellularToAirCO2Ratio
         )
         {
@@ -164,7 +163,6 @@ namespace DCAPST.Utilities
                 MaxPEPcActivitySLNRatio = maxPEPcActivitySLNRatio,
                 MesophyllCO2ConductanceSLNRatio = mesophyllCO2ConductanceSLNRatio,
                 ExtraATPCost = extraATPCost,
-                MesophyllElectronTransportFraction = mesophyllElectronTransportFraction,
                 IntercellularToAirCO2Ratio = intercellularToAirCO2Ratio,
                 RubiscoCarboxylation = Kc,
                 RubiscoOxygenation = Ko,
@@ -175,9 +173,8 @@ namespace DCAPST.Utilities
                 PEPcActivity = Vp,
                 ElectronTransportRateParams = j,
                 MesophyllCO2ConductanceParams = g
-            };
+            };            
             
-            // Only used in CCM
             PP.MesophyllElectronTransportFraction = PP.ExtraATPCost / (3.0 + PP.ExtraATPCost);
             PP.FractionOfCyclicElectronFlow = 0.25 * PP.ExtraATPCost;
             PP.ATPProductionElectronTransportFactor = (3.0 - PP.FractionOfCyclicElectronFlow) / (4.0 * (1.0 - PP.FractionOfCyclicElectronFlow));
