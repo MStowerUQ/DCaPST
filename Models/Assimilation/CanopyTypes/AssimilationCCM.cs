@@ -41,7 +41,7 @@ namespace DCAPST
             x[3] = leaf.VpMaxT / (pathway.MesophyllCO2 + leaf.Kp);
             x[4] = 0.0;
             x[5] = 0.0;
-            x[6] = pathway.ChloroplasticCO2 * leaf.VcMaxT / (pathway.ChloroplasticCO2 + leaf.Kc * (1 + pathway.ChloroplasticO2 / leaf.Ko));
+            x[6] = pathway.ChloroplasticCO2 * leaf.VcMaxT / (pathway.ChloroplasticCO2 + (leaf.Kc / leaf.Ko) * pathway.ChloroplasticO2 + leaf.Kc);
             x[7] = 1.0;
             x[8] = 1.0;
 

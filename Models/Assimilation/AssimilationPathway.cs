@@ -74,7 +74,7 @@ namespace DCAPST
             Vpr = Pathway.PEPRegeneration * lai;
 
             MesophyllCO2 = Canopy.AirCO2 * Pathway.IntercellularToAirCO2Ratio;
-            ChloroplasticCO2 = MesophyllCO2 + 20;
+            ChloroplasticCO2 = MesophyllCO2;
             ChloroplasticO2 = 210000;
         }
     }

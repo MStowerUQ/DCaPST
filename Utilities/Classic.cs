@@ -184,7 +184,7 @@ namespace DCAPST.Utilities
 
         public static DCAPSTModel SetUpModel(
             ICanopyParameters CP, 
-            IPathwayParameters PP, 
+            IPathwayParameters PP,
             int DOY, 
             double latitude, 
             double maxT, 
@@ -223,9 +223,13 @@ namespace DCAPST.Utilities
             var ShadedAj = new AssimilationPathway(CP, PP);
 
             // Model the canopy
-            var C4 = new AssimilationC4(CP, PP);
-            var sunlit = new AssimilationArea(SunlitAc1, SunlitAc2, SunlitAj, C4);
-            var shaded = new AssimilationArea(ShadedAc1, ShadedAc2, ShadedAj, C4);
+            IAssimilation A;
+            if (CP.Type == CanopyType.C3) A = new AssimilationC3(CP, PP);
+            else if (CP.Type == CanopyType.C4) A = new AssimilationC4(CP, PP);
+            else A = new AssimilationCCM(CP, PP);
+
+            var sunlit = new AssimilationArea(SunlitAc1, SunlitAc2, SunlitAj, A);
+            var shaded = new AssimilationArea(ShadedAc1, ShadedAc2, ShadedAj, A);
             var CA = new CanopyAttributes(CP, PP, sunlit, shaded);
 
             // Model the transpiration
