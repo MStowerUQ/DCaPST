@@ -17,7 +17,6 @@ namespace DCAPST.Canopy
         /// </summary>
         public ParameterRates At25C { get; private set; } = new ParameterRates();
 
-
         /// <summary>
         /// The leaf area index of this part of the canopy
         /// </summary>
@@ -36,17 +35,25 @@ namespace DCAPST.Canopy
         /// <summary>
         /// CO2 assimilation rate over a period of time
         /// </summary>
-        public double CO2AssimilationRate { get; set; }
+        protected double CO2AssimilationRate { get; set; }
         
         /// <summary>
         /// Water used during photosynthesis
         /// </summary>
-        public double WaterUse { get; set; }        
+        protected double WaterUse { get; set; }        
 
         /// <summary>
         /// The possible assimilation pathways
         /// </summary>
         protected List<AssimilationPathway> pathways;
+
+        //public List<double> WaterDemands { get; set; } = new List<double>();
+
+        //public List<double> AssimilationRates { get; set; } = new List<double>();
+
+        public AreaAlphaValues Alpha { get; private set; }
+
+        public AreaBetaValues Beta { get; } = new AreaBetaValues();
 
         public AssimilationArea(
             AssimilationPathway Ac1,
@@ -99,7 +106,7 @@ namespace DCAPST.Canopy
             WaterUse = GetWaterUse();
 
             // Only attempt to converge result if there is sufficient assimilation
-            if (CO2AssimilationRate < 0.5 || WaterUse == 0) return;
+            if (CO2AssimilationRate < 0.5 || WaterUse == 0) goto Finally;
 
             // Repeat calculation 3 times to let solution converge
             for (int n = 0; n < 3; n++)
@@ -107,12 +114,17 @@ namespace DCAPST.Canopy
                 UpdateAssimilation(transpiration);
 
                 // If the additional updates fail, stop the process (meaning the initial results used)
-                if (GetCO2Rate() == 0 || GetWaterUse() == 0) return;
+                if (GetCO2Rate() == 0 || GetWaterUse() == 0) goto Finally;
             }
 
             // Update results only if convergence succeeds
             CO2AssimilationRate = GetCO2Rate();
-            WaterUse = GetWaterUse();
+            WaterUse = GetWaterUse();            
+
+        Finally:
+            RecordAlphaValues();
+            //AssimilationRates.Add(CO2AssimilationRate);
+            //WaterDemands.Add(WaterUse);
         }
 
         /// <summary>
@@ -131,8 +143,49 @@ namespace DCAPST.Canopy
                 {
                     p.CO2Rate = 0;
                     p.WaterUse = 0;
-                }
+                }                
             }
         }
+
+        private void RecordAlphaValues()
+        {
+            Alpha = new AreaAlphaValues();
+
+            foreach (var p in pathways)
+            {
+                if (p.Type == PathwayType.Ac1) Alpha.Ac1 = p.CO2Rate;
+                else if (p.Type == PathwayType.Ac2) Alpha.Ac2 = p.CO2Rate;
+                else Alpha.Aj = p.CO2Rate;
+            }
+
+            Alpha.A = CO2AssimilationRate;
+            Alpha.E = WaterUse;
+        }
+    }
+
+    public class AreaAlphaValues
+    {
+        public double Ac1 { get; set; }
+
+        public double Ac2 { get; set; }
+
+        public double Aj { get; set; }
+
+        public double gsCO2 { get; set; }
+
+        public double A { get; set; }
+
+        public double E { get; set; }
+    }
+
+    public class AreaBetaValues
+    {
+        public double Ci { get; set; }
+
+        public double Cm { get; set; }
+
+        public double Cc { get; set; }
+
+        public double Tl { get; set; }
     }
 }

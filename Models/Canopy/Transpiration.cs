@@ -31,13 +31,13 @@ namespace DCAPST.Canopy
 
         public double BoundaryHeatConductance { get; set; }
 
-        public double MaxHourlyT { get; set; }
+        public double HourlyMax { get; set; }
 
         public double Fraction { get; set; }
 
-        public double[] SunlitDemand { get; private set; }
+        public List<double> SunlitDemand { get; private set; }
 
-        public double[] ShadedDemand { get; private set; }
+        public List<double> ShadedDemand { get; private set; }
 
         /// <summary>
         /// Resistance to water
@@ -57,10 +57,10 @@ namespace DCAPST.Canopy
             Leaf = leaf;            
         }
 
-        public void Initialise(int iterations)
+        public void ClearData()
         {
-            SunlitDemand = new double[iterations];
-            ShadedDemand = new double[iterations];
+            SunlitDemand = new List<double>();
+            ShadedDemand = new List<double>();
         }
 
         public void SetConditions(ParameterRates At25C, double temperature, double photons, double radiation)
@@ -79,7 +79,7 @@ namespace DCAPST.Canopy
                 var g_to_kg = 1000;
                 var hrs_to_seconds = 3600;
 
-                pathway.WaterUse = MaxHourlyT * Fraction;
+                pathway.WaterUse = HourlyMax * Fraction;
                 var WaterUseMolsSecond = pathway.WaterUse / molarMassWater * g_to_kg / hrs_to_seconds;
 
                 Resistance = Water.LimitedWaterResistance(pathway.WaterUse);

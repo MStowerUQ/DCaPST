@@ -1,4 +1,5 @@
-﻿using DCAPST.Canopy;
+﻿using System.Collections.Generic;
+using DCAPST.Canopy;
 
 namespace DCAPST.Interfaces
 {
@@ -24,19 +25,15 @@ namespace DCAPST.Interfaces
         /// </summary>
         double PhotonCount { get; set; }
 
-        /// <summary>
-        /// Rate of biomass conversion
-        /// </summary>
-        double CO2AssimilationRate { get; set; }
+        AreaAlphaValues Alpha { get; }
 
-        /// <summary>
-        /// How much water the canopy consumes
-        /// </summary>
-        double WaterUse { get; set; }        
+        // List<double> WaterDemands { get; set; }
 
-        /// <summary>
-        /// Runs the photosynthesis calculations for the canopy
-        /// </summary>
+            //List<double> AssimilationRates { get; set; }
+
+            /// <summary>
+            /// Runs the photosynthesis calculations for the canopy
+            /// </summary>
         void DoPhotosynthesis(ITemperature temperature, Transpiration transpiration);
     }
 
