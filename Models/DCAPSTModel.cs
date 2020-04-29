@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-
 using DCAPST.Canopy;
-using DCAPST.Environment;
 using DCAPST.Interfaces;
 
 namespace DCAPST
@@ -288,8 +285,10 @@ namespace DCAPST
         {
             Canopy.DoTimestepAdjustment(Radiation);
 
+            var totalHeat = Canopy.CalcBoundaryHeatConductance();
             var sunlitHeat = Canopy.CalcSunlitBoundaryHeatConductance();
-            var shadedHeat = Canopy.CalcBoundaryHeatConductance() - sunlitHeat;
+            
+            var shadedHeat =  (totalHeat == sunlitHeat) ? double.Epsilon : totalHeat - sunlitHeat;
 
             PerformPhotosynthesis(Canopy.Sunlit, sunlitHeat, sunFraction);
             interval.Sunlit = Canopy.Sunlit.Alpha;            
