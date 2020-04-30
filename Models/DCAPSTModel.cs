@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using DCAPST.Canopy;
 using DCAPST.Interfaces;
 
@@ -31,6 +33,10 @@ namespace DCAPST
         private IPathwayParameters pathway;
 
         Transpiration transpiration;
+
+        public bool PrintIntervalValues { get; set; } = false;
+
+        public string IntervalResults { get; private set; } = "";
 
         /// <summary>
         /// Biochemical Conversion & Maintenance Respiration
@@ -114,6 +120,12 @@ namespace DCAPST
                 potential = CalculateLimited(waterDemands);
             }
 
+            if (PrintIntervalValues)
+            {
+                IntervalResults = Solar.DayOfYear.ToString() + ",";
+                IntervalResults += string.Join(",", Intervals.Select(i => i.ToString()));
+            }
+
             // ACTUAL CALCULATIONS
             var totalDemand = waterDemands.Sum();
             var limitedSupply = CalculateWaterSupplyLimits(soilWater, waterDemands);
@@ -129,6 +141,8 @@ namespace DCAPST
             PotentialBiomass = potential * hrs_to_seconds / 1000000 * 44 * B / (1 + RootShootRatio);
             WaterDemanded = totalDemand;
             WaterSupplied = (soilWater < totalDemand) ? limitedSupply.Sum() : waterDemands.Sum();
+
+            if (PrintIntervalValues) IntervalResults += "," + string.Join(",", Intervals.Select(i => i.ToString()));
         }        
 
         private double RatioFunction(double A, double B)
@@ -344,6 +358,15 @@ namespace DCAPST
             }
             return demand.Select(d => d > averageDemandRate ? averageDemandRate : d);
         }
+
+        public string PrintResultHeader()
+        {
+            var builder = new StringBuilder();
+            builder.Append("DoY,");
+            Intervals.ForEach(i => builder.Append(i.PrintHeader("Pot_") + ","));
+            Intervals.ForEach(i => builder.Append(i.PrintHeader("") + ","));
+            return builder.ToString();
+        }
     }
 
     public class IntervalValues
@@ -353,10 +376,18 @@ namespace DCAPST
         /// </summary>
         public double Time { get; set; }
 
-        public double WaterDemand { get; set; }
-
         public AreaAlphaValues Sunlit { get; set; } = new AreaAlphaValues();
 
         public AreaAlphaValues Shaded { get; set; } = new AreaAlphaValues();
+
+        public override string ToString()
+        {            
+            return $"{Sunlit},{Shaded}";
+        }
+
+        public string PrintHeader(string prefix)
+        {
+            return $"{Sunlit.Header($"{prefix}sun", $"at {Time}")},{Shaded.Header($"{prefix}sh", $"at {Time}")}";
+        }
     }
 }
