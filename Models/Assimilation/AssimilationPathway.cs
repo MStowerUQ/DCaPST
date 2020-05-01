@@ -10,8 +10,14 @@ namespace DCAPST
 
     public class AssimilationPathway
     {
+        /// <summary>
+        /// The canopy parameters
+        /// </summary>
         ICanopyParameters Canopy;
 
+        /// <summary>
+        /// The pathway parameters
+        /// </summary>
         IPathwayParameters Pathway;        
 
         /// <summary>
@@ -19,6 +25,9 @@ namespace DCAPST
         /// </summary>
         public PathwayType Type { get; set; }
 
+        /// <summary>
+        /// The current temperature of the pathway
+        /// </summary>
         public double Temperature { get; set; }
 
         /// <summary>
@@ -67,6 +76,11 @@ namespace DCAPST
             Pathway = pathway;            
         }
 
+        /// <summary>
+        /// Establishes the current conditions of the pathway
+        /// </summary>
+        /// <param name="temperature">The current temperature</param>
+        /// <param name="lai">The current leaf area index</param>
         public void SetConditions(double temperature, double lai)
         {
             Temperature = temperature;

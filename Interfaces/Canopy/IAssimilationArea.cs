@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
-using DCAPST.Canopy;
+﻿using DCAPST.Canopy;
 
 namespace DCAPST.Interfaces
 {
+    /// <summary>
+    /// Represents an area of a canopy that can undergo assimilation
+    /// </summary>
     public interface IAssimilationArea
     {
         /// <summary>
@@ -25,15 +27,17 @@ namespace DCAPST.Interfaces
         /// </summary>
         double PhotonCount { get; set; }
 
-        AreaAlphaValues Alpha { get; }
+        /// <summary>
+        /// Retrieves the current data values of the area in a seperate object
+        /// </summary>
+        /// <remarks>
+        /// This is intended to enable the extraction / tracking of data if necessary
+        /// </remarks>
+        AreaValues GetAreaValues();
 
-        // List<double> WaterDemands { get; set; }
-
-            //List<double> AssimilationRates { get; set; }
-
-            /// <summary>
-            /// Runs the photosynthesis calculations for the canopy
-            /// </summary>
+        /// <summary>
+        /// Runs the photosynthesis calculations for the canopy
+        /// </summary>
         void DoPhotosynthesis(ITemperature temperature, Transpiration transpiration);
     }
 

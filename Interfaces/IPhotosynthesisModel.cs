@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DCAPST.Interfaces
 {
+    /// <summary>
+    /// Represents a model that simulates daily photosynthesis
+    /// </summary>
     public interface IPhotosynthesisModel
     {
         void DailyRun(double lai, double SLN, double soilWater, double RootShootRatio, double biolimit = 0, double reduction = 0);

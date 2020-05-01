@@ -10,6 +10,9 @@ namespace DCAPST.Canopy
     /// </summary>
     public class AssimilationArea : IAssimilationArea
     {   
+        /// <summary>
+        /// The assimilation model
+        /// </summary>
         IAssimilation assimilation;
 
         /// <summary>
@@ -46,14 +49,6 @@ namespace DCAPST.Canopy
         /// The possible assimilation pathways
         /// </summary>
         protected List<AssimilationPathway> pathways;
-
-        //public List<double> WaterDemands { get; set; } = new List<double>();
-
-        //public List<double> AssimilationRates { get; set; } = new List<double>();
-
-        public AreaAlphaValues Alpha { get; private set; }
-
-        public AreaBetaValues Beta { get; } = new AreaBetaValues();
 
         public AssimilationArea(
             AssimilationPathway Ac1,
@@ -106,7 +101,7 @@ namespace DCAPST.Canopy
             WaterUse = GetWaterUse();
 
             // Only attempt to converge result if there is sufficient assimilation
-            if (CO2AssimilationRate < 0.5 || WaterUse == 0) goto Finally;
+            if (CO2AssimilationRate < 0.5 || WaterUse == 0) return;
 
             // Repeat calculation 3 times to let solution converge
             for (int n = 0; n < 3; n++)
@@ -114,17 +109,12 @@ namespace DCAPST.Canopy
                 UpdateAssimilation(transpiration);
 
                 // If the additional updates fail, stop the process (meaning the initial results used)
-                if (GetCO2Rate() == 0 || GetWaterUse() == 0) goto Finally;
+                if (GetCO2Rate() == 0 || GetWaterUse() == 0) return;
             }
 
             // Update results only if convergence succeeds
             CO2AssimilationRate = GetCO2Rate();
-            WaterUse = GetWaterUse();            
-
-        Finally:
-            RecordAlphaValues();
-            //AssimilationRates.Add(CO2AssimilationRate);
-            //WaterDemands.Add(WaterUse);
+            WaterUse = GetWaterUse();
         }
 
         /// <summary>
@@ -147,23 +137,29 @@ namespace DCAPST.Canopy
             }
         }
 
-        private void RecordAlphaValues()
+        /// <inheritdoc/>
+        public AreaValues GetAreaValues()
         {
-            Alpha = new AreaAlphaValues();
+            var alpha = new AreaValues();
 
             foreach (var p in pathways)
             {
-                if (p.Type == PathwayType.Ac1) Alpha.Ac1 = p.CO2Rate;
-                else if (p.Type == PathwayType.Ac2) Alpha.Ac2 = p.CO2Rate;
-                else Alpha.Aj = p.CO2Rate;
+                if (p.Type == PathwayType.Ac1) alpha.Ac1 = p.CO2Rate;
+                else if (p.Type == PathwayType.Ac2) alpha.Ac2 = p.CO2Rate;
+                else alpha.Aj = p.CO2Rate;
             }
 
-            Alpha.A = CO2AssimilationRate;
-            Alpha.E = WaterUse;
+            alpha.A = CO2AssimilationRate;
+            alpha.E = WaterUse;
+
+            return alpha;
         }
     }
 
-    public class AreaAlphaValues
+    /// <summary>
+    /// An instance of values present within an assimilation area
+    /// </summary>
+    public class AreaValues
     {
         public double A { get; set; }
 
@@ -183,25 +179,14 @@ namespace DCAPST.Canopy
             return $"{Ac1:F6},{Ac2:F6},{Aj:F6},{gsCO2:F6},{E:F6}";
         }
 
+        /// <summary>
+        /// Generates a .csv format header line
+        /// </summary>
+        /// <param name="pre">A prefix for each column</param>
+        /// <param name="suf">A suffix for each column</param>
         public string Header(string pre = "", string suf = "")
         {
             return $"{pre}_Ac1_{suf}, {pre}_Ac2_{suf}, {pre}_Aj_{suf}, {pre}_gsCO2_{suf}, {pre}_E_{suf}";
-        }
-    }
-
-    public class AreaBetaValues
-    {
-        public double Ci { get; set; }
-
-        public double Cm { get; set; }
-
-        public double Cc { get; set; }
-
-        public double Tl { get; set; }
-
-        public override string ToString()
-        {
-            return $"{Ci},{Cm},{Cc},{Tl}";
         }
     }
 }

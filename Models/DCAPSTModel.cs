@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using DCAPST.Canopy;
@@ -30,12 +29,24 @@ namespace DCAPST
         /// </summary>
         private ICanopyAttributes Canopy { get; set; }
 
+        /// <summary>
+        /// The pathway parameters
+        /// </summary>
         private IPathwayParameters pathway;
 
+        /// <summary>
+        /// The transpiration model
+        /// </summary>
         Transpiration transpiration;
 
+        /// <summary>
+        /// A public option to toggle if the interval values are tracked or not
+        /// </summary>
         public bool PrintIntervalValues { get; set; } = false;
 
+        /// <summary>
+        /// Used to track the interval values that are printed
+        /// </summary>
         public string IntervalResults { get; private set; } = "";
 
         /// <summary>
@@ -43,10 +54,29 @@ namespace DCAPST
         /// </summary>
         public double B { get; set; } = 0.409;
 
+        /// <summary>
+        /// Potential total daily biomass
+        /// </summary>
         public double PotentialBiomass { get; private set; }
+        
+        /// <summary>
+        /// Actual total daily biomass 
+        /// </summary>
         public double ActualBiomass { get; private set; }
+        
+        /// <summary>
+        /// Daily water demand
+        /// </summary>
         public double WaterDemanded { get; private set; }
+        
+        /// <summary>
+        /// Daily water supplied
+        /// </summary>
         public double WaterSupplied { get; private set; }
+        
+        /// <summary>
+        /// Daily intercepted radiation
+        /// </summary>
         public double InterceptedRadiation { get; private set; }
 
         private readonly double start = 6.0;
@@ -54,8 +84,6 @@ namespace DCAPST
         private readonly double timestep = 1.0;
 
         private List<IntervalValues> Intervals = new List<IntervalValues>();
-
-        //private int iterations;
 
         public DCAPSTModel(
             ISolarGeometry solar, 
@@ -145,6 +173,9 @@ namespace DCAPST
             if (PrintIntervalValues) IntervalResults += "," + string.Join(",", Intervals.Select(i => i.ToString()));
         }        
 
+        /// <summary>
+        /// Calculates the ratio of A to A + B
+        /// </summary>
         private double RatioFunction(double A, double B)
         {
             var total = A + B;
@@ -152,6 +183,13 @@ namespace DCAPST
             return A / total;
         }
 
+        /// <summary>
+        /// Reduces the value of any excess water past the limit by a given percentage
+        /// </summary>
+        /// <param name="water">The total water</param>
+        /// <param name="limit">The water limit</param>
+        /// <param name="percent">The precentage to reduce excess water by</param>
+        /// <returns>Water with reduced excess</returns>
         private double ReductionFunction(double water, double limit, double percent)
         {
             if (water < limit) return water;
@@ -168,14 +206,24 @@ namespace DCAPST
         /// <summary>
         /// Attempt to initialise models based on the current time, and test if they are sensible
         /// </summary>
-        private bool TryInitiliase(double time)
+        private bool TryInitiliase(IntervalValues I)
         {
-            Temperature.UpdateAirTemperature(time);
-            Radiation.UpdateRadiationValues(time);
-            var sunAngle = Solar.SunAngle(time);            
+            Temperature.UpdateAirTemperature(I.Time);
+            Radiation.UpdateRadiationValues(I.Time);
+            var sunAngle = Solar.SunAngle(I.Time);            
             Canopy.DoSolarAdjustment(sunAngle);
 
-            return IsSensible();
+            if (IsSensible()) 
+                return true;
+            else
+            {
+                I.Sunlit.A = 0;
+                I.Shaded.A = 0;
+
+                I.Sunlit.E = 0;
+                I.Shaded.E = 0;
+                return false;
+            }
         }
 
         /// <summary>
@@ -210,17 +258,7 @@ namespace DCAPST
         {
             foreach (var I in Intervals)
             {
-                // Note: double arrays default value is 0.0, which is the intended case if initialisation fails
-                if (!TryInitiliase(I.Time))
-                {
-                    I.Sunlit.A = 0;
-                    I.Shaded.A = 0;
-
-                    I.Sunlit.E = 0;
-                    I.Shaded.E = 0;
-
-                    continue;
-                }
+                if (!TryInitiliase(I)) continue;                
 
                 InterceptedRadiation += Radiation.Total * Canopy.GetInterceptedRadiation() * 3600;
 
@@ -230,6 +268,10 @@ namespace DCAPST
             return Intervals.Select(i => i.Sunlit.A + i.Shaded.A).Sum();
         }
 
+        /// <summary>
+        /// Calculates the potential biomass in the case where a plant has a biological limit
+        /// on transpiration rate
+        /// </summary>
         public double CalculateLimited(IEnumerable<double> demands)
         {
             var ratios = Intervals.Select(i => RatioFunction(i.Sunlit.E, i.Shaded.E));
@@ -238,22 +280,12 @@ namespace DCAPST
 
             foreach (var I in Intervals)
             {
-                // Note: double array values default to 0.0, which is the intended case if initialisation fails
-                if (!TryInitiliase(I.Time))
-                {
-                    I.Sunlit.A = 0;
-                    I.Shaded.A = 0;
-
-                    I.Sunlit.E = 0;
-                    I.Shaded.E = 0;
-
-                    continue;
-                }
+                if (!TryInitiliase(I)) continue;
 
                 int i = Intervals.IndexOf(I);
                 
                 double total = sunlitDemand[i] + shadedDemand[i];
-                transpiration.HourlyMax = total;
+                transpiration.MaxRate = total;
                 DoTimestepUpdate(I, sunlitDemand[i] / total, shadedDemand[i] / total);
             }
 
@@ -270,21 +302,11 @@ namespace DCAPST
 
             foreach (var I in Intervals)
             {
-                // Note: double array values default to 0.0, which is the intended case if initialisation fails
-                if (!TryInitiliase(I.Time))
-                {
-                    I.Sunlit.A = 0;
-                    I.Shaded.A = 0;
-
-                    I.Sunlit.E = 0;
-                    I.Shaded.E = 0;
-
-                    continue;
-                }
+                if (!TryInitiliase(I)) continue;
 
                 int i = Intervals.IndexOf(I);
 
-                transpiration.HourlyMax = waterSupply[i];
+                transpiration.MaxRate = waterSupply[i];
                 double total = sunlitDemand[i] + shadedDemand[i];
                 DoTimestepUpdate(I, sunlitDemand[i] / total, shadedDemand[i] / total);
             }
@@ -305,12 +327,18 @@ namespace DCAPST
             var shadedHeat =  (totalHeat == sunlitHeat) ? double.Epsilon : totalHeat - sunlitHeat;
 
             PerformPhotosynthesis(Canopy.Sunlit, sunlitHeat, sunFraction);
-            interval.Sunlit = Canopy.Sunlit.Alpha;            
+            interval.Sunlit = Canopy.Sunlit.GetAreaValues();            
 
             PerformPhotosynthesis(Canopy.Shaded, shadedHeat, shadeFraction);
-            interval.Shaded = Canopy.Shaded.Alpha;
+            interval.Shaded = Canopy.Shaded.GetAreaValues();
         }
 
+        /// <summary>
+        /// Runs the photosynthesis simulation for an assimilating area
+        /// </summary>
+        /// <param name="area">The area to run photosynthesis for</param>
+        /// <param name="gbh">The boundary heat conductance</param>
+        /// <param name="fraction">Fraction of water allowance</param>
         public void PerformPhotosynthesis(IAssimilationArea area, double gbh, double fraction)
         {
             transpiration.BoundaryHeatConductance = gbh;
@@ -359,6 +387,9 @@ namespace DCAPST
             return demand.Select(d => d > averageDemandRate ? averageDemandRate : d);
         }
 
+        /// <summary>
+        /// Generates a .csv formatted string to use as a header in an output file for tracked interval values
+        /// </summary>
         public string PrintResultHeader()
         {
             var builder = new StringBuilder();
@@ -376,18 +407,29 @@ namespace DCAPST
         /// </summary>
         public double Time { get; set; }
 
-        public AreaAlphaValues Sunlit { get; set; } = new AreaAlphaValues();
+        /// <summary>
+        /// Area values for the sunlit canopy
+        /// </summary>
+        public AreaValues Sunlit { get; set; } = new AreaValues();
 
-        public AreaAlphaValues Shaded { get; set; } = new AreaAlphaValues();
+        /// <summary>
+        /// Area values for the shaded canopy
+        /// </summary>
+        public AreaValues Shaded { get; set; } = new AreaValues();
 
         public override string ToString()
         {            
             return $"{Sunlit},{Shaded}";
         }
 
+        /// <summary>
+        /// Generates a .csv formatted string for use as column headers
+        /// </summary>
         public string PrintHeader(string prefix)
         {
-            return $"{Sunlit.Header($"{prefix}sun", $"at {Time}")},{Shaded.Header($"{prefix}sh", $"at {Time}")}";
+            var sunlit = Sunlit.Header($"{prefix}sun", $"at {Time}");
+            var shaded = Shaded.Header($"{prefix}sh", $"at {Time}");
+            return $"{sunlit},{shaded}";
         }
     }
 }

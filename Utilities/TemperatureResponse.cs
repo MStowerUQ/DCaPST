@@ -1,5 +1,4 @@
 using System;
-using DCAPST.Canopy;
 using DCAPST.Interfaces;
 
 namespace DCAPST
@@ -42,6 +41,9 @@ namespace DCAPST
         /// </summary>
         private double temperature;
 
+        /// <summary>
+        /// Number of photons that reached the leaf
+        /// </summary>
         private double photoncount;
 
         /// <summary>
