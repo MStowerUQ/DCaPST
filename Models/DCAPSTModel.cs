@@ -45,6 +45,16 @@ namespace DCAPST
         public bool PrintIntervalValues { get; set; } = false;
 
         /// <summary>
+        /// The biological transpiration limit of a plant
+        /// </summary>
+        public double Biolimit { get; set; } = 0;
+
+        /// <summary>
+        /// Excess water reduction fraction
+        /// </summary>
+        public double Reduction { get; set; } = 0;
+
+        /// <summary>
         /// Used to track the interval values that are printed
         /// </summary>
         public string IntervalResults { get; private set; } = "";
@@ -110,9 +120,7 @@ namespace DCAPST
             double lai,
             double SLN, 
             double soilWater, 
-            double RootShootRatio,
-            double biolimit = 0,
-            double reduction = 0
+            double RootShootRatio
         )
         {
             for (double x = start; x <= end; x += timestep) Intervals.Add(new IntervalValues() { Time = x });
@@ -131,18 +139,18 @@ namespace DCAPST
             transpiration.Limited = true;
 
             // Check if the plant is biologically self-limiting
-            if (biolimit > 0)
+            if (Biolimit > 0)
             {
                 // Percentile reduction
-                if (reduction > 0)
+                if (Reduction > 0)
                 {
-                    waterDemands = waterDemands.Select(w => ReductionFunction(w, biolimit, reduction)).ToList();
+                    waterDemands = waterDemands.Select(w => ReductionFunction(w, Biolimit, Reduction)).ToList();
                 }
                 // Truncation
                 else
                 {
                     // Reduce to the flat biological limit
-                    waterDemands = waterDemands.Select(w => Math.Min(w, biolimit)).ToList();
+                    waterDemands = waterDemands.Select(w => Math.Min(w, Biolimit)).ToList();
                 }               
 
                 potential = CalculateLimited(waterDemands);
@@ -164,9 +172,11 @@ namespace DCAPST
 
             // 1,000,000 mmol to mol
             // 44 mol wt CO2
+            var mmolToMol = 1000000;
+            var molWtCO2 = 44;
 
-            ActualBiomass = actual * hrs_to_seconds / 1000000 * 44 * B / (1 + RootShootRatio);
-            PotentialBiomass = potential * hrs_to_seconds / 1000000 * 44 * B / (1 + RootShootRatio);
+            ActualBiomass = actual * hrs_to_seconds / mmolToMol * molWtCO2 * B / (1 + RootShootRatio);
+            PotentialBiomass = potential * hrs_to_seconds / mmolToMol * molWtCO2 * B / (1 + RootShootRatio);
             WaterDemanded = totalDemand;
             WaterSupplied = (soilWater < totalDemand) ? limitedSupply.Sum() : waterDemands.Sum();
 
