@@ -1,14 +1,12 @@
-﻿namespace DCAPST.Interfaces
+﻿using DCAPST.Canopy;
+
+namespace DCAPST.Interfaces
 {
-    public interface IPartialCanopy
+    /// <summary>
+    /// Represents an area of a canopy that can undergo assimilation
+    /// </summary>
+    public interface IAssimilationArea
     {
-        /// <summary>
-        /// A collection of predefined parameters used by the canopy
-        /// </summary>
-        ICanopyParameters Canopy { get; }
-
-        IPathwayParameters Pathway { get; }
-
         /// <summary>
         /// The rates of various parameters at 25 Celsius
         /// </summary>
@@ -29,20 +27,17 @@
         /// </summary>
         double PhotonCount { get; set; }
 
-        /// <summary>
-        /// Rate of biomass conversion
+        /// Retrieves the current data values of the area in a seperate object
         /// </summary>
-        double CO2AssimilationRate { get; set; }
-
-        /// <summary>
-        /// How much water the canopy consumes
-        /// </summary>
-        double WaterUse { get; set; }        
+        /// <remarks>
+        /// This is intended to enable the extraction / tracking of data if necessary
+        /// </remarks>
+        AreaValues GetAreaValues();
 
         /// <summary>
         /// Runs the photosynthesis calculations for the canopy
         /// </summary>
-        void DoPhotosynthesis(ITemperature temperature, WaterParameters Params);
+        void DoPhotosynthesis(ITemperature temperature, Transpiration transpiration);
     }
 
     public class ParameterRates

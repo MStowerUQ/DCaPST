@@ -1,26 +1,29 @@
 ﻿namespace DCAPST.Interfaces
-{
-    
+{    
     public interface IAssimilation
     {
         /// <summary>
-        /// A leaf water interaction model
+        /// Generates the function used to calculate assimilation
         /// </summary>
-        ILeafWaterInteraction LeafWater { get; }
+        /// <param name="pathway">The assimilating pathway</param>
+        /// <param name="leaf">The leaf temperature response model</param>
+        AssimilationFunction GetFunction(AssimilationPathway pathway, TemperatureResponse leaf);
 
         /// <summary>
-        /// Attempts to calculate possible changes to the assimilation value under current conditions.
+        /// Updates the intercellular CO2 for a pathway
         /// </summary>
-        void UpdateAssimilation(WaterParameters Params);        
+        /// <param name="pathway">The pathway to update</param>
+        /// <param name="gt">Water conductance</param>
+        /// <param name="waterUseMolsSecond">Water usage rate</param>
+        void UpdateIntercellularCO2(AssimilationPathway pathway, double gt, double waterUseMolsSecond);
 
         /// <summary>
-        /// Gets the rate of CO2 assimilation
+        /// Updates the partial pressures for a pathway
         /// </summary>
-        double GetCO2Rate();
+        /// <param name="pathway">The pathway to update</param>
+        /// <param name="leaf">The leaf temperature response model</param>
+        /// <param name="function">The assimilation function specific to the pathway</param>
 
-        /// <summary>
-        /// Gets the water used by the CO2 assimilation
-        /// </summary>
-        double GetWaterUse();
+        void UpdatePartialPressures(AssimilationPathway pathway, TemperatureResponse leaf, AssimilationFunction function);
     }
 }

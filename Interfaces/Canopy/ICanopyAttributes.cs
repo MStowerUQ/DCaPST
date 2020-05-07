@@ -2,7 +2,10 @@
 
 namespace DCAPST.Interfaces
 {
-    public interface ITotalCanopy
+    /// <summary>
+    /// Represents attributes of a plant canopy
+    /// </summary>
+    public interface ICanopyAttributes
     {
         /// <summary>
         /// A collection of predefined parameters used by the canopy
@@ -12,12 +15,12 @@ namespace DCAPST.Interfaces
         /// <summary>
         /// The section of canopy currently in sunlight
         /// </summary>
-        IPartialCanopy Sunlit { get; }
+        IAssimilationArea Sunlit { get; }
 
         /// <summary>
         /// The section of canopy currently in shade
         /// </summary>
-        IPartialCanopy Shaded { get; }        
+        IAssimilationArea Shaded { get; }        
 
         /// <summary>
         /// Performs initial calculations for the canopy provided daily conditions 
