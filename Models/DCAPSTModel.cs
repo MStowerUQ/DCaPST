@@ -47,12 +47,12 @@ namespace DCAPST
         /// <summary>
         /// The biological transpiration limit of a plant
         /// </summary>
-        public double Biolimit { get; set; } = 0;
+        public double Biolimit { get; set; } = -1;
 
         /// <summary>
         /// Excess water reduction fraction
         /// </summary>
-        public double Reduction { get; set; } = 0;
+        public double Reduction { get; set; } = -1;
 
         /// <summary>
         /// Used to track the interval values that are printed
